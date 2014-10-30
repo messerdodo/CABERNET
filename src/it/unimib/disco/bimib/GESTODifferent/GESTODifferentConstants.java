@@ -17,7 +17,7 @@ public class GESTODifferentConstants {
 	/**
 	 * No value
 	 */
-	public static final String NO ="no";
+	public static final String NO ="no";   
 	
 	/**
 	 * Network view key. It used in order to specify if create Cytoscape view for the network.
