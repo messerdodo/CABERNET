@@ -51,7 +51,8 @@ public class NetworkRightClickAtmAction implements CyNetworkViewContextMenuFacto
 				//The simulation exists
 				if(currentSimulation != null){
 					AtmView atmView = new AtmView(currentSimulation.getAtmManager(), currentSimulation.getSamplingManager(),
-							adapter, appManager, simulationId.substring(simulationId.indexOf("_") + 1), vizMapperManager);
+							adapter, appManager, simulationId.substring(simulationId.indexOf("_") + 1), vizMapperManager,
+							currentNetwork);
 					atmView.setVisible(true);
 				}
 			}

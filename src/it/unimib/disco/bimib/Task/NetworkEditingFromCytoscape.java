@@ -28,7 +28,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
-public class NetworkCreation extends AbstractTask{
+public class NetworkEditingFromCytoscape extends AbstractTask{
 
 	private Properties simulationFeatures;
 	private Properties requiredOutputs;
@@ -42,14 +42,14 @@ public class NetworkCreation extends AbstractTask{
 	private String matchingType;
 	private int threshold;
 
-	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
+	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			CyApplicationManager appManager, SimulationsContainer simulationsContainer, boolean atmComputation) throws NumberFormatException, 
 			NullPointerException, FileNotFoundException, TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, 
 				atmComputation, false, null);
 	}
 
-	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
+	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, boolean treeMatching, 
 			String treePath) throws NumberFormatException, NullPointerException, 
 			FileNotFoundException, TesTreeException, InputFormatException{
@@ -57,7 +57,7 @@ public class NetworkCreation extends AbstractTask{
 				treeMatching, treePath, GESTODifferentConstants.PERFECT_MATCH, -1);
 	}
 
-	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
+	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, 
 			boolean treeMatching, String treePath, String matchingType, int threshold) 
 					throws NumberFormatException, NullPointerException, FileNotFoundException, 
@@ -91,19 +91,22 @@ public class NetworkCreation extends AbstractTask{
 		AtmManager atmManager = null;
 		TesManager tesManager = null;
 		Simulation newSim;
-		CyNetwork parent;
 		int distance;
 		double[] deltas;
 		boolean match;
 		int net = 0;
+		CyNetwork parent;
+		GraphManager cytoscapeNetwork = cytoscapeBridge.getNetworkFromCytoscape();
+		
 		while(net < requiredNetworks){
 			taskMonitor.setStatusMessage("Network " + (net + 1) + ": Network creation");
 			match = true;
 			deltas = null;
 			parent = null;
 			//Creates the network
-			graphManager = new GraphManager();
-			graphManager.createNetwork(this.simulationFeatures);
+			graphManager = cytoscapeNetwork.copy();
+			
+			graphManager.modify(this.simulationFeatures);
 			networkId = "network_" + (net + 1);
 
 			//Samples the network in order to find the attractors
@@ -164,8 +167,6 @@ public class NetworkCreation extends AbstractTask{
 						this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId);
 					else
 						this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId, parent);
-					
-						
 				net = net + 1;
 			}else{
 				taskMonitor.setStatusMessage("Network " + (net + 1) + ": No match");

@@ -42,13 +42,14 @@ public class AtmView extends JFrame {
 	private final CySwingAppAdapter adapter;
 	private final CyApplicationManager appManager;
 	private VizMapperManager vizMapperManager;
-
+	private CyNetwork currentNetwork;
 	
 	/**
 	 * Create the frame.
 	 */
 	public AtmView(AtmManager atmManager, SamplingManager samplingManager, CySwingAppAdapter adapter, 
-			CyApplicationManager appManager, String networkId, VizMapperManager vizMapperManager) {
+			CyApplicationManager appManager, String networkId, VizMapperManager vizMapperManager, 
+			CyNetwork currentNetwork) {
 		setTitle("ATM");
 		setResizable(false);
 		this.atmManager = atmManager;
@@ -56,6 +57,7 @@ public class AtmView extends JFrame {
 		this.adapter = adapter;
 		this.appManager = appManager;
 		this.vizMapperManager = vizMapperManager;
+		this.currentNetwork = currentNetwork;
 		
 		setBounds(100, 100, 459, 312);
 		contentPane = new JPanel();
@@ -137,11 +139,12 @@ public class AtmView extends JFrame {
 			threshold = (threshold < 0) ? 0 : (threshold > 1) ? 1 : threshold;
 			try {
 				if(chkCollapsed.isSelected()){
-					network = middleware.createCollapsedTesGraph(atmManager, networkId, threshold);
+					network = middleware.createCollapsedTesGraph(atmManager, networkId, threshold, currentNetwork);
 					//Show the network in a new view.
 					viewManager.createView(network, vizMapperManager.getStyle("GESTODifferent Collapsed TES"));
 				}else{
-					network = middleware.createTesGraph(samplingManager.getAttractorFinder(), atmManager, networkId, threshold);
+					network = middleware.createTesGraph(samplingManager.getAttractorFinder(), atmManager, networkId, 
+							threshold, currentNetwork);
 					//Show the network in a new view.
 					viewManager.createView(network, vizMapperManager.getStyle("GESTODifferent TES"));
 				}

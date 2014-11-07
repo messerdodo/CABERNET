@@ -22,6 +22,10 @@ import org.cytoscape.model.CyTable;
 
 
 
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+
+import org.cytoscape.model.subnetwork.CySubNetwork;
+
 //GESTODifferent packages
 import it.unimib.disco.bimib.Networks.GraphManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
@@ -143,6 +147,52 @@ public class NetworkManagment {
 
 		return attractorGraph;
 	}
+	
+	//Creates the attractors graph in the Cytoscape format from a given network and put it in the network collenction.
+		public CyNetwork createAttractorGraph(AttractorsFinder attractorsFinder, String rbnId, CyNetwork parent) 
+				throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+
+			//Get the parent group
+			CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
+			//Adds a new sub network
+			CyNetwork attractorGraph = root.addSubNetwork();
+		
+			// Set name for network
+			attractorGraph.getRow(attractorGraph).set(CyNetwork.NAME, "Attractor_graph_" + rbnId);
+
+			//Adds the attributes 
+			CyTable nodeTable = attractorGraph.getDefaultNodeTable();
+			nodeTable.createColumn("State", String.class, true);
+
+			Object[] states;
+			CyNode[] statesInAttractor;
+
+			//Gets all the attractors
+			Object[] attractors = attractorsFinder.getAttractors();
+
+			//Gets all the states in each attractor
+			for(Object attractor : attractors){
+				states = attractorsFinder.getStatesInAttractor(attractor);
+				statesInAttractor = new CyNode[states.length];
+
+				//Adds all the states in the attractor and sets its value
+				for(int state = 0; state < states.length; state++){
+					statesInAttractor[state] = attractorGraph.addNode();
+					attractorGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
+				}
+
+				//Sets the edges
+				for(int state = 0; state < states.length; state++){
+					attractorGraph.addEdge(statesInAttractor[state], statesInAttractor[(state + 1)%states.length], true);
+				}	
+			}
+
+			// Add the network to Cytoscape
+			CyNetworkManager networkManager = adapter.getCyNetworkManager();
+			networkManager.addNetwork(attractorGraph);
+
+			return attractorGraph;
+		}
 
 	/**
 	 * This method creates the complete TES graph in the Cytoscape format from a given network
@@ -150,19 +200,19 @@ public class NetworkManagment {
 	 * @param atmManager: the AtmManager object
 	 * @param networkId: the network identifier
 	 * @param threshold: the threshold value. It must be between 0 and 1.
+	 * @param parent: the parent network
 	 * @return: The created network
 	 * @throws ParamDefinitionException
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public CyNetwork createTesGraph(AttractorsFinder attractorsFinder, AtmManager atmManager, String networkId, double threshold) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public CyNetwork createTesGraph(AttractorsFinder attractorsFinder, AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 		double[][] newAtm = atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold);
 
-		//Gets the reference of CyNetworkFactory at CyActivator class of the App
-		CyNetworkFactory networkFactory = adapter.getCyNetworkFactory();
-
-		// Create a new network
-		CyNetwork tesGraph = networkFactory.createNetwork();
+		//Get the parent group
+		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
+		//Adds a new sub network
+		CyNetwork tesGraph = root.addSubNetwork();
 
 		// Set name for network
 		tesGraph.getRow(tesGraph).set(CyNetwork.NAME, "TES_graph_" + networkId + "_threshold_" + threshold);
@@ -229,19 +279,19 @@ public class NetworkManagment {
 	 * @param atmManager: the atm manager object
 	 * @param networkId: the network identifier
 	 * @param threshold: the threshold value. It must be between 0 and 1.
+	 * @param parent: the parent network.
 	 * @return the created network.
 	 * @throws ParamDefinitionException
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public CyNetwork createCollapsedTesGraph(AtmManager atmManager, String networkId, double threshold) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public CyNetwork createCollapsedTesGraph(AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 		double[][] newAtm = atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold);
 
-		//Gets the reference of CyNetworkFactory at CyActivator class of the App
-		CyNetworkFactory networkFactory = adapter.getCyNetworkFactory();
-
-		// Create a new network
-		CyNetwork tesGraph = networkFactory.createNetwork();
+		//Get the parent group
+		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
+		//Adds a new sub network
+		CyNetwork tesGraph = root.addSubNetwork();
 
 		// Set name for network
 		tesGraph.getRow(tesGraph).set(CyNetwork.NAME, "TES_graph_" + networkId + "_threshold_" + threshold);
@@ -276,6 +326,12 @@ public class NetworkManagment {
 
 	}
 
+	/**
+	 * This method returns a GRNSim GraphManager from the current Cytoscape view.
+	 * @return The Cytoscape current view network as a GraphManager object
+	 * @throws ParamDefinitionException
+	 * @throws NotExistingNodeException
+	 */
 	public GraphManager getNetworkFromCytoscape() throws ParamDefinitionException, NotExistingNodeException{
 		GraphManager graphManager = new GraphManager();
 		CyNetwork currentNetwork = appManager.getCurrentNetwork();
@@ -287,7 +343,7 @@ public class NetworkManagment {
 		int[][] edgesMatrix = new int[edges.size()][2];
 		//Gets the names
 		for(int i = 0; i < nodes.size(); i++){
-			genesNames[i] = currentNetwork.getDefaultNodeTable().getRow(nodes.get(i)).get("name", String.class);
+			genesNames[i] = currentNetwork.getRow(nodes.get(i)).get("name", String.class);
 			mapping.put(nodes.get(i), i);
 		}
 		//Gets the edges

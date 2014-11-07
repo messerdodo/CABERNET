@@ -55,6 +55,12 @@ public class GESTODifferentConstants {
 	public static final String EDIT = "edit";
 	
 	/**
+	 * This key is used on order to specify the network creation by importing from cytoscape and editing.
+	 * In other words it means read network from the Cytoscape view and edit it.
+	 */
+	public static final String CYTOSCAPE_EDIT = "cytoscape-edit";
+	
+	/**
 	 * ATM performing key. It is used in order to specify if the ATM computation is required.
 	 */
 	public static final String ATM_COMPUTATION = "atm-computation";

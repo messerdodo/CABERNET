@@ -4,6 +4,7 @@ import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
 import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.Wizard;
 import it.unimib.disco.bimib.Task.NetworkCreation;
+import it.unimib.disco.bimib.Task.NetworkEditingFromCytoscape;
 
 import java.awt.event.ActionEvent;
 import java.util.Properties;
@@ -57,6 +58,7 @@ public class WizardAction extends AbstractCyAction{
 			tree_matching = tasks.getProperty(GESTODifferentConstants.TREE_MATCHING).equals(GESTODifferentConstants.YES);
 			//Network Creation from features
 			try{
+				//Create the network randomly
 				if(tasks.getProperty(GESTODifferentConstants.NETWORK_CREATION).equals(GESTODifferentConstants.NEW)){
 					if(!tree_matching){
 						dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
@@ -69,6 +71,25 @@ public class WizardAction extends AbstractCyAction{
 						}else{
 							threshold = Integer.parseInt(tasks.getProperty(GESTODifferentConstants.MATCHING_THRESHOLD));
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
+									matching_type, threshold)));
+							
+						}
+					}
+					
+				//Gets the original network from Cytoscape
+				}else if(tasks.getProperty(GESTODifferentConstants.NETWORK_CREATION).equals(GESTODifferentConstants.CYTOSCAPE_EDIT)){
+					if(!tree_matching){
+						dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
+								this.appManager, this.simulationsContainer, atm_computation)));
+					}else{
+						matching_type = tasks.getProperty(GESTODifferentConstants.MATCHING_TYPE);
+						if(matching_type.equals(GESTODifferentConstants.PERFECT_MATCH)){
+							dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree())));
+						}else{
+							threshold = Integer.parseInt(tasks.getProperty(GESTODifferentConstants.MATCHING_THRESHOLD));
+							dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold)));
 							

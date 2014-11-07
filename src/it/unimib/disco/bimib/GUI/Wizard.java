@@ -65,6 +65,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import javax.swing.AbstractListModel;
+import javax.swing.JTextArea;
 
 public class Wizard extends JDialog {
 
@@ -170,11 +172,48 @@ public class Wizard extends JDialog {
 	private JCheckBox chckbxCompletelyDefinedFunctions;
 	private JRadioButton rdbtnPerfectMatch;
 	private JRadioButton rdbtnMinDistance;
+	private JTextField txtRequiredNetworks;
+	private JLabel lblSamplingMethod;
+	private JTextField txtCutoff;
+	private final ButtonGroup grpMatchType = new ButtonGroup();
+	private JRadioButton rdoHistogramDistance;
+	private JLabel lblMatchingThreshold;
+	private JTextField txtThreshold;
+	private JLabel lblNetworkEditing;
+	private JPanel pnlInnerNetworkEditing;
+	private JTextField txtEditingNodesNumber;
+	private JLabel lblTotalEdges;
+	private JTextField txtEditingEdgesNumber;
+	private JLabel lblEachGeneName;
+	private JLabel lblSourceGenes;
+	private JTextArea txtNoSourceGenes;
+	private JTextArea txtNoDestinationGenes;
+	private JLabel lblDestinationGenes;
+	private JLabel lblFixedNumberOf;
+	private JTextField txtFixedInputs;
+	private JTextField txtEditingRandomType;
+	private JLabel lblBias;
+	private JTextField txtEditingBiasType;
+	private JLabel lblBiasValue_1;
+	private JTextField txtEditingBiasValue;
+	private JLabel lblAnd_1;
+	private JTextField txtEditingAndType;
+	private JLabel lblOr_1;
+	private JTextField txtEditingOrType;
+	private JLabel lblCanalizing_1;
+	private JTextField txtEditingCanalizingType;
+	private JCheckBox chckbxComplitellyDefined;
+	private JPanel pnlNetworkEditing;
+	private JComboBox cmbEditingFunctionType;
+	
+
+	
 	
 	//****
 	private String form;
 	private String inputMethod;
 	private String currentFeature;
+	private boolean editing;
 	
 	
 	//private String task;
@@ -185,13 +224,8 @@ public class Wizard extends JDialog {
 	private ArrayList<String> inputNetworks;
 	private Properties simulationFeatures;
 	private String treeFile;
-	private JTextField txtRequiredNetworks;
-	private JLabel lblSamplingMethod;
-	private JTextField txtCutoff;
-	private final ButtonGroup grpMatchType = new ButtonGroup();
-	private JRadioButton rdoHistogramDistance;
-	private JLabel lblMatchingThreshold;
-	private JTextField txtThreshold;
+
+	
 
 	/**
 	 * Launch the application.
@@ -1042,6 +1076,195 @@ public class Wizard extends JDialog {
 				networkFeaturesTablePanel.add(new JScrollPane(networkFeaturesTable));
 			}
 		
+			pnlNetworkEditing = new JPanel();
+			contentPanel.add(pnlNetworkEditing, "pnlNetworkEditing");
+			pnlNetworkEditing.setLayout(new BorderLayout(0, 0));
+			
+			lblNetworkEditing = new JLabel("Network editing");
+			lblNetworkEditing.setFont(new Font("Helvetica Neue", Font.PLAIN, 15));
+			pnlNetworkEditing.add(lblNetworkEditing, BorderLayout.NORTH);
+			
+			pnlInnerNetworkEditing = new JPanel();
+			pnlNetworkEditing.add(pnlInnerNetworkEditing, BorderLayout.CENTER);
+			SpringLayout sl_pnlInnerNetworkEditing = new SpringLayout();
+			pnlInnerNetworkEditing.setLayout(sl_pnlInnerNetworkEditing);
+			
+			JLabel lblTotalNodes = new JLabel("Total nodes:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalNodes, 10, SpringLayout.NORTH, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTotalNodes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			pnlInnerNetworkEditing.add(lblTotalNodes);
+			
+			txtEditingNodesNumber = new JTextField();
+			txtEditingNodesNumber.setText("0");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingNodesNumber, -6, SpringLayout.NORTH, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingNodesNumber, 6, SpringLayout.EAST, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingNodesNumber, 102, SpringLayout.EAST, lblTotalNodes);
+			pnlInnerNetworkEditing.add(txtEditingNodesNumber);
+			txtEditingNodesNumber.setColumns(10);
+			
+			lblTotalEdges = new JLabel("Total edges:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalEdges, 0, SpringLayout.NORTH, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTotalEdges, 6, SpringLayout.EAST, txtEditingNodesNumber);
+			pnlInnerNetworkEditing.add(lblTotalEdges);
+			
+			txtEditingEdgesNumber = new JTextField();
+			txtEditingEdgesNumber.setText("0");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingEdgesNumber, -6, SpringLayout.NORTH, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingEdgesNumber, 6, SpringLayout.EAST, lblTotalEdges);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingEdgesNumber, -277, SpringLayout.EAST, pnlInnerNetworkEditing);
+			txtEditingEdgesNumber.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingEdgesNumber);
+			
+			JLabel lblExcludeAsSource = new JLabel("Exclude the following genes from source or destination genes set.");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblExcludeAsSource, 16, SpringLayout.SOUTH, txtEditingNodesNumber);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblExcludeAsSource, 0, SpringLayout.WEST, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblExcludeAsSource, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			pnlInnerNetworkEditing.add(lblExcludeAsSource);
+			
+			txtNoSourceGenes = new JTextArea();
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtNoSourceGenes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoSourceGenes, -168, SpringLayout.SOUTH, pnlInnerNetworkEditing);
+			pnlInnerNetworkEditing.add(txtNoSourceGenes);
+			
+			lblEachGeneName = new JLabel("Each gene name must be separated by a ,");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblEachGeneName, 6, SpringLayout.SOUTH, lblExcludeAsSource);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblEachGeneName, 0, SpringLayout.WEST, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblEachGeneName, 572, SpringLayout.WEST, pnlInnerNetworkEditing);
+			pnlInnerNetworkEditing.add(lblEachGeneName);
+			
+			lblSourceGenes = new JLabel("Source genes:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, lblSourceGenes, -264, SpringLayout.SOUTH, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoSourceGenes, 5, SpringLayout.SOUTH, lblSourceGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblSourceGenes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblSourceGenes, 123, SpringLayout.WEST, pnlInnerNetworkEditing);
+			pnlInnerNetworkEditing.add(lblSourceGenes);
+			
+			txtNoDestinationGenes = new JTextArea();
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtNoDestinationGenes, 353, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtNoDestinationGenes, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtNoSourceGenes, -44, SpringLayout.WEST, txtNoDestinationGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoDestinationGenes, 0, SpringLayout.NORTH, txtNoSourceGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoDestinationGenes, 0, SpringLayout.SOUTH, txtNoSourceGenes);
+			pnlInnerNetworkEditing.add(txtNoDestinationGenes);
+			
+			lblDestinationGenes = new JLabel("Target genes:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblDestinationGenes, 6, SpringLayout.SOUTH, lblEachGeneName);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblDestinationGenes, 0, SpringLayout.WEST, txtNoDestinationGenes);
+			pnlInnerNetworkEditing.add(lblDestinationGenes);
+			
+			lblFixedNumberOf = new JLabel("Fixed number of inputs:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFixedNumberOf, 0, SpringLayout.NORTH, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblFixedNumberOf, 6, SpringLayout.EAST, txtEditingEdgesNumber);
+			pnlInnerNetworkEditing.add(lblFixedNumberOf);
+			
+			txtFixedInputs = new JTextField();
+			txtFixedInputs.setText("-1");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtFixedInputs, -6, SpringLayout.NORTH, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtFixedInputs, 6, SpringLayout.EAST, lblFixedNumberOf);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtFixedInputs, 0, SpringLayout.EAST, lblExcludeAsSource);
+			txtFixedInputs.setColumns(10);
+			pnlInnerNetworkEditing.add(txtFixedInputs);
+			
+			cmbEditingFunctionType = new JComboBox();
+			cmbEditingFunctionType.setModel(new DefaultComboBoxModel(new String[] {"Boolean"}));
+			pnlInnerNetworkEditing.add(cmbEditingFunctionType);
+			
+			JLabel lblReplaceTheUndefined = new JLabel("Replace the undefined functions with:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, cmbEditingFunctionType, 11, SpringLayout.SOUTH, lblReplaceTheUndefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblReplaceTheUndefined, 16, SpringLayout.SOUTH, txtNoSourceGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblReplaceTheUndefined, 0, SpringLayout.WEST, lblTotalNodes);
+			pnlInnerNetworkEditing.add(lblReplaceTheUndefined);
+			
+			JLabel lblFunctionsType_1 = new JLabel("Functions type:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, cmbEditingFunctionType, 6, SpringLayout.EAST, lblFunctionsType_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFunctionsType_1, 15, SpringLayout.SOUTH, lblReplaceTheUndefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblFunctionsType_1, 0, SpringLayout.WEST, lblTotalNodes);
+			pnlInnerNetworkEditing.add(lblFunctionsType_1);
+			
+			chckbxComplitellyDefined = new JCheckBox("Complitely defined");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, cmbEditingFunctionType, -29, SpringLayout.WEST, chckbxComplitellyDefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, chckbxComplitellyDefined, 0, SpringLayout.NORTH, cmbEditingFunctionType);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, chckbxComplitellyDefined, 0, SpringLayout.EAST, lblExcludeAsSource);
+			pnlInnerNetworkEditing.add(chckbxComplitellyDefined);
+			
+			JLabel lblRandom_1 = new JLabel("Random:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblRandom_1, 13, SpringLayout.SOUTH, lblFunctionsType_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblRandom_1, 0, SpringLayout.WEST, lblTotalNodes);
+			pnlInnerNetworkEditing.add(lblRandom_1);
+			
+			txtEditingRandomType = new JTextField();
+			txtEditingRandomType.setText("0.2");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingRandomType, 7, SpringLayout.SOUTH, lblFunctionsType_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingRandomType, 6, SpringLayout.EAST, lblRandom_1);
+			pnlInnerNetworkEditing.add(txtEditingRandomType);
+			txtEditingRandomType.setColumns(10);
+			
+			lblBias = new JLabel("Bias:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblBias, 0, SpringLayout.NORTH, lblRandom_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblBias, 10, SpringLayout.WEST, cmbEditingFunctionType);
+			pnlInnerNetworkEditing.add(lblBias);
+			
+			txtEditingBiasType = new JTextField();
+			txtEditingBiasType.setText("0.2");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingRandomType, -46, SpringLayout.WEST, txtEditingBiasType);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingBiasType, 159, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingBiasType, -461, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingBiasType, 0, SpringLayout.SOUTH, cmbEditingFunctionType);
+			txtEditingBiasType.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingBiasType);
+			
+			lblBiasValue_1 = new JLabel("Bias value:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblBiasValue_1, 6, SpringLayout.SOUTH, cmbEditingFunctionType);
+			pnlInnerNetworkEditing.add(lblBiasValue_1);
+			
+			txtEditingBiasValue = new JTextField();
+			txtEditingBiasValue.setText("0.5");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingBiasValue, 286, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblBiasValue_1, -6, SpringLayout.WEST, txtEditingBiasValue);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingBiasValue, -6, SpringLayout.NORTH, lblRandom_1);
+			txtEditingBiasValue.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingBiasValue);
+			
+			lblAnd_1 = new JLabel("And:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingBiasValue, -18, SpringLayout.WEST, lblAnd_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblAnd_1, 0, SpringLayout.NORTH, lblRandom_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblAnd_1, 0, SpringLayout.WEST, txtNoDestinationGenes);
+			pnlInnerNetworkEditing.add(lblAnd_1);
+			
+			txtEditingAndType = new JTextField();
+			txtEditingAndType.setText("0.2");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingAndType, -6, SpringLayout.NORTH, lblRandom_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingAndType, 6, SpringLayout.EAST, lblAnd_1);
+			pnlInnerNetworkEditing.add(txtEditingAndType);
+			txtEditingAndType.setColumns(10);
+			
+			lblOr_1 = new JLabel("Or:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingAndType, -6, SpringLayout.WEST, lblOr_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblOr_1, 0, SpringLayout.NORTH, lblRandom_1);
+			pnlInnerNetworkEditing.add(lblOr_1);
+			
+			txtEditingOrType = new JTextField();
+			txtEditingOrType.setText("0.2");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingOrType, 468, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblOr_1, -6, SpringLayout.WEST, txtEditingOrType);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingOrType, 4, SpringLayout.SOUTH, chckbxComplitellyDefined);
+			txtEditingOrType.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingOrType);
+			
+			lblCanalizing_1 = new JLabel("Canalizing:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingOrType, -10, SpringLayout.WEST, lblCanalizing_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblCanalizing_1, 0, SpringLayout.NORTH, lblRandom_1);
+			pnlInnerNetworkEditing.add(lblCanalizing_1);
+			
+			txtEditingCanalizingType = new JTextField();
+			txtEditingCanalizingType.setText("0.2");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingCanalizingType, 603, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingCanalizingType, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblCanalizing_1, -6, SpringLayout.WEST, txtEditingCanalizingType);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingCanalizingType, 6, SpringLayout.SOUTH, chckbxComplitellyDefined);
+			txtEditingCanalizingType.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingCanalizingType);
+			
 			experimentsPanel = new JPanel();
 			contentPanel.add(experimentsPanel, "experimentsPanel");
 			experimentsPanel.setLayout(new BorderLayout(0, 0));
@@ -1695,9 +1918,11 @@ public class Wizard extends JDialog {
 							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.NEW);
 						}else if(inputMethod.equals("Partial network from GRNML file")){
 							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.EDIT);
+							editing = true;
+						}else if(inputMethod.equals("Partial network from Cytoscape selected view")){
+							editing = true;
+							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.CYTOSCAPE_EDIT);
 						}
-						
-						//MANCA L'IMPORT DA CYTOSCAPE
 						
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
 						form = "features-input-method";	
@@ -1706,12 +1931,15 @@ public class Wizard extends JDialog {
 				}else if(form.equals("features-input-method")){
 					//Features manually added
 					if(rdbtnFeaturesFromForm.isSelected()){
-						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkFeaturesPanel");	
-						form = "features-input";
-
-						//Disables the next button for the features insertion
-						btnNext.setEnabled(false);
-
+						if(editing){
+							((CardLayout)contentPanel.getLayout()).show(contentPanel, "pnlNetworkEditing");	
+							form = "editing-features";
+						}else{
+							((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkFeaturesPanel");	
+							form = "features-for-editing";
+							//Disables the next button for the features insertion
+							btnNext.setEnabled(false);
+						}
 						//Features from file
 					}else{
 						//Loads the features from file
@@ -1721,6 +1949,52 @@ public class Wizard extends JDialog {
 							form = "output-form";
 							((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");	
 						}
+					}
+				//Network editing form
+				}else if(form.equals("editing-features")){
+					if(!txtEditingNodesNumber.getText().equals("") && !txtEditingEdgesNumber.getText().equals("") &&
+						!txtFixedInputs.getText().equals("") && !txtEditingRandomType.getText().equals("") &&
+						!txtEditingBiasType.getText().equals("") && !txtEditingBiasValue.getText().equals("") &&
+						!txtEditingOrType.getText().equals("") && !txtEditingAndType.getText().equals("") &&
+						!txtEditingCanalizingType.getText().equals("")){
+						
+						//Sets the properties
+						simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
+						simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtEditingNodesNumber.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEditingEdgesNumber.getText());
+						if(!txtFixedInputs.getText().equals("-1"))
+							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedInputs.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbEditingFunctionType.getSelectedItem().toString());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.RANDOM_TYPE, txtEditingRandomType.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_TYPE, txtEditingBiasType.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_VALUE, txtEditingBiasValue.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE, txtEditingAndType.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE, txtEditingOrType.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.CANALIZED_TYPE, txtEditingCanalizingType.getText());
+						simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, chckbxComplitellyDefined.isSelected()?SimulationFeaturesConstants.YES:SimulationFeaturesConstants.NO);
+						
+						ArrayList<String> noTarget = null;
+						ArrayList<String> noSource = null;
+						
+						if(!txtNoSourceGenes.getText().equals("")){
+							noSource = new ArrayList<String>();
+							String[] parsed = txtNoSourceGenes.getText().split(",");
+							for(String gene_name : parsed)
+								noSource.add(gene_name);
+							simulationFeatures.put(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES, noSource);
+						}
+						
+						if(!txtNoDestinationGenes.getText().equals("")){
+							noTarget = new ArrayList<String>();
+							String[] parsed = txtNoDestinationGenes.getText().split(",");
+							for(String gene_name : parsed)
+								noTarget.add(gene_name);
+							simulationFeatures.put(SimulationFeaturesConstants.EXCLUDES_TARGET_GENES, noTarget);
+						}
+						
+						form = "attractors-params";
+						((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
+						
 					}
 				}else if(form.equals("attractors-params")){
 					if(cmbSamplingType.getSelectedItem().equals(SimulationFeaturesConstants.BRUTE_FORCE)){
