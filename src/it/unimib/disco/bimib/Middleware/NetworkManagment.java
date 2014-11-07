@@ -1,10 +1,9 @@
 package it.unimib.disco.bimib.Middleware;
 
-//Cytoscape packages
-import java.util.ArrayList;
+//System imports
 import java.util.HashMap;
 import java.util.List;
-
+//Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyEdge;
@@ -13,17 +12,7 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTable;
-
-
-
-
-
-
-
-
-
 import org.cytoscape.model.subnetwork.CyRootNetwork;
-
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 //GESTODifferent packages
