@@ -12,11 +12,15 @@ import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
 import it.unimib.disco.bimib.Functions.Function;
 import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.ExploresFunctionView;
+
 //System imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JMenuItem;
+
 //Cytoscape imports
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CyMenuItem;
@@ -57,7 +61,7 @@ public class NodeRightClickAction implements CyNodeViewContextMenuFactory{
 				Function function = null;
 				int currentNode;
 				String simulationId = "";
-				String[] genesNames;
+				ArrayList<String> genesNames;
 				
 				//Gets the simulation id connected with the selected network.
 				CyNetwork currentNetwork = appManager.getCurrentNetwork();

@@ -1,8 +1,10 @@
 package it.unimib.disco.bimib.Middleware;
 
 //System imports
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 //Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
@@ -14,6 +16,7 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
+
 
 //GESTODifferent packages
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -46,7 +49,7 @@ public class NetworkManagment {
 		int genesNumber = graphManager.getNodesNumber();
 		CyNode[] genes = new CyNode[genesNumber];
 		GeneRegulatoryNetwork rbn = graphManager.getGraph();
-		String[] genesNames = rbn.getNodesNames();
+		ArrayList<String> genesNames = rbn.getNodesNames();
 
 		//Gets the reference of CyNetworkFactory at CyActivator class of the App
 		CyNetworkFactory networkFactory = adapter.getCyNetworkFactory();
@@ -70,7 +73,7 @@ public class NetworkManagment {
 			//Creates the gene
 			genes[i] = newRBN.addNode();
 			//Sets the gene name and the other properties
-			newRBN.getRow(genes[i]).set(CyNetwork.NAME, genesNames[i]);
+			newRBN.getRow(genes[i]).set(CyNetwork.NAME, genesNames.get(i));
 			newRBN.getRow(genes[i]).set("Gene number", i);
 			newRBN.getRow(genes[i]).set("Function", rbn.getFunction(i).getType());
 			newRBN.getRow(genes[i]).set("Incoming edges", rbn.getIncomingNodes(i).size());

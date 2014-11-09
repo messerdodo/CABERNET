@@ -52,7 +52,7 @@ public class ExploresFunctionView extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ExploresFunctionView(int currentNode, String[] nodesNames, Function function) {
+	public ExploresFunctionView(int currentNode, ArrayList<String> nodesNames, Function function) {
 		
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -72,7 +72,7 @@ public class ExploresFunctionView extends JFrame {
 		JLabel lblFunctionType = new JLabel("Function type: " + function.getType());
 		pnlFunctionInfo.add(lblFunctionType);
 		
-		JLabel lblGeneName = new JLabel("Gene name: " + nodesNames[currentNode]);
+		JLabel lblGeneName = new JLabel("Gene name: " + nodesNames.get(currentNode));
 		sl_pnlFunctionInfo.putConstraint(SpringLayout.WEST, lblGeneName, 10, SpringLayout.WEST, pnlFunctionInfo);
 		sl_pnlFunctionInfo.putConstraint(SpringLayout.SOUTH, lblGeneName, -196, SpringLayout.SOUTH, pnlFunctionInfo);
 		sl_pnlFunctionInfo.putConstraint(SpringLayout.NORTH, lblFunctionType, 6, SpringLayout.SOUTH, lblGeneName);
@@ -99,7 +99,7 @@ public class ExploresFunctionView extends JFrame {
 		
 		//Shows the input genes names
 		for(Integer node : function.getInputs()){
-			inputsList.addElement(nodesNames[node]);
+			inputsList.addElement(nodesNames.get(node));
 		}
 		
 		inputsGenesList.setModel(inputsList);
