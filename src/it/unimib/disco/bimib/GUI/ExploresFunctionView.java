@@ -1,6 +1,6 @@
 package it.unimib.disco.bimib.GUI;
 
-import it.unimib.disco.bimib.Functions.AndOrFunction;
+
 import it.unimib.disco.bimib.Functions.CanalizedFunction;
 import it.unimib.disco.bimib.Functions.Function;
 
@@ -18,16 +18,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
-import javax.swing.JLayeredPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
-import javax.swing.AbstractListModel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 
 public class ExploresFunctionView extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private JPanel contentPane;
 	private JTable table;
 

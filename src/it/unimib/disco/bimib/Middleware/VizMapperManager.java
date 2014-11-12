@@ -81,11 +81,11 @@ public class VizMapperManager {
 		//Use pass-through mapping
 		vs.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ELLIPSE);                  
 
-		// Set node color map to attribute "Degree"
-		ContinuousMapping<Integer, Double> nodeSizeMapping = (ContinuousMapping<Integer, Double>) vmfFactoryC.createVisualMappingFunction("Degree", Integer.class, BasicVisualLexicon.NODE_SIZE);
-		Integer val1 = 0;
-		Integer val2 = 100;
-		BoundaryRangeValues<Double> nodeWidthVal1 = new BoundaryRangeValues<Double>(30.0, 30.0, 30.0);
+		// Set node color map to attribute "Normalized Degree"
+		ContinuousMapping<Double, Double> nodeSizeMapping = (ContinuousMapping<Double, Double>) vmfFactoryC.createVisualMappingFunction("Normalized Degree", Double.class, BasicVisualLexicon.NODE_SIZE);
+		Double val1 = 0.0;
+		Double val2 = 1.0;
+		BoundaryRangeValues<Double> nodeWidthVal1 = new BoundaryRangeValues<Double>(25.0, 25.0, 25.0);
 		BoundaryRangeValues<Double> nodeWidthVal2 = new BoundaryRangeValues<Double>(100.0, 100.0, 100.0);
 		nodeSizeMapping.addPoint(val1, nodeWidthVal1);
 		nodeSizeMapping.addPoint(val2, nodeWidthVal2);

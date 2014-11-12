@@ -1,15 +1,17 @@
 package it.unimib.disco.bimib.GUI.Actions;
 
+//GESTODifferent imports
 import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
 import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.Wizard;
 import it.unimib.disco.bimib.Task.NetworkCreation;
 import it.unimib.disco.bimib.Task.NetworkEditingFromCytoscape;
 
+//System imports
 import java.awt.event.ActionEvent;
 import java.util.Properties;
 
-import org.cytoscape.app.CyAppAdapter;
+//Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;

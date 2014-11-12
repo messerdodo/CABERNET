@@ -29,6 +29,12 @@ import javax.swing.JCheckBox;
 
 public class AtmView extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private JPanel contentPane;
 	private JTextField txtThreshold;
 	private JScrollPane pnlATMTable;
@@ -149,13 +155,8 @@ public class AtmView extends JFrame {
 					viewManager.createView(network, vizMapperManager.getStyle("GESTODifferent TES"));
 				}
 				
-				
-				
-				
-				 
-				
 			} catch (Exception exception){
-				
+				System.out.println(exception);
 			}
 			
 		}

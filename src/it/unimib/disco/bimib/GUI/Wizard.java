@@ -4,8 +4,6 @@ package it.unimib.disco.bimib.GUI;
 import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
 import it.unimib.disco.bimib.IO.*;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
-import it.unimib.disco.bimib.Utility.TaskFeaturesConstants;
-
 
 //Swing and awt imports
 import java.awt.BorderLayout;
@@ -15,18 +13,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.CardLayout;
-
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-
 import java.awt.Font;
-
 import javax.swing.UIManager;
 import javax.swing.SpringLayout;
 import javax.swing.JRadioButton;
@@ -65,11 +58,17 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import javax.swing.AbstractListModel;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 public class Wizard extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private final JPanel contentPanel = new JPanel();
 	private JPanel NetworkDefinitionPanel;
 	private JPanel experimentsPanel;
@@ -82,8 +81,8 @@ public class Wizard extends JDialog {
 	private JPanel networkDefinitionSubPanel;
 	private JPanel featuresFileSelectionPanel;
 	private JPanel nodesPanel;
-	private JList networksList;
-	private DefaultListModel networkListModel;
+	private JList<String> networksList;
+	private DefaultListModel<String> networkListModel;
 	private JPanel featuresSubPanel;
 	private JPanel featureInputFormPanel;
 	private JTextField txtNodesNumber;
@@ -100,16 +99,16 @@ public class Wizard extends JDialog {
 	private JTextField txtGamma;
 	private JTextField txtAvgConnSW;
 	private JTextField txtBeta;
-	private JComboBox cmbSamplingType;
+	private JComboBox<String> cmbSamplingType;
 	private JTable networkFeaturesTable;
 	private DefaultTableModel networkFeaturesTableModel;
 	private JRadioButton rdbtnFeaturesFromFile;
 	private JRadioButton rdbtnFeaturesFromForm;
-	private JComboBox cmbTopology;
+	private JComboBox<String> cmbTopology;
 	private JTextField txtFeaturesFilePath;
 	private JTextField txtEdgesNumber;
 	private final ButtonGroup featuresInputMethodGroup = new ButtonGroup();
-	private JComboBox cmbFunctionsType;
+	private JComboBox<String> cmbFunctionsType;
 	private JButton btnNext;
 	private JLabel lblFunctionsType;
 	private JTextField txtRandomFunctionsType;
@@ -132,7 +131,7 @@ public class Wizard extends JDialog {
 	private JPanel commonExperimentsPanel;
 	private JPanel variableExperimentsPanel;
 	private JLabel lblPerturbationType;
-	private JComboBox mutationsTypeComboBox;
+	private JComboBox<String> mutationsTypeComboBox;
 	private JLabel lblNewLabel_2;
 	private JTextField txtRatioStatesMutations;
 	private JLabel lblRatioOfAttractors;
@@ -204,7 +203,7 @@ public class Wizard extends JDialog {
 	private JTextField txtEditingCanalizingType;
 	private JCheckBox chckbxComplitellyDefined;
 	private JPanel pnlNetworkEditing;
-	private JComboBox cmbEditingFunctionType;
+	private JComboBox<String> cmbEditingFunctionType;
 	
 
 	
@@ -224,6 +223,7 @@ public class Wizard extends JDialog {
 	private ArrayList<String> inputNetworks;
 	private Properties simulationFeatures;
 	private String treeFile;
+	private JCheckBox chkAvalanchesAndSensitivity;
 
 	
 
@@ -243,7 +243,6 @@ public class Wizard extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	@SuppressWarnings("unchecked")
 	public Wizard(){
 		
 		setTitle("GESTODifferent Wizard");
@@ -356,8 +355,8 @@ public class Wizard extends JDialog {
 						}
 					}
 				});
-				networksList = new JList();
-				networkListModel = new DefaultListModel();
+				networksList = new JList<String>();
+				networkListModel = new DefaultListModel<String>();
 				networksList.setModel(networkListModel);
 				GroupLayout gl_networkFromFilePanel = new GroupLayout(networkFromFilePanel);
 				gl_networkFromFilePanel.setHorizontalGroup(
@@ -538,8 +537,8 @@ public class Wizard extends JDialog {
 
 				JLabel lblNetworkTopology = new JLabel("Network Topology:");
 
-				cmbTopology = new JComboBox();
-				cmbTopology.setModel(new DefaultComboBoxModel(new String[] {"Random (Erdos-Renyi)", "Scale Free (Barabasi-Albertz)", "Scale Free (Power law)", "Small World (Watts-Strogatz)"}));
+				cmbTopology = new JComboBox<String>();
+				cmbTopology.setModel(new DefaultComboBoxModel<String>(new String[] {"Random (Erdos-Renyi)", "Scale Free (Barabasi-Albertz) {in}", "Scale Free (Power law) {out}", "Small World (Watts-Strogatz)"}));
 				cmbTopology.setSelectedIndex(0);
 				GroupLayout gl_topologyPanel = new GroupLayout(topologyPanel);
 				gl_topologyPanel.setHorizontalGroup(
@@ -728,8 +727,8 @@ public class Wizard extends JDialog {
 				
 				lblFunctionsType = new JLabel("Functions type:");
 				
-				cmbFunctionsType = new JComboBox();
-				cmbFunctionsType.setModel(new DefaultComboBoxModel(new String[] {"Boolean"}));
+				cmbFunctionsType = new JComboBox<String>();
+				cmbFunctionsType.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean"}));
 				
 				chckbxCompletelyDefinedFunctions = new JCheckBox("Completely defined functions");
 				chckbxCompletelyDefinedFunctions.setSelected(true);
@@ -1165,8 +1164,8 @@ public class Wizard extends JDialog {
 			txtFixedInputs.setColumns(10);
 			pnlInnerNetworkEditing.add(txtFixedInputs);
 			
-			cmbEditingFunctionType = new JComboBox();
-			cmbEditingFunctionType.setModel(new DefaultComboBoxModel(new String[] {"Boolean"}));
+			cmbEditingFunctionType = new JComboBox<String>();
+			cmbEditingFunctionType.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean"}));
 			pnlInnerNetworkEditing.add(cmbEditingFunctionType);
 			
 			JLabel lblReplaceTheUndefined = new JLabel("Replace the undefined functions with:");
@@ -1289,7 +1288,7 @@ public class Wizard extends JDialog {
 			
 			lblSamplingMethod = new JLabel("Sampling method:");
 			
-			cmbSamplingType = new JComboBox();
+			cmbSamplingType = new JComboBox<String>();
 			cmbSamplingType.addItemListener(new ItemListener() {
 				//Shows and hides the initial conditions form.
 				public void itemStateChanged(ItemEvent e) {
@@ -1303,7 +1302,7 @@ public class Wizard extends JDialog {
 				}
 			});
 		
-			cmbSamplingType.setModel(new DefaultComboBoxModel(new String[] {SimulationFeaturesConstants.PARTIAL_SAMPLING, SimulationFeaturesConstants.BRUTE_FORCE}));
+			cmbSamplingType.setModel(new DefaultComboBoxModel<String>(new String[] {SimulationFeaturesConstants.PARTIAL_SAMPLING, SimulationFeaturesConstants.BRUTE_FORCE}));
 			
 			JLabel lblSimulationStepsCutoff = new JLabel("Simulation steps cutoff (-1 means no cutoff)");
 			
@@ -1358,23 +1357,29 @@ public class Wizard extends JDialog {
 			atmPanel.add(atmCalulationSelectionPanel, BorderLayout.NORTH);
 			atmCalulationSelectionPanel.setLayout(new GridLayout(0, 2, 0, 0));
 			
-			lblPerformAtmCalculation = new JLabel("Perform ATM calculation");
-			atmCalulationSelectionPanel.add(lblPerformAtmCalculation);
-			
-			chkAtmCalculation = new JCheckBox("");
+			chkAtmCalculation = new JCheckBox("Perform ATM calculation");
+			chkAtmCalculation.setHorizontalAlignment(SwingConstants.LEFT);
 			chkAtmCalculation.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					//Shows the param selection panel only if the checkbox is selected
 					if(chkAtmCalculation.isSelected()){
 						atmCalculationParmPanel.setVisible(true);
+						chkAvalanchesAndSensitivity.setEnabled(true);
 					}else{
 						atmCalculationParmPanel.setVisible(false);
+						chkAvalanchesAndSensitivity.setEnabled(false);
 					}
 					
 				}
 			});
 			chkAtmCalculation.setSelected(true);
 			atmCalulationSelectionPanel.add(chkAtmCalculation);
+			
+			lblPerformAtmCalculation = new JLabel("");
+			atmCalulationSelectionPanel.add(lblPerformAtmCalculation);
+			
+			chkAvalanchesAndSensitivity = new JCheckBox("Compute avalanches and sensitivity");
+			atmCalulationSelectionPanel.add(chkAvalanchesAndSensitivity);
 			
 			atmCalculationParmPanel = new JPanel();
 			atmPanel.add(atmCalculationParmPanel, BorderLayout.CENTER);
@@ -1387,7 +1392,7 @@ public class Wizard extends JDialog {
 			lblPerturbationType = new JLabel("Perturbation type:");
 			perturbationTypePanel.add(lblPerturbationType);
 			
-			mutationsTypeComboBox = new JComboBox();
+			mutationsTypeComboBox = new JComboBox<String>();
 			mutationsTypeComboBox.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					if(mutationsTypeComboBox.getSelectedItem().equals("Flip")){
@@ -1398,7 +1403,7 @@ public class Wizard extends JDialog {
 				}
 			});
 			
-			mutationsTypeComboBox.setModel(new DefaultComboBoxModel(new String[] {"Flip", "Temporary"}));
+			mutationsTypeComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {SimulationFeaturesConstants.FLIP_MUTATIONS, SimulationFeaturesConstants.KNOCKIN_KNOCKOUT_MUTATIONS}));
 			perturbationTypePanel.add(mutationsTypeComboBox);
 			
 			commonExperimentsPanel = new JPanel();
@@ -2011,6 +2016,10 @@ public class Wizard extends JDialog {
 					//Adds the features about the atm creation
 					if(chkAtmCalculation.isSelected()){
 						tasks.setProperty(GESTODifferentConstants.ATM_COMPUTATION, GESTODifferentConstants.YES);
+						//Sets the avalanches distribution and sensitivity computation.
+						simulationFeatures.setProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY,
+								chkAvalanchesAndSensitivity.isSelected() ? SimulationFeaturesConstants.YES :
+									SimulationFeaturesConstants.NO);
 						if(!txtRatioStatesMutations.getText().equals("") && !txtExperimentsNumber.getText().equals("")){
 							//Adds the RATIO_OF_STATES_TO_PERTURB and HOW_MANY_PERTURB_EXP features
 							simulationFeatures.setProperty(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB, txtRatioStatesMutations.getText());

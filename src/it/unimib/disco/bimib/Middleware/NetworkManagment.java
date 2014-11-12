@@ -67,7 +67,10 @@ public class NetworkManagment {
 		nodeTable.createColumn("Incoming edges", Integer.class, true);
 		nodeTable.createColumn("Outcoming edges", Integer.class, true);
 		nodeTable.createColumn("Degree", Integer.class, true);
-
+		nodeTable.createColumn("Normalized Degree", Double.class, true);
+		
+		double maxDegree = 1.0;
+		
 		//Adds the genes
 		for(int i = 0; i < genesNumber; i++){
 			//Creates the gene
@@ -79,8 +82,14 @@ public class NetworkManagment {
 			newRBN.getRow(genes[i]).set("Incoming edges", rbn.getIncomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Outcoming edges", rbn.getOutcomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Degree", rbn.getNodeDegree(i));
+			maxDegree = Math.max(maxDegree, rbn.getNodeDegree(i));
 		}
 
+		//Set the normalized degree
+		for(int i = 0; i < genesNumber; i++){
+			newRBN.getRow(genes[i]).set("Normalized Degree", rbn.getNodeDegree(i)/maxDegree);
+		}
+		
 		for(int[] edge : rbn.getEdges()){
 			newRBN.addEdge(genes[edge[SOURCE]], genes[edge[DESTINATION]], DIRECTED_EDGE);
 		}
@@ -108,7 +117,8 @@ public class NetworkManagment {
 
 		//Adds the attributes 
 		CyTable nodeTable = attractorGraph.getDefaultNodeTable();
-		nodeTable.createColumn("State", String.class, true);
+		if(nodeTable.getColumn("State") == null)
+			nodeTable.createColumn("State", String.class, true);
 
 		Object[] states;
 		CyNode[] statesInAttractor;
@@ -139,52 +149,53 @@ public class NetworkManagment {
 
 		return attractorGraph;
 	}
-	
+
 	//Creates the attractors graph in the Cytoscape format from a given network and put it in the network collenction.
-		public CyNetwork createAttractorGraph(AttractorsFinder attractorsFinder, String rbnId, CyNetwork parent) 
-				throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public CyNetwork createAttractorGraph(AttractorsFinder attractorsFinder, String rbnId, CyNetwork parent) 
+			throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 
-			//Get the parent group
-			CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
-			//Adds a new sub network
-			CyNetwork attractorGraph = root.addSubNetwork();
-		
-			// Set name for network
-			attractorGraph.getRow(attractorGraph).set(CyNetwork.NAME, "Attractor_graph_" + rbnId);
+		//Get the parent group
+		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
+		//Adds a new sub network
+		CyNetwork attractorGraph = root.addSubNetwork();
 
-			//Adds the attributes 
-			CyTable nodeTable = attractorGraph.getDefaultNodeTable();
+		// Set name for network
+		attractorGraph.getRow(attractorGraph).set(CyNetwork.NAME, "Attractor_graph_" + rbnId);
+
+		//Adds the attributes 
+		CyTable nodeTable = attractorGraph.getDefaultNodeTable();
+		if(nodeTable.getColumn("State") == null)
 			nodeTable.createColumn("State", String.class, true);
 
-			Object[] states;
-			CyNode[] statesInAttractor;
+		Object[] states;
+		CyNode[] statesInAttractor;
 
-			//Gets all the attractors
-			Object[] attractors = attractorsFinder.getAttractors();
+		//Gets all the attractors
+		Object[] attractors = attractorsFinder.getAttractors();
 
-			//Gets all the states in each attractor
-			for(Object attractor : attractors){
-				states = attractorsFinder.getStatesInAttractor(attractor);
-				statesInAttractor = new CyNode[states.length];
+		//Gets all the states in each attractor
+		for(Object attractor : attractors){
+			states = attractorsFinder.getStatesInAttractor(attractor);
+			statesInAttractor = new CyNode[states.length];
 
-				//Adds all the states in the attractor and sets its value
-				for(int state = 0; state < states.length; state++){
-					statesInAttractor[state] = attractorGraph.addNode();
-					attractorGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
-				}
-
-				//Sets the edges
-				for(int state = 0; state < states.length; state++){
-					attractorGraph.addEdge(statesInAttractor[state], statesInAttractor[(state + 1)%states.length], true);
-				}	
+			//Adds all the states in the attractor and sets its value
+			for(int state = 0; state < states.length; state++){
+				statesInAttractor[state] = attractorGraph.addNode();
+				attractorGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
 			}
 
-			// Add the network to Cytoscape
-			CyNetworkManager networkManager = adapter.getCyNetworkManager();
-			networkManager.addNetwork(attractorGraph);
-
-			return attractorGraph;
+			//Sets the edges
+			for(int state = 0; state < states.length; state++){
+				attractorGraph.addEdge(statesInAttractor[state], statesInAttractor[(state + 1)%states.length], true);
+			}	
 		}
+
+		// Add the network to Cytoscape
+		CyNetworkManager networkManager = adapter.getCyNetworkManager();
+		networkManager.addNetwork(attractorGraph);
+
+		return attractorGraph;
+	}
 
 	/**
 	 * This method creates the complete TES graph in the Cytoscape format from a given network
@@ -211,11 +222,13 @@ public class NetworkManagment {
 
 		//Adds the attributes for the nodes
 		CyTable nodeTable = tesGraph.getDefaultNodeTable();
-		nodeTable.createColumn("State", String.class, true);
+		if(nodeTable.getColumn("State") == null)
+			nodeTable.createColumn("State", String.class, true);
 
 		//Adds the attributes for the edges
 		CyTable edgeTable = tesGraph.getDefaultEdgeTable();
-		edgeTable.createColumn("Transition probability", Double.class, true);
+		if(edgeTable.getColumn("Transition probability") == null)
+			edgeTable.createColumn("Transition probability", Double.class, true);
 
 		Object[] states;
 		CyNode[] statesInAttractor;
@@ -286,11 +299,12 @@ public class NetworkManagment {
 		CyNetwork tesGraph = root.addSubNetwork();
 
 		// Set name for network
-		tesGraph.getRow(tesGraph).set(CyNetwork.NAME, "TES_graph_" + networkId + "_threshold_" + threshold);
+		tesGraph.getRow(tesGraph).set(CyNetwork.NAME, "Collapsed_TES_graph_" + networkId + "_threshold_" + threshold);
 
 		//Adds the attributes for the edges
 		CyTable edgeTable = tesGraph.getDefaultEdgeTable();
-		edgeTable.createColumn("Transition probability", Double.class, true);
+		if(edgeTable.getColumn("Transition probability") == null)
+			edgeTable.createColumn("Transition probability", Double.class, true);
 
 		CyNode[] attractorsNodes = new CyNode[newAtm.length];
 
@@ -330,7 +344,7 @@ public class NetworkManagment {
 		List<CyNode> nodes = currentNetwork.getNodeList();
 		List<CyEdge> edges = currentNetwork.getEdgeList();
 		HashMap<CyNode, Integer> mapping = new HashMap<CyNode, Integer>();
-		
+
 		String[] genesNames = new String[nodes.size()];
 		int[][] edgesMatrix = new int[edges.size()][2];
 		//Gets the names
@@ -343,11 +357,11 @@ public class NetworkManagment {
 			edgesMatrix[i][0] = mapping.get(edges.get(i).getSource());
 			edgesMatrix[i][1] = mapping.get(edges.get(i).getTarget());
 		}
-		
+
 		graphManager.createGraph(genesNames, edgesMatrix, "Random");
-		
+
 		return graphManager;
-		
+
 	}
 
 }

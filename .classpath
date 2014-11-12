@@ -5,5 +5,8 @@
 	<classpathentry kind="lib" path="miglayout15-swing.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Cytoscape"/>
+	<classpathentry kind="lib" path="JCommon"/>
+	<classpathentry kind="lib" path="JFreeChart"/>
+	<classpathentry kind="lib" path="Commons-Math3-3.3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
