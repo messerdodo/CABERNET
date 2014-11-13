@@ -164,7 +164,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 				if(match){
 					taskMonitor.setProgress((net + 1)/((double)requiredNetworks));
 					//Adds the simulation in the container
-					newSim = new Simulation();
+					newSim = new Simulation(networkId);
 					newSim.setGraphManager(graphManager);
 					newSim.setAtmManager(atmManager);
 					newSim.setSamplingManager(samplingManager);

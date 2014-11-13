@@ -13,6 +13,7 @@ import it.unimib.disco.bimib.Sampling.SamplingManager;
 
 public class Simulation {
 
+	private String networkId;
 	private GraphManager graphManager;
 	private AtmManager atmManager;
 	private SamplingManager samplingManager;
@@ -20,8 +21,11 @@ public class Simulation {
 	/**
 	 * Default constructor
 	 */
-	public Simulation(){
+	public Simulation(String networkId){
+		this.networkId = networkId;
 		this.graphManager = null;
+		this.atmManager = null;
+		this.samplingManager = null;
 	}
 	
 	/**
@@ -72,5 +76,11 @@ public class Simulation {
 		return this.samplingManager;
 	}
 	
+	/**
+	 * This method returns the networkId of the simulation
+	 */
+	public String getNetworkId(){
+		return this.networkId;
+	}
 	
 }

@@ -30,6 +30,7 @@ public class MutationManager {
 	 * @param simulationFeatures
 	 * @throws FeaturesException
 	 */
+	@SuppressWarnings("unchecked")
 	public MutationManager(GraphManager graphManager, SamplingManager samplingManager, Properties simulationFeatures) throws FeaturesException {
 		//Parameters checking
 		if(samplingManager == null)
@@ -62,7 +63,7 @@ public class MutationManager {
 			ArrayList<Integer> specificFlips;
 			if(simulationFeatures.containsKey(SimulationFeaturesConstants.SPECIFIC_PERTURB_NODES)){
 				specificFlips = new ArrayList<Integer>();
-				for(String nodeName : simulationFeatures.getProperty(SimulationFeaturesConstants.SPECIFIC_PERTURB_NODES).split(",")){
+				for(String nodeName : (ArrayList<String>)simulationFeatures.get(SimulationFeaturesConstants.SPECIFIC_PERTURB_NODES)){
 					int nodeId = graphManager.getNodeNumber(nodeName);
 					if(nodeId != -1)
 						specificFlips.add(nodeId);
@@ -102,7 +103,7 @@ public class MutationManager {
 			//Specific knock-in
 			if(simulationFeatures.containsKey(SimulationFeaturesConstants.SPECIFIC_KNOCK_IN_NODES)){
 				specificKnockIn = new ArrayList<Integer>();
-				for(String nodeName : simulationFeatures.getProperty(SimulationFeaturesConstants.SPECIFIC_KNOCK_IN_NODES).split(",")){
+				for(String nodeName : (ArrayList<String>)simulationFeatures.get(SimulationFeaturesConstants.SPECIFIC_KNOCK_IN_NODES)){
 					int nodeId = graphManager.getNodeNumber(nodeName);
 					if(nodeId != -1)
 						specificKnockIn.add(nodeId);
@@ -111,7 +112,7 @@ public class MutationManager {
 			//Specific knock-out
 			if(simulationFeatures.containsKey(SimulationFeaturesConstants.SPECIFIC_KNOCK_OUT_NODES)){
 				specificKnockOut = new ArrayList<Integer>();
-				for(String nodeName : simulationFeatures.getProperty(SimulationFeaturesConstants.SPECIFIC_KNOCK_OUT_NODES).split(",")){
+				for(String nodeName : (ArrayList<String>)simulationFeatures.get(SimulationFeaturesConstants.SPECIFIC_KNOCK_OUT_NODES)){
 					int nodeId = graphManager.getNodeNumber(nodeName);
 					if(nodeId != -1)
 						specificKnockOut.add(nodeId);
@@ -132,13 +133,6 @@ public class MutationManager {
 		}
 			
 	}
-/*
-	public MutationManager(GraphManager graphManager, SamplingManager samplingManager, Properties simulationFeatures, Properties mutationsFeatures) throws FeaturesException {
-
-
-	}
-*/
-
 
 	/**
 	 * Returns the mutation object

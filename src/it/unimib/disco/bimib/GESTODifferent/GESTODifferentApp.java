@@ -1,6 +1,7 @@
 package it.unimib.disco.bimib.GESTODifferent;
 
 //GESTODifferent imports
+import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsAction;
 import it.unimib.disco.bimib.GUI.Actions.DynamicPerturbationsStatsAction;
 import it.unimib.disco.bimib.GUI.Actions.NetworkRightClickAtmAction;
 import it.unimib.disco.bimib.GUI.Actions.NodeRightClickAction;
@@ -49,9 +50,14 @@ public class GESTODifferentApp extends AbstractCySwingApp{
 				CyNetworkViewContextMenuFactory.class,
 				new Properties());
 
-		//Registers the dynamic perturbations statistics service
+		//Registers the dynamic perturbations statistics view service
 		registrar.registerService(new DynamicPerturbationsStatsAction(swingAdapter, this.simulationsContainer), CyNetworkViewContextMenuFactory.class,
 				new Properties());
+
+		//Registers the dynamic perturbations statistics computation service
+		registrar.registerService(new ComputeDynamicPerturbationsAction(swingAdapter, this.simulationsContainer, viz), CyNetworkViewContextMenuFactory.class,
+				new Properties());
+
 	}
 
 
