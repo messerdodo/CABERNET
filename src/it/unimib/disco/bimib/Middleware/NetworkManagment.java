@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+
+
 //Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
@@ -18,12 +21,16 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 
+
+
+
 //GESTODifferent packages
 import it.unimib.disco.bimib.Networks.GraphManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Networks.GeneRegulatoryNetwork;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
+import it.unimib.disco.bimib.Tes.TesTree;
 
 public class NetworkManagment {
 
@@ -68,9 +75,9 @@ public class NetworkManagment {
 		nodeTable.createColumn("Outcoming edges", Integer.class, true);
 		nodeTable.createColumn("Degree", Integer.class, true);
 		nodeTable.createColumn("Normalized Degree", Double.class, true);
-		
+
 		double maxDegree = 1.0;
-		
+
 		//Adds the genes
 		for(int i = 0; i < genesNumber; i++){
 			//Creates the gene
@@ -89,7 +96,7 @@ public class NetworkManagment {
 		for(int i = 0; i < genesNumber; i++){
 			newRBN.getRow(genes[i]).set("Normalized Degree", rbn.getNodeDegree(i)/maxDegree);
 		}
-		
+
 		for(int[] edge : rbn.getEdges()){
 			newRBN.addEdge(genes[edge[SOURCE]], genes[edge[DESTINATION]], DIRECTED_EDGE);
 		}
@@ -362,6 +369,95 @@ public class NetworkManagment {
 
 		return graphManager;
 
+	}
+
+
+	public TesTree getTreeFromCytoscape() throws TesTreeException{
+		CyNetwork currentNetwork = appManager.getCurrentNetwork();
+		List<CyNode> nodes = currentNetwork.getNodeList();
+		List<CyEdge> edges = currentNetwork.getEdgeList();
+
+		if(nodes.size() != edges.size() + 1)
+			return null;
+
+
+		boolean [][] treeMatrix = new boolean[nodes.size()][nodes.size()];
+		for(int i = 0; i < nodes.size(); i++){
+			for(int j = 0; j < nodes.size(); j++){
+				treeMatrix[i][j] = false;
+			}
+		}
+		//Populates the tree matrix
+		for(CyEdge edge : edges)
+			treeMatrix[nodes.indexOf(edge.getSource())][nodes.indexOf(edge.getTarget())] = true;
+
+		//Finds the potential root
+		int rootIndex  = - 1, potentialRoots = 0;
+		int i = 0;
+		for(int j = 0; j < nodes.size(); j++){
+			i = 0;
+			while(i < nodes.size() && treeMatrix[i][j] == false){
+				i = i + 1;
+			}
+			if(i == nodes.size()){
+				rootIndex = j;
+				potentialRoots = potentialRoots + 1;
+			}
+		}
+
+		if(potentialRoots != 1){
+			return null;
+		}
+
+		//Cycles detection
+		boolean[] visited = new boolean[nodes.size()];
+		for(int h = 0; h < nodes.size(); h++){
+			visited[h] = false;
+		}
+		visited[rootIndex] = true;
+		boolean isTree = treeVisit(rootIndex, treeMatrix, visited);
+		
+		if(!isTree)
+			return null;
+		
+		
+		TesTree tree = new TesTree(rootIndex);
+		createTesTree(rootIndex, treeMatrix, 0, tree);
+		tree.print();
+		return tree;
+		
+		
+		
+		
+	}
+
+	private boolean treeVisit(int rootIndex, boolean[][] treeMatrix, boolean[] visited){
+
+		boolean result = true;
+
+		for(int i = 0; i < visited.length; i++){
+			if(treeMatrix[rootIndex][i]){
+				if(visited[i]){
+					return false;
+				}else{
+					visited[i] = true;
+					result = result && treeVisit(i, treeMatrix, visited);
+					if(!result)
+						return false;
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	private void createTesTree(int rootIndex, boolean[][] treeMatrix, int level, TesTree tree) throws TesTreeException{
+		for(int i = 0; i < treeMatrix.length; i++){
+			if(treeMatrix[rootIndex][i]){
+				tree.addNodeManually(i, level + 1, rootIndex);
+				createTesTree(i, treeMatrix, level + 1, tree);
+			}
+		}
 	}
 
 }

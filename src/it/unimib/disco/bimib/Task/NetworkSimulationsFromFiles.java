@@ -15,14 +15,10 @@ import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
 
-
-
 //System imports
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Properties;
-
-
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -57,15 +53,15 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 
 	public NetworkSimulationsFromFiles(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, boolean treeMatching, 
-			String treePath, ArrayList<String> filesPath, boolean editing) throws NumberFormatException, NullPointerException, 
+			TesTree tree, ArrayList<String> filesPath, boolean editing) throws NumberFormatException, NullPointerException, 
 			FileNotFoundException, TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, atmComputation, 
-				treeMatching, treePath, GESTODifferentConstants.PERFECT_MATCH, -1, filesPath, editing);
+				treeMatching, tree, GESTODifferentConstants.PERFECT_MATCH, -1, filesPath, editing);
 	}
 
 	public NetworkSimulationsFromFiles(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, 
-			boolean treeMatching, String treePath, String matchingType, int threshold, ArrayList<String> filesPath, boolean editing) 
+			boolean treeMatching, TesTree tree, String matchingType, int threshold, ArrayList<String> filesPath, boolean editing) 
 					throws NumberFormatException, NullPointerException, FileNotFoundException, 
 					TesTreeException, InputFormatException{
 		this.simulationFeatures = networkFeatures;
@@ -76,10 +72,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 		this.simulationsContainer = simulationsContainer;
 		this.atmComputation = atmComputation;
 		this.treeMatching = treeMatching;
-		if(treePath != null)
-			this.givenTree = TesManager.createTesTreeFromFile(Input.readTree(treePath));
-		else
-			this.givenTree = null;
+		this.givenTree = tree;
 		this.matchingType = matchingType;
 		this.threshold = threshold;
 		this.filesPath = filesPath;
@@ -144,7 +137,9 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 							}else if(this.matchingType.equals(GESTODifferentConstants.MIN_DISTANCE)){
 								//Min distance comparison
 								distance = tesManager.findMinDistanceTesTree(this.givenTree);
-								if(distance <= threshold)
+								if(distance == -1){
+									match = false;
+								}else if(distance <= threshold)
 									deltas = new double[1];
 							}else{
 								//Computes the histogram distance

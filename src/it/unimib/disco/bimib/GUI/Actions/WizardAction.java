@@ -43,7 +43,7 @@ public class WizardAction extends AbstractCyAction{
 		// Get a Cytoscape service 'DialogTaskManager' in CyActivator class
 		DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
 
-		Wizard wizard = new Wizard();
+		Wizard wizard = new Wizard(adapter);
 		Properties simulationFeatures;
 		Properties tasks;
 		Properties outputs;

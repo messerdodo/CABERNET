@@ -10,7 +10,6 @@ import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
 import it.unimib.disco.bimib.GESTODifferent.Simulation;
 import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
-import it.unimib.disco.bimib.IO.Input;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -51,15 +50,15 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 
 	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, boolean treeMatching, 
-			String treePath) throws NumberFormatException, NullPointerException, 
+			TesTree tree) throws NumberFormatException, NullPointerException, 
 			FileNotFoundException, TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, atmComputation, 
-				treeMatching, treePath, GESTODifferentConstants.PERFECT_MATCH, -1);
+				treeMatching, tree, GESTODifferentConstants.PERFECT_MATCH, -1);
 	}
 
 	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, 
-			boolean treeMatching, String treePath, String matchingType, int threshold) 
+			boolean treeMatching, TesTree tree, String matchingType, int threshold) 
 					throws NumberFormatException, NullPointerException, FileNotFoundException, 
 					TesTreeException, InputFormatException{
 		this.simulationFeatures = networkFeatures;
@@ -70,10 +69,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		this.simulationsContainer = simulationsContainer;
 		this.atmComputation = atmComputation;
 		this.treeMatching = treeMatching;
-		if(treePath != null)
-			this.givenTree = TesManager.createTesTreeFromFile(Input.readTree(treePath));
-		else
-			this.givenTree = null;
+		this.givenTree = tree;
 		this.matchingType = matchingType;
 		this.threshold = threshold;
 	}
@@ -131,7 +127,9 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						}else if(this.matchingType.equals(GESTODifferentConstants.MIN_DISTANCE)){
 							//Min distance comparison
 							distance = tesManager.findMinDistanceTesTree(this.givenTree);
-							if(distance <= threshold)
+							if(distance == -1){
+								match = false;
+							}else if(distance <= threshold)
 								deltas = new double[1];
 						}else{
 							//Computes the histogram distance
