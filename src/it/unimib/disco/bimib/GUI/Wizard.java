@@ -84,8 +84,10 @@ public class Wizard extends JDialog {
 	private JTextField txtNodesNumber;
 	private JPanel topologyPanel;
 	private JPanel randomTopologyPanel;
+	private JPanel fixedRandomPanel;
 	private JPanel barabasiPanel;
 	private JPanel powerLawPanel;
+	private JPanel fixedPowerLawPanel;
 	private JPanel smallWorldPanel;
 	private JPanel functionsTypePanel;
 	private JPanel functionsRatesPanel;
@@ -221,6 +223,14 @@ public class Wizard extends JDialog {
 	private Properties simulationFeatures;
 	private TesTree tree;
 	private NetworkManagment netManagment;
+	private JTextField txtFixedRandomEdges;
+	private JTextField txtFixedRandomInputs;
+	private JLabel lblGamma_1;
+	private JTextField txtFixedPLGamma;
+	private JLabel lblAverageConettivity;
+	private JTextField txtFixedPLK;
+	private JLabel lblFixedInputs_1;
+	private JTextField txtFixedPLInputs;
 
 
 
@@ -526,7 +536,12 @@ public class Wizard extends JDialog {
 				JLabel lblNetworkTopology = new JLabel("Network Topology:");
 
 				cmbTopology = new JComboBox<String>();
-				cmbTopology.setModel(new DefaultComboBoxModel<String>(new String[] {"Random (Erdos-Renyi)", "Scale Free (Barabasi-Albertz) {in}", "Scale Free (Power law) {out}", "Small World (Watts-Strogatz)"}));
+				cmbTopology.setModel(new DefaultComboBoxModel<String>(new String[] {"Random (Erdos-Renyi)", 
+						"Random (Fixed number of inputs)", 
+						"Scale Free (Barabasi-Albertz) {in}", 
+						"Scale Free (Power law) {out}", 
+						"Scale Free (Power law with fixed number of inputs)", 
+						"Small World (Watts-Strogatz)"}));
 				cmbTopology.setSelectedIndex(0);
 				GroupLayout gl_topologyPanel = new GroupLayout(topologyPanel);
 				gl_topologyPanel.setHorizontalGroup(
@@ -574,7 +589,27 @@ public class Wizard extends JDialog {
 										.addComponent(txtEdgesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						);
 				randomTopologyPanel.setLayout(gl_randomTopologyPanel);
-
+				
+				fixedRandomPanel = new JPanel();
+				featureInputFormPanel.add(fixedRandomPanel, "fixedRandomPanel");
+				fixedRandomPanel.setLayout(new GridLayout(0, 4, 0, 0));
+				
+				JLabel lblEdges = new JLabel("Edges:");
+				fixedRandomPanel.add(lblEdges);
+				
+				txtFixedRandomEdges = new JTextField();
+				txtFixedRandomEdges.setText("200");
+				fixedRandomPanel.add(txtFixedRandomEdges);
+				txtFixedRandomEdges.setColumns(10);
+				
+				JLabel lblFixedInputs = new JLabel("Fixed inputs:");
+				fixedRandomPanel.add(lblFixedInputs);
+				
+				txtFixedRandomInputs = new JTextField();
+				txtFixedRandomInputs.setText("2");
+				fixedRandomPanel.add(txtFixedRandomInputs);
+				txtFixedRandomInputs.setColumns(10);
+				
 				barabasiPanel = new JPanel();
 				featureInputFormPanel.add(barabasiPanel, "barabasiPanel");
 
@@ -666,6 +701,34 @@ public class Wizard extends JDialog {
 						);
 				powerLawPanel.setLayout(gl_powerLawPanel);
 
+				fixedPowerLawPanel = new JPanel();
+				featureInputFormPanel.add(fixedPowerLawPanel, "fixedPowerLawPanel");
+				fixedPowerLawPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+				
+				lblGamma_1 = new JLabel("Gamma:");
+				fixedPowerLawPanel.add(lblGamma_1);
+				
+				txtFixedPLGamma = new JTextField();
+				txtFixedPLGamma.setText("2.3");
+				fixedPowerLawPanel.add(txtFixedPLGamma);
+				txtFixedPLGamma.setColumns(7);
+				
+				lblAverageConettivity = new JLabel("Average connectivity:");
+				fixedPowerLawPanel.add(lblAverageConettivity);
+				
+				txtFixedPLK = new JTextField();
+				txtFixedPLK.setText("2");
+				fixedPowerLawPanel.add(txtFixedPLK);
+				txtFixedPLK.setColumns(7);
+				
+				lblFixedInputs_1 = new JLabel("Fixed inputs:");
+				fixedPowerLawPanel.add(lblFixedInputs_1);
+				
+				txtFixedPLInputs = new JTextField();
+				txtFixedPLInputs.setText("2");
+				fixedPowerLawPanel.add(txtFixedPLInputs);
+				txtFixedPLInputs.setColumns(7);
+				
 				smallWorldPanel = new JPanel();
 				featureInputFormPanel.add(smallWorldPanel, "smallWorldPanel");
 
@@ -885,6 +948,13 @@ public class Wizard extends JDialog {
 								currentFeature = "random-topology-parameters";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Random topology parameters (Erdos-Renyi)");
 								networkManualFeaturesPanel.repaint();
+							}else if(cmbTopology.getSelectedItem().equals("Random (Fixed number of inputs)")){
+								//Sets the network topology
+								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY);
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY});
+								//Next step: Barabasi-Albertz parameters
+								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedRandomPanel");	
+								currentFeature = "fixed-random-parameters";
 							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Barabasi-Albertz) {in}")){
 								//Sets the network topology
 								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
@@ -905,6 +975,17 @@ public class Wizard extends JDialog {
 								//Next step: Power Law parameters
 								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "powerLawPanel");	
 								currentFeature = "power-law-parameters";
+								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
+								networkManualFeaturesPanel.repaint();
+							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law with fixed number of inputs)")){
+								//Sets the network topology
+								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM);
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM});
+								//Next step: Fixed Power Law parameters
+								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedPowerLawPanel");	
+								currentFeature = "fixed-power-law-parameters";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
 								networkManualFeaturesPanel.repaint();
 							}else if(cmbTopology.getSelectedItem().equals("Small World (Watts-Strogatz)")){
@@ -928,6 +1009,18 @@ public class Wizard extends JDialog {
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
 								networkManualFeaturesPanel.repaint();
 							}
+						}else if(currentFeature.equals("fixed-random-parameters")){
+							//Sets the number of edges
+							simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtFixedRandomEdges.getText());
+							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.EDGES, txtFixedRandomEdges.getText()});
+							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText());
+							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText()});
+							//Next step: Functions type
+							((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+							currentFeature = "functions-type";
+							((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+							networkManualFeaturesPanel.repaint();
+							
 						}else if(currentFeature.equals("barabasi-parameters")){
 							if(!txtNi.getText().equals("") && !txtAvgConnBA.getText().equals("")){
 								//Sets the ni and k parameters
@@ -954,6 +1047,20 @@ public class Wizard extends JDialog {
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
 								networkManualFeaturesPanel.repaint();
 							}
+						}else if(currentFeature.equals("fixed-power-law-parameters")){
+							//Sets the gamma and k parameters
+							simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText());
+							simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText());
+							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText());
+							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText()});
+							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText()});
+							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText()});
+							//Next step: Functions type
+							((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+							currentFeature = "functions-type";
+							((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+							networkManualFeaturesPanel.repaint();
+							
 						}else if(currentFeature.equals("small-world-parameters")){
 							if(!txtBeta.getText().equals("") && !txtAvgConnSW.getText().equals("")){
 								//Sets the beta and k parameters
