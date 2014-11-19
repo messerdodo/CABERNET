@@ -158,10 +158,12 @@ public class DynamicPerturbationsStatsView extends JFrame {
 				//Saves the avalanches observations and distribution
 				try{
 					final JFileChooser fc = new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					String outputPath;
 					//In response to a button click:
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 						outputPath = fc.getSelectedFile().getPath();
+						outputPath = outputPath + "/avalanches.csv";
 						Output.saveAvalachesDistribution(outputPath, statsToView.getAvalanchesDistribution());
 					}
 				}catch(Exception ex){
@@ -195,10 +197,12 @@ public class DynamicPerturbationsStatsView extends JFrame {
 				//Saves the sensitivity csv file
 				try{
 					final JFileChooser fc = new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					String outputPath;
 					//In response to a button click:
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 						outputPath = fc.getSelectedFile().getPath();
+						outputPath = outputPath + "/sensitivity.csv";
 						Output.saveSensitivity(outputPath , genesNames, statsToView.getSensitivity());
 					}
 				}catch(Exception ex){
@@ -241,7 +245,7 @@ public class DynamicPerturbationsStatsView extends JFrame {
 		pnlSesitivityStatistics.add(lblSensitivityObservations);
 
 		//Creates and shows the avalanche distribution chart
-		DefaultCategoryDataset sensitivityDataset = this.prepareCategoryDataset(genesNames, statsToView.getSensitivity());
+		DefaultCategoryDataset sensitivityDataset = this.prepareCategoryDataset(genesNames, statsToView.getSensitivity(), "Sensitivity");
 		sensitivityChartPanel = new ChartPanel(this.createBarChart("Sensitivity", sensitivityDataset, "Genes names", "Sensitivity"));
 		pnlSensitivity.add(sensitivityChartPanel, BorderLayout.CENTER);
 
@@ -302,14 +306,14 @@ public class DynamicPerturbationsStatsView extends JFrame {
 	 * @return The CategoryDataset dataset object
 	 * @throws Exception
 	 */
-	private DefaultCategoryDataset prepareCategoryDataset(ArrayList<String> xValues, int[] yValues) throws Exception{
+	private DefaultCategoryDataset prepareCategoryDataset(ArrayList<String> xValues, int[] yValues, String seriesName) throws Exception{
 		//Checks the dataset dimensions
 		if(xValues.size() != yValues.length)
 			throw new Exception("X and Y values must be the same length");
 		//Creates and populates the dataset object
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		for(int i = 0; i < xValues.size(); i++){
-			dataset.addValue(Double.valueOf(yValues[i]), Double.valueOf(yValues[i]), xValues.get(i));
+			dataset.addValue(Double.valueOf(yValues[i]), seriesName, xValues.get(i));
 		}
 		return dataset;
 	}

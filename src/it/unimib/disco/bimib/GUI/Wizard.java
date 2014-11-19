@@ -897,7 +897,7 @@ public class Wizard extends JDialog {
 								currentFeature = "random-topology-parameters";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Random topology parameters (Erdos-Renyi)");
 								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Barabasi-Albertz)")){
+							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Barabasi-Albertz) {in}")){
 								//Sets the network topology
 								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
 								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
@@ -908,7 +908,7 @@ public class Wizard extends JDialog {
 								currentFeature = "barabasi-parameters";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Barabasi-Albertz)");
 								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law)")){
+							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law) {out}")){
 								//Sets the network topology
 								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
 								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM);

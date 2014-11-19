@@ -1,6 +1,8 @@
 package it.unimib.disco.bimib.GESTODifferent;
 
+//System imports
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * This class is container for the computed simulations.
@@ -9,7 +11,7 @@ import java.util.HashMap;
  * @year 2014
  */
 
-public class SimulationsContainer {
+public class SimulationsContainer{
 	
 	private HashMap<String, Simulation> simulations;
 	
@@ -40,6 +42,14 @@ public class SimulationsContainer {
 			return this.simulations.get(simId);
 		else
 			return null;
+	}
+
+	/**
+	 * This method returns the simulations ids.
+	 * @return a Set with the simulations ids.
+	 */
+	public Set<String> getSimulationsId(){
+		return this.simulations.keySet();
 	}
 
 }

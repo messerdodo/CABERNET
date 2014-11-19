@@ -3,13 +3,18 @@ package it.unimib.disco.bimib.GESTODifferent;
 //GESTODifferent imports
 import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsAction;
 import it.unimib.disco.bimib.GUI.Actions.DynamicPerturbationsStatsAction;
+import it.unimib.disco.bimib.GUI.Actions.DynamicalStatsAction;
+import it.unimib.disco.bimib.GUI.Actions.ExportAction;
 import it.unimib.disco.bimib.GUI.Actions.NetworkRightClickAtmAction;
 import it.unimib.disco.bimib.GUI.Actions.NodeRightClickAction;
+import it.unimib.disco.bimib.GUI.Actions.TesNumberComputingAction;
 import it.unimib.disco.bimib.GUI.Actions.WizardAction;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 
+
 //System imports
 import java.util.Properties;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.AbstractCySwingApp;
@@ -56,6 +61,18 @@ public class GESTODifferentApp extends AbstractCySwingApp{
 
 		//Registers the dynamic perturbations statistics computation service
 		registrar.registerService(new ComputeDynamicPerturbationsAction(swingAdapter, this.simulationsContainer, viz), CyNetworkViewContextMenuFactory.class,
+				new Properties());
+
+		//Registers the dynamical statistics view service
+		registrar.registerService(new DynamicalStatsAction(swingAdapter, this.simulationsContainer), CyNetworkViewContextMenuFactory.class,
+				new Properties());
+
+		//Registers the export service
+		registrar.registerService(new ExportAction(swingAdapter, this.simulationsContainer), CyNetworkViewContextMenuFactory.class,
+				new Properties());
+
+		//Registers the Tes view service
+		registrar.registerService(new TesNumberComputingAction(swingAdapter, this.simulationsContainer), CyNetworkViewContextMenuFactory.class,
 				new Properties());
 
 	}
