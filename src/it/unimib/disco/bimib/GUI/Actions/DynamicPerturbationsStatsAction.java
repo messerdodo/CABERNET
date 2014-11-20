@@ -7,11 +7,15 @@ import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.DynamicPerturbationsStatsView;
 import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
 
+
 //System imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
 import javax.swing.JMenuItem;
+
+import javax.swing.JOptionPane;
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -60,9 +64,12 @@ public class DynamicPerturbationsStatsAction implements CyNetworkViewContextMenu
 							dynView = new DynamicPerturbationsStatsView(stats, genesNames);
 							dynView.setVisible(true);
 						}	
+					}else{
+						JOptionPane.showMessageDialog(null, "A simulated network must be selected.", "Error", JOptionPane.ERROR_MESSAGE, null);
 					}
-				}catch(Exception e){
-					System.out.println(e.getMessage().equals("") ? e : e.getMessage());
+				}catch(Exception ex){
+					String message = (String) (ex.getMessage().equals("") ? ex : ex.getMessage());
+					JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE, null);
 				}
 			}
 		});

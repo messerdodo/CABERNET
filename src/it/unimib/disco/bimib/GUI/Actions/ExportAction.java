@@ -5,10 +5,14 @@ package it.unimib.disco.bimib.GUI.Actions;
 import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.ExportView;
 
+
 //System imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JMenuItem;
+
+import javax.swing.JOptionPane;
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -50,10 +54,12 @@ public class ExportAction implements CyNetworkViewContextMenuFactory{
 					if(simulationsContainer.getSimulation(simulationId) != null){
 						exportView = new ExportView(simulationsContainer, simulationsContainer.getSimulation(simulationId), adapter);
 						exportView.setVisible(true);
-					}	
-
-				}catch(Exception e){
-					System.out.println(e.getMessage().equals("") ? e : e.getMessage());
+					}else{
+						JOptionPane.showMessageDialog(null, "A simulated network must be selected.", "Error", JOptionPane.ERROR_MESSAGE, null);
+					}
+				}catch(Exception ex){
+					String message = (String) (ex.getMessage().equals("") ? ex : ex.getMessage());
+					JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE, null);
 				}
 			}
 

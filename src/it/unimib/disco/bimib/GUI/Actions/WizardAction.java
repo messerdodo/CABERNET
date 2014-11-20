@@ -27,11 +27,11 @@ public class WizardAction extends AbstractCyAction{
 	private final CySwingAppAdapter adapter;
 
 	public WizardAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
-		super("GESTODifferent");
+		super("Wizard");
 		this.adapter = adapter;
 		this.appManager = this.adapter.getCyApplicationManager();
 		this.simulationsContainer = simulationsContainer;
-		setPreferredMenu("Apps");
+		setPreferredMenu("Apps.GESTODifferent");
 	}
 
 
