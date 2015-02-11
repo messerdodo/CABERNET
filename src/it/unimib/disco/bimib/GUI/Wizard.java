@@ -15,10 +15,10 @@ import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 
+
 //Swing and awt imports
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -26,10 +26,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import java.awt.CardLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import java.awt.Font;
 import javax.swing.UIManager;
 import javax.swing.SpringLayout;
 import javax.swing.JRadioButton;
@@ -37,32 +35,46 @@ import javax.swing.ButtonGroup;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JList;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.CardLayout;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.SystemColor;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
+
+
+
+
 
 //System imports
 import java.util.ArrayList;
 import java.util.Properties;
 
+
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
+
+
+
 
 public class Wizard extends JDialog {
 
@@ -211,7 +223,11 @@ public class Wizard extends JDialog {
 	private JComboBox<String> cmbEditingFunctionType;
 	private JCheckBox chkTreeFromCytoscape;
 	private JCheckBox chkAvalanchesAndSensitivity;
-
+	private JPanel pnlList;
+	private JLabel lblNetworksStructureList;
+	private JLabel lblExperimentsList;
+	private JLabel lblTreeMatchingList;
+	private JLabel lblOutputsList;
 
 
 	//****
@@ -237,6 +253,7 @@ public class Wizard extends JDialog {
 	private JTextField txtFixedPLK;
 	private JLabel lblFixedInputs_1;
 	private JTextField txtFixedPLInputs;
+	
 
 
 
@@ -260,8 +277,48 @@ public class Wizard extends JDialog {
 		this.inputMethod = "New random networks from features";
 		this.form = "network-input-method";
 
-		setBounds(100, 100, 672, 462);
+		setBounds(100, 100, 872, 462);
 		getContentPane().setLayout(new BorderLayout());
+		
+		pnlList = new JPanel();
+		pnlList.setBorder(null);
+		getContentPane().add(pnlList, BorderLayout.WEST);
+		pnlList.setLayout(new GridLayout(5, 1, 0, 0));
+		
+		JLabel lblLogo = new JLabel(new ImageIcon("/Users/messerdodo/Google Drive/BIMIB/Java_projects/GESTODifferent/Images/logo.png"));
+		lblLogo.setText("");
+		lblLogo.setHorizontalAlignment(SwingConstants.LEFT);
+		
+		pnlList.add(lblLogo);
+		
+		lblNetworksStructureList = new JLabel("Networks structure");
+		lblNetworksStructureList.setOpaque(true);
+		lblNetworksStructureList.setForeground(Color.BLACK);
+		lblNetworksStructureList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		lblNetworksStructureList.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNetworksStructureList.setBackground(Color.WHITE);
+		pnlList.add(lblNetworksStructureList);
+		
+		lblExperimentsList = new JLabel("Experiments");
+		lblExperimentsList.setOpaque(true);
+		lblExperimentsList.setHorizontalAlignment(SwingConstants.CENTER);
+		lblExperimentsList.setBackground(Color.WHITE);
+		lblExperimentsList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		pnlList.add(lblExperimentsList);
+		
+		lblTreeMatchingList = new JLabel("Tree Matching");
+		lblTreeMatchingList.setOpaque(true);
+		lblTreeMatchingList.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTreeMatchingList.setBackground(Color.WHITE);
+		lblTreeMatchingList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		pnlList.add(lblTreeMatchingList);
+		
+		lblOutputsList = new JLabel("Outputs");
+		lblOutputsList.setOpaque(true);
+		lblOutputsList.setHorizontalAlignment(SwingConstants.CENTER);
+		lblOutputsList.setBackground(Color.WHITE);
+		lblOutputsList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		pnlList.add(lblOutputsList);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new CardLayout(0, 0));
@@ -1137,6 +1194,7 @@ public class Wizard extends JDialog {
 							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.CANALIZED_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.CANALIZED_TYPE)});
 
 							//Next step: experiments page
+							lblExperimentsList.setBackground(Color.LIGHT_GRAY);
 							((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
 							form = "attractors-params";
 							btnNext.setEnabled(true);
@@ -2070,9 +2128,11 @@ public class Wizard extends JDialog {
 					if(rdbtnFeaturesFromForm.isSelected()){
 						if(editing){
 							((CardLayout)contentPanel.getLayout()).show(contentPanel, "pnlNetworkEditing");	
+							lblNetworksStructureList.setBackground(Color.lightGray);
 							form = "editing-features";
 						}else{
 							((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkFeaturesPanel");	
+							lblNetworksStructureList.setBackground(Color.lightGray);
 							form = "features-for-editing";
 							//Disables the next button for the features insertion
 							btnNext.setEnabled(false);
@@ -2083,6 +2143,10 @@ public class Wizard extends JDialog {
 						if(!txtFeaturesFilePath.getText().equals("")){
 							simulationFeatures = Input.readSimulationFeatures(txtFeaturesFilePath.getText());
 							//New step: outputs page
+							lblNetworksStructureList.setBackground(Color.LIGHT_GRAY);
+							lblExperimentsList.setBackground(Color.LIGHT_GRAY);
+							lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
+							lblOutputsList.setBackground(Color.LIGHT_GRAY);
 							form = "output-form";
 							((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");	
 						}
@@ -2131,6 +2195,7 @@ public class Wizard extends JDialog {
 
 						form = "attractors-params";
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
+						lblExperimentsList.setBackground(Color.lightGray);
 
 					}
 				}else if(form.equals("attractors-params")){
@@ -2166,6 +2231,7 @@ public class Wizard extends JDialog {
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB, txtMaxFlipTimes.getText());
 
 									form = "tree-matching";
+									lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
 									((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
 
 								}
@@ -2183,6 +2249,7 @@ public class Wizard extends JDialog {
 
 									form = "tree-matching";
 									((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
+									lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
 								}
 							}
 						}
@@ -2191,6 +2258,7 @@ public class Wizard extends JDialog {
 						tasks.setProperty(GESTODifferentConstants.ATM_COMPUTATION, GESTODifferentConstants.NO);
 						//Next step: Output elements chosen
 						form = "output-form";
+						lblOutputsList.setBackground(Color.LIGHT_GRAY);
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 					}
 					//Next action: Tree matching
@@ -2213,10 +2281,12 @@ public class Wizard extends JDialog {
 								tree = TesManager.createTesTreeFromFile(Input.readTree(txtTreeFilePath.getText()));	
 								//New step: outputs page
 								form = "output-form";
+								lblOutputsList.setBackground(Color.LIGHT_GRAY);
 								((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 							}else if(tree != null){
 								//New step: outputs page
 								form = "output-form";
+								lblOutputsList.setBackground(Color.LIGHT_GRAY);
 								((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 							}
 						}
@@ -2224,6 +2294,7 @@ public class Wizard extends JDialog {
 						tasks.setProperty(GESTODifferentConstants.TREE_MATCHING, GESTODifferentConstants.NO);
 						//New step: outputs page
 						form = "output-form";
+						lblOutputsList.setBackground(Color.LIGHT_GRAY);
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");	
 					}
 				}else if(form.equals("output-form")){

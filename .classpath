@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="JCommon"/>
 	<classpathentry kind="lib" path="JFreeChart"/>
 	<classpathentry kind="lib" path="Commons-Math3-3.3"/>
+	<classpathentry kind="lib" path="Images"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
