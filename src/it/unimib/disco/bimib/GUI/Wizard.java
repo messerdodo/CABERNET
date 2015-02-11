@@ -1,5 +1,12 @@
 package it.unimib.disco.bimib.GUI;
 
+/**
+ * Wizard GUI
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 //GRNSim imports
 import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
 import it.unimib.disco.bimib.IO.*;
@@ -223,7 +230,6 @@ public class Wizard extends JDialog {
 	private Properties simulationFeatures;
 	private TesTree tree;
 	private NetworkManagment netManagment;
-	private JTextField txtFixedRandomEdges;
 	private JTextField txtFixedRandomInputs;
 	private JLabel lblGamma_1;
 	private JTextField txtFixedPLGamma;
@@ -593,14 +599,6 @@ public class Wizard extends JDialog {
 				fixedRandomPanel = new JPanel();
 				featureInputFormPanel.add(fixedRandomPanel, "fixedRandomPanel");
 				fixedRandomPanel.setLayout(new GridLayout(0, 4, 0, 0));
-				
-				JLabel lblEdges = new JLabel("Edges:");
-				fixedRandomPanel.add(lblEdges);
-				
-				txtFixedRandomEdges = new JTextField();
-				txtFixedRandomEdges.setText("200");
-				fixedRandomPanel.add(txtFixedRandomEdges);
-				txtFixedRandomEdges.setColumns(10);
 				
 				JLabel lblFixedInputs = new JLabel("Fixed inputs:");
 				fixedRandomPanel.add(lblFixedInputs);
@@ -1010,9 +1008,7 @@ public class Wizard extends JDialog {
 								networkManualFeaturesPanel.repaint();
 							}
 						}else if(currentFeature.equals("fixed-random-parameters")){
-							//Sets the number of edges
-							simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtFixedRandomEdges.getText());
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.EDGES, txtFixedRandomEdges.getText()});
+							//Sets the number of required inputs
 							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText());
 							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText()});
 							//Next step: Functions type
@@ -1975,6 +1971,12 @@ public class Wizard extends JDialog {
 		buttonPane.add(btnNext);
 
 		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Closes the window
+				closeWindow();
+			}
+		});
 		cancelButton.setActionCommand("Cancel");
 		buttonPane.add(cancelButton);
 
@@ -1989,6 +1991,13 @@ public class Wizard extends JDialog {
 		this.setVisible(true);
 		return 1;
 
+	}
+	
+	/**
+	 * This method closes the wizard window.
+	 */
+	public void closeWindow(){
+		this.setVisible(false);
 	}
 
 	/**

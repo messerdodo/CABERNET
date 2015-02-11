@@ -4,23 +4,32 @@ package it.unimib.disco.bimib.GUI;
 import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
 
+
+
 //System imports
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+
 import java.awt.FlowLayout;
 import java.awt.Component;
+
 import javax.swing.Box;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
+
+
 
 //JFreeChart imports
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -167,6 +176,7 @@ public class DynamicPerturbationsStatsView extends JFrame {
 						Output.saveAvalachesDistribution(outputPath, statsToView.getAvalanchesDistribution());
 					}
 				}catch(Exception ex){
+					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 					System.out.println(ex.getMessage().equals("") ? ex : ex.getMessage());
 				}
 			}
@@ -206,6 +216,7 @@ public class DynamicPerturbationsStatsView extends JFrame {
 						Output.saveSensitivity(outputPath , genesNames, statsToView.getSensitivity());
 					}
 				}catch(Exception ex){
+					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 					System.out.println(ex.getMessage().equals("") ? ex : ex.getMessage());
 				}
 			}

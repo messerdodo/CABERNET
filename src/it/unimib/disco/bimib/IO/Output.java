@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 
 
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -85,11 +86,12 @@ public class Output {
 		PrintWriter printer = new PrintWriter(writer);
 		//Gets the edges
 		List<int[]> graphEdges = network.getEdges();
+		ArrayList<String> nodesNames = network.getNodesNames();
 
 		//Writes the sif file
 		for(int[] edge : graphEdges){
 			//Each rows likes "n	_connected	m" where n and m are node numbers 
-			printer.println("Node"+ edge[0] + "\tDirectedEdge\t" + "Node" + edge[1]);
+			printer.println(nodesNames.get(edge[0]) + "\tDirectedEdge\t" + nodesNames.get(edge[1]));
 			printer.flush();
 		}
 		//Closes the streams
@@ -278,7 +280,7 @@ public class Output {
 		//Number of attractors in the network
 		if(!results.containsKey(OutputConstants.ATTRACTORS_NUMBER))
 			throw new Exception(OutputConstants.ATTRACTORS_NUMBER + " key must be in the results object");
-		//Average attractors lenght
+		//Average attractors lengts
 		if(!results.containsKey(OutputConstants.ATTRACTORS_LENGTH))
 			throw new Exception(OutputConstants.ATTRACTORS_LENGTH + " key must be in the results object");
 		//Not found attractors

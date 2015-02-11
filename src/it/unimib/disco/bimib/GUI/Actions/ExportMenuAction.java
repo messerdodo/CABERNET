@@ -36,7 +36,7 @@ public class ExportMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 
-		setPreferredMenu("Export");
+		setPreferredMenu("File.Export");
 	}
 
 	//Menu action pressed

@@ -388,7 +388,7 @@ public class DynamicStatisticsFrame extends JFrame {
 		
 		
 		JPanel pnlPerpetualMutations = new JPanel();
-		tabbedPane.addTab("Permanenet mutations", null, pnlPerpetualMutations, null);
+		tabbedPane.addTab("Permanent mutations", null, pnlPerpetualMutations, null);
 		SpringLayout sl_pnlPerpetualMutations = new SpringLayout();
 		pnlPerpetualMutations.setLayout(sl_pnlPerpetualMutations);
 		

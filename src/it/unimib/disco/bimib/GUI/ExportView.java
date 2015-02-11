@@ -261,7 +261,7 @@ public class ExportView extends JFrame {
 			//Attractors lengths
 			if(chkAttractorsLengths.isSelected()){
 				DynamicalStatistics dynStats = new DynamicalStatistics(sim.getSamplingManager());
-				ArrayList<Integer> lengths = dynStats.getBasinOfAttraction(true);
+				ArrayList<Integer> lengths = dynStats.getAttractorsLength(true);
 				Output.saveAttractorsLengths(networkName + "_attractors_lengths.csv", lengths);
 			}
 		}

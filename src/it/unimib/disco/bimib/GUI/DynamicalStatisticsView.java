@@ -18,6 +18,7 @@ import it.unimib.disco.bimib.Statistics.DynamicalStatistics;
 
 
 
+
 //System imports
 import java.awt.BorderLayout;
 
@@ -32,6 +33,7 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import java.awt.GridLayout;
@@ -230,7 +232,7 @@ public class DynamicalStatisticsView extends JFrame {
 					String outputPath;
 					//In response to a button click:
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
-						outputPath = fc.getSelectedFile().getPath();
+						outputPath = fc.getSelectedFile().getParent();
 						outputPath = outputPath + "/attractors_lengths.csv";
 						//Get all the values of lengths if the checkbox is selected
 						if(chckbxAttLenAllNetworks.isSelected()){
@@ -246,6 +248,7 @@ public class DynamicalStatisticsView extends JFrame {
 						Output.saveAttractorsLengths(outputPath, attractorsLengths);
 					}
 				}catch(Exception ex){
+					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 					System.out.println(ex.getMessage().equals("") ? ex : ex.getMessage());
 				}
 			}
@@ -363,6 +366,7 @@ public class DynamicalStatisticsView extends JFrame {
 					pnlBasinOfAttraction.updateUI();
 					
 				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 					System.out.println(ex.getMessage().equals("") ? ex : ex.getMessage());
 				}
 			}
@@ -396,7 +400,9 @@ public class DynamicalStatisticsView extends JFrame {
 						Output.saveBasinOfAttractionFile(outputPath, basinsOfAttraction);
 					}
 				}catch(Exception ex){
+					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 					System.out.println(ex.getMessage().equals("") ? ex : ex.getMessage());
+				
 				}
 			}
 		});
