@@ -10,11 +10,14 @@ package it.unimib.disco.bimib.GUI;
 
 //GRNSim imports
 import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
+import it.unimib.disco.bimib.Exceptions.FeaturesException;
 import it.unimib.disco.bimib.IO.*;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
+
+
 
 //Swing and awt imports
 import javax.swing.DefaultListModel;
@@ -45,6 +48,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.CardLayout;
@@ -63,6 +67,8 @@ import java.awt.event.ItemEvent;
 //System imports
 import java.util.ArrayList;
 import java.util.Properties;
+
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -247,7 +253,7 @@ public class Wizard extends JDialog {
 	private JTextField txtFixedPLK;
 	private JLabel lblFixedInputs_1;
 	private JTextField txtFixedPLInputs;
-	
+
 
 
 
@@ -273,18 +279,18 @@ public class Wizard extends JDialog {
 
 		setBounds(100, 100, 872, 462);
 		getContentPane().setLayout(new BorderLayout());
-		
+
 		pnlList = new JPanel();
 		pnlList.setBorder(null);
 		getContentPane().add(pnlList, BorderLayout.WEST);
 		pnlList.setLayout(new GridLayout(5, 1, 0, 0));
-		
+
 		JLabel lblLogo = new JLabel(new ImageIcon(Wizard.class.getResource("/it/unimib/disco/bimib/resources/logo.png")));
 		lblLogo.setText("");
 		lblLogo.setHorizontalAlignment(SwingConstants.LEFT);
-		
+
 		pnlList.add(lblLogo);
-		
+
 		lblNetworksStructureList = new JLabel("Networks structure");
 		lblNetworksStructureList.setOpaque(true);
 		lblNetworksStructureList.setForeground(Color.BLACK);
@@ -292,21 +298,21 @@ public class Wizard extends JDialog {
 		lblNetworksStructureList.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNetworksStructureList.setBackground(Color.WHITE);
 		pnlList.add(lblNetworksStructureList);
-		
+
 		lblExperimentsList = new JLabel("Experiments");
 		lblExperimentsList.setOpaque(true);
 		lblExperimentsList.setHorizontalAlignment(SwingConstants.CENTER);
 		lblExperimentsList.setBackground(Color.WHITE);
 		lblExperimentsList.setBorder(new LineBorder(new Color(0, 0, 0)));
 		pnlList.add(lblExperimentsList);
-		
+
 		lblTreeMatchingList = new JLabel("Tree Matching");
 		lblTreeMatchingList.setOpaque(true);
 		lblTreeMatchingList.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTreeMatchingList.setBackground(Color.WHITE);
 		lblTreeMatchingList.setBorder(new LineBorder(new Color(0, 0, 0)));
 		pnlList.add(lblTreeMatchingList);
-		
+
 		lblOutputsList = new JLabel("Outputs");
 		lblOutputsList.setOpaque(true);
 		lblOutputsList.setHorizontalAlignment(SwingConstants.CENTER);
@@ -598,7 +604,7 @@ public class Wizard extends JDialog {
 						"Scale Free (Barabasi-Albertz) {in}", 
 						"Scale Free (Power law) {out}", 
 						"Scale Free (Power law with fixed number of inputs)", 
-						"Small World (Watts-Strogatz)"}));
+				"Small World (Watts-Strogatz)"}));
 				cmbTopology.setSelectedIndex(0);
 				GroupLayout gl_topologyPanel = new GroupLayout(topologyPanel);
 				gl_topologyPanel.setHorizontalGroup(
@@ -646,19 +652,19 @@ public class Wizard extends JDialog {
 										.addComponent(txtEdgesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						);
 				randomTopologyPanel.setLayout(gl_randomTopologyPanel);
-				
+
 				fixedRandomPanel = new JPanel();
 				featureInputFormPanel.add(fixedRandomPanel, "fixedRandomPanel");
 				fixedRandomPanel.setLayout(new GridLayout(0, 4, 0, 0));
-				
+
 				JLabel lblFixedInputs = new JLabel("Fixed inputs:");
 				fixedRandomPanel.add(lblFixedInputs);
-				
+
 				txtFixedRandomInputs = new JTextField();
 				txtFixedRandomInputs.setText("2");
 				fixedRandomPanel.add(txtFixedRandomInputs);
 				txtFixedRandomInputs.setColumns(10);
-				
+
 				barabasiPanel = new JPanel();
 				featureInputFormPanel.add(barabasiPanel, "barabasiPanel");
 
@@ -753,31 +759,31 @@ public class Wizard extends JDialog {
 				fixedPowerLawPanel = new JPanel();
 				featureInputFormPanel.add(fixedPowerLawPanel, "fixedPowerLawPanel");
 				fixedPowerLawPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-				
+
 				lblGamma_1 = new JLabel("Gamma:");
 				fixedPowerLawPanel.add(lblGamma_1);
-				
+
 				txtFixedPLGamma = new JTextField();
 				txtFixedPLGamma.setText("2.3");
 				fixedPowerLawPanel.add(txtFixedPLGamma);
 				txtFixedPLGamma.setColumns(7);
-				
+
 				lblAverageConettivity = new JLabel("Average connectivity:");
 				fixedPowerLawPanel.add(lblAverageConettivity);
-				
+
 				txtFixedPLK = new JTextField();
 				txtFixedPLK.setText("2");
 				fixedPowerLawPanel.add(txtFixedPLK);
 				txtFixedPLK.setColumns(7);
-				
+
 				lblFixedInputs_1 = new JLabel("Fixed inputs:");
 				fixedPowerLawPanel.add(lblFixedInputs_1);
-				
+
 				txtFixedPLInputs = new JTextField();
 				txtFixedPLInputs.setText("2");
 				fixedPowerLawPanel.add(txtFixedPLInputs);
 				txtFixedPLInputs.setColumns(7);
-				
+
 				smallWorldPanel = new JPanel();
 				featureInputFormPanel.add(smallWorldPanel, "smallWorldPanel");
 
@@ -977,223 +983,288 @@ public class Wizard extends JDialog {
 				JButton btnAddFeature = new JButton("Add feature");
 				btnAddFeature.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(currentFeature.equals("nodes-number")){
-							if(!txtNodesNumber.getText().equals("")){
-								//Sets the number of nodes in the simulation property list.
-								simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtNodesNumber.getText());
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.NODES, txtNodesNumber.getText()});
-								//Next step: Topology
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "topologyPanel");	
-								currentFeature = "topology";
-							}
-						}else if(currentFeature.equals("topology")){
+						try{
+							if(currentFeature.equals("nodes-number")){
+								if(!txtNodesNumber.getText().equals("")){
+									if(Integer.parseInt(txtNodesNumber.getText()) <= 0)
+										throw new FeaturesException(SimulationFeaturesConstants.NODES + " value must be greater than 0");
+									//Sets the number of nodes in the simulation property list.
+									simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtNodesNumber.getText());
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.NODES, txtNodesNumber.getText()});
+									//Next step: Topology
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "topologyPanel");	
+									currentFeature = "topology";
+								}
+							}else if(currentFeature.equals("topology")){
 
-							if(cmbTopology.getSelectedItem().equals("Random (Erdos-Renyi)")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY});
-								//Next step: Erdos-Renyi parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "randomTopologyPanel");	
-								currentFeature = "random-topology-parameters";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Random topology parameters (Erdos-Renyi)");
-								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Random (Fixed number of inputs)")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY});
-								//Next step: Barabasi-Albertz parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedRandomPanel");	
-								currentFeature = "fixed-random-parameters";
-							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Barabasi-Albertz) {in}")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM});
-								//Next step: Barabasi-Albertz parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "barabasiPanel");	
-								currentFeature = "barabasi-parameters";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Barabasi-Albertz)");
-								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law) {out}")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM});
-								//Next step: Power Law parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "powerLawPanel");	
-								currentFeature = "power-law-parameters";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
-								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law with fixed number of inputs)")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM});
-								//Next step: Fixed Power Law parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedPowerLawPanel");	
-								currentFeature = "fixed-power-law-parameters";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
-								networkManualFeaturesPanel.repaint();
-							}else if(cmbTopology.getSelectedItem().equals("Small World (Watts-Strogatz)")){
-								//Sets the network topology
-								simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY});
-								//Next step: Small World parameters
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "smallWorldPanel");	
-								currentFeature = "small-world-parameters";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Small world topology parameters (Watts Strogatz)");
-								networkManualFeaturesPanel.repaint();
-							}
-						}else if(currentFeature.equals("random-topology-parameters")){
-							if(!txtEdgesNumber.getText().equals("")){
-								//Sets the number of edges
-								simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEdgesNumber.getText());
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.EDGES, txtEdgesNumber.getText()});
+								if(cmbTopology.getSelectedItem().equals("Random (Erdos-Renyi)")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY});
+									//Next step: Erdos-Renyi parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "randomTopologyPanel");	
+									currentFeature = "random-topology-parameters";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Random topology parameters (Erdos-Renyi)");
+									networkManualFeaturesPanel.repaint();
+								}else if(cmbTopology.getSelectedItem().equals("Random (Fixed number of inputs)")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.PARTIALLY_RANDOM_TOPOLOGY});
+									//Next step: Barabasi-Albertz parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedRandomPanel");	
+									currentFeature = "fixed-random-parameters";
+								}else if(cmbTopology.getSelectedItem().equals("Scale Free (Barabasi-Albertz) {in}")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+									simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM});
+									//Next step: Barabasi-Albertz parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "barabasiPanel");	
+									currentFeature = "barabasi-parameters";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Barabasi-Albertz)");
+									networkManualFeaturesPanel.repaint();
+								}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law) {out}")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+									simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM});
+									//Next step: Power Law parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "powerLawPanel");	
+									currentFeature = "power-law-parameters";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
+									networkManualFeaturesPanel.repaint();
+								}else if(cmbTopology.getSelectedItem().equals("Scale Free (Power law with fixed number of inputs)")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+									simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.FIXED_POWER_LAW_ALGORITHM});
+									//Next step: Fixed Power Law parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "fixedPowerLawPanel");	
+									currentFeature = "fixed-power-law-parameters";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Scale Free topology parameters (Power Law)");
+									networkManualFeaturesPanel.repaint();
+								}else if(cmbTopology.getSelectedItem().equals("Small World (Watts-Strogatz)")){
+									//Sets the network topology
+									simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY});
+									//Next step: Small World parameters
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "smallWorldPanel");	
+									currentFeature = "small-world-parameters";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Small world topology parameters (Watts Strogatz)");
+									networkManualFeaturesPanel.repaint();
+								}
+							}else if(currentFeature.equals("random-topology-parameters")){
+								if(!txtEdgesNumber.getText().equals("")){
+									//Sets the number of edges
+									if(Integer.parseInt(txtEdgesNumber.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.EDGES + " value must be greater than 0");
+									}else if(Integer.parseInt(txtEdgesNumber.getText()) >= Math.pow(Integer.parseInt(txtNodesNumber.getText()) - 1, 2)){
+										throw new FeaturesException(SimulationFeaturesConstants.EDGES + " value must be less than (nodes - 1)^2");
+									}
+									simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEdgesNumber.getText());
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.EDGES, txtEdgesNumber.getText()});
+									//Next step: Functions type
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+									currentFeature = "functions-type";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+									networkManualFeaturesPanel.repaint();
+								}
+							}else if(currentFeature.equals("fixed-random-parameters")){
+								//Sets the number of required inputs
+								if(Integer.parseInt(txtFixedRandomInputs.getText()) <= 0){
+									throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be greater than 0");
+								}else if(Integer.parseInt(txtFixedRandomInputs.getText()) >= Math.pow(Integer.parseInt(txtNodesNumber.getText()) - 1, 2)){
+									throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be less than (nodes - 1)^2");
+								}
+								simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText());
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText()});
 								//Next step: Functions type
 								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
 								currentFeature = "functions-type";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
 								networkManualFeaturesPanel.repaint();
-							}
-						}else if(currentFeature.equals("fixed-random-parameters")){
-							//Sets the number of required inputs
-							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText());
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedRandomInputs.getText()});
-							//Next step: Functions type
-							((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
-							currentFeature = "functions-type";
-							((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
-							networkManualFeaturesPanel.repaint();
-							
-						}else if(currentFeature.equals("barabasi-parameters")){
-							if(!txtNi.getText().equals("") && !txtAvgConnBA.getText().equals("")){
-								//Sets the ni and k parameters
-								simulationFeatures.setProperty(SimulationFeaturesConstants.NI, txtNi.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnBA.getText());
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.NI, txtNi.getText()});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnBA.getText()});
-								//Next step: Functions type
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
-								currentFeature = "functions-type";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
-								networkManualFeaturesPanel.repaint();
-							}
-						}else if(currentFeature.equals("power-law-parameters")){
-							if(!txtGamma.getText().equals("") && !txtavgConnPL.getText().equals("")){
+
+							}else if(currentFeature.equals("barabasi-parameters")){
+								if(!txtNi.getText().equals("") && !txtAvgConnBA.getText().equals("")){
+									//Sets the ni and k parameters
+									if(Integer.parseInt(txtNi.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.NI + " value must be greater than 0");
+									}else if(Integer.parseInt(txtFixedRandomInputs.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+										throw new FeaturesException(SimulationFeaturesConstants.NI + " value must be less than nodes");
+									}
+									if(Integer.parseInt(txtAvgConnBA.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
+									}else if(Integer.parseInt(txtAvgConnBA.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be less than nodes");
+									}
+									simulationFeatures.setProperty(SimulationFeaturesConstants.NI, txtNi.getText());
+									simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnBA.getText());
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.NI, txtNi.getText()});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnBA.getText()});
+									//Next step: Functions type
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+									currentFeature = "functions-type";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+									networkManualFeaturesPanel.repaint();
+								}
+							}else if(currentFeature.equals("power-law-parameters")){
+								if(!txtGamma.getText().equals("") && !txtavgConnPL.getText().equals("")){
+									//Sets the gamma and k parameters
+									if(Double.parseDouble(txtGamma.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.GAMMA + " value must be greater than 0");
+									}
+									if(Integer.parseInt(txtavgConnPL.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
+									}else if(Integer.parseInt(txtavgConnPL.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be less than nodes");
+									}
+									simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtGamma.getText());
+									simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtavgConnPL.getText());
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.GAMMA, txtGamma.getText()});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtavgConnPL.getText()});
+									//Next step: Functions type
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+									currentFeature = "functions-type";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+									networkManualFeaturesPanel.repaint();
+								}
+							}else if(currentFeature.equals("fixed-power-law-parameters")){
 								//Sets the gamma and k parameters
-								simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtGamma.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtavgConnPL.getText());
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.GAMMA, txtGamma.getText()});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtavgConnPL.getText()});
+								if(Double.parseDouble(txtFixedPLGamma.getText()) <= 0){
+									throw new FeaturesException(SimulationFeaturesConstants.GAMMA + " value must be greater than 0");
+								}
+								if(Integer.parseInt(txtFixedPLK.getText()) <= 0){
+									throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
+								}else if(Integer.parseInt(txtFixedPLK.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+									throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be less than nodes");
+								}
+								if(Integer.parseInt(txtFixedPLInputs.getText()) <= 0){
+									throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be greater than 0");
+								}else if(Integer.parseInt(txtFixedPLInputs.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+									throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be less than nodes");
+								}
+								simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText());
+								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText());
+								simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText());
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText()});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText()});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText()});
 								//Next step: Functions type
 								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
 								currentFeature = "functions-type";
 								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
 								networkManualFeaturesPanel.repaint();
-							}
-						}else if(currentFeature.equals("fixed-power-law-parameters")){
-							//Sets the gamma and k parameters
-							simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText());
-							simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText());
-							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText());
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.GAMMA, txtFixedPLGamma.getText()});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtFixedPLK.getText()});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedPLInputs.getText()});
-							//Next step: Functions type
-							((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
-							currentFeature = "functions-type";
-							((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
-							networkManualFeaturesPanel.repaint();
-							
-						}else if(currentFeature.equals("small-world-parameters")){
-							if(!txtBeta.getText().equals("") && !txtAvgConnSW.getText().equals("")){
-								//Sets the beta and k parameters
-								simulationFeatures.setProperty(SimulationFeaturesConstants.BETA, txtBeta.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnSW.getText());
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BETA, txtBeta.getText()});
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnSW.getText()});
+
+							}else if(currentFeature.equals("small-world-parameters")){
+								if(!txtBeta.getText().equals("") && !txtAvgConnSW.getText().equals("")){
+									//Sets the beta and k parameters
+									if(Double.parseDouble(txtBeta.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.BETA + " value must be greater than 0");
+									}else if(Double.parseDouble(txtBeta.getText()) > 1.0){
+										throw new FeaturesException(SimulationFeaturesConstants.BETA + " value must be less or equal than 1.0");
+									}
+									if(Integer.parseInt(txtAvgConnSW.getText()) <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
+									}else if(Integer.parseInt(txtAvgConnSW.getText()) >= Integer.parseInt(txtNodesNumber.getText())){
+										throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be less than nodes");
+									}
+									simulationFeatures.setProperty(SimulationFeaturesConstants.BETA, txtBeta.getText());
+									simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnSW.getText());
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BETA, txtBeta.getText()});
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConnSW.getText()});
+									//Next step: Functions type
+									((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
+									currentFeature = "functions-type";
+									((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+									networkManualFeaturesPanel.repaint();
+								}
+							}else if(currentFeature.equals("functions-type")){
+								//Sets the functions type
+								simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbFunctionsType.getSelectedItem().toString());
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FUNCTION_TYPE, cmbFunctionsType.getSelectedItem().toString()});
+								if(chckbxCompletelyDefinedFunctions.isSelected()){
+									simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.YES);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.YES});
+								}else{
+									simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.NO);
+									networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.NO});
+								}
 								//Next step: Functions type
-								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsTypePanel");	
-								currentFeature = "functions-type";
-								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions");
+								((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsRatesPanel");	
+								currentFeature = "functions-rates";
+								((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions type ratio");
 								networkManualFeaturesPanel.repaint();
-							}
-						}else if(currentFeature.equals("functions-type")){
-							//Sets the functions type
-							simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbFunctionsType.getSelectedItem().toString());
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.FUNCTION_TYPE, cmbFunctionsType.getSelectedItem().toString()});
-							if(chckbxCompletelyDefinedFunctions.isSelected()){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.YES);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.YES});
-							}else{
-								simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.NO);
-								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, SimulationFeaturesConstants.NO});
-							}
-							//Next step: Functions type
-							((CardLayout)featureInputFormPanel.getLayout()).show(featureInputFormPanel, "functionsRatesPanel");	
-							currentFeature = "functions-rates";
-							((TitledBorder)networkManualFeaturesPanel.getBorder()).setTitle("Functions type ratio");
-							networkManualFeaturesPanel.repaint();
-						}else if(currentFeature.equals("functions-rates")){
-							//Sets the random type
-							if(txtRandomFunctionsType.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.RANDOM_TYPE, "0.0");
-							}else{
+							}else if(currentFeature.equals("functions-rates")){
+
+								Double random, biased, bias, and, or, canalizing;
+								//Sets the random type
+								random = Double.parseDouble(txtRandomFunctionsType.getText());
+								if(random < 0 || random > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.RANDOM_TYPE + " value must be between 0 and 1");
+
 								simulationFeatures.setProperty(SimulationFeaturesConstants.RANDOM_TYPE, txtRandomFunctionsType.getText());
-							}
 
-							//Sets the bias type functions and the bias value
-							if(txtBiasFunctionsType.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_TYPE, "0.0");
-							}else{
+								//Sets the bias type functions and the bias value
+								biased = Double.parseDouble(txtBiasFunctionsType.getText());
+								if(biased < 0 || biased > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.BIAS_TYPE + " value must be between 0 and 1");
 								simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_TYPE, txtBiasFunctionsType.getText());
-							}
 
-							if(txtBiasValue.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_VALUE, "0.0");
-							}else{
+								//Set the bias value
+								bias = Double.parseDouble(txtBiasValue.getText());
+								if(bias < 0 || bias > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.BIAS_VALUE + " value must be between 0 and 1");
+
 								simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_VALUE, txtBiasValue.getText());
-							}
 
-							//Sets the And type functions
-							if(txtAndFunctionsType.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE, "0.0");
-							}else{
+								//Sets the And type functions
+								and = Double.parseDouble(txtAndFunctionsType.getText());
+								if(and < 0 || and > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.AND_FUNCTION_TYPE + " value must be between 0 and 1");
 								simulationFeatures.setProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE, txtAndFunctionsType.getText());
-							}
 
-							//Sets the Or type functions
-							if(txtOrFunctionsType.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE, "0.0");
-							}else{
+								//Sets the Or type functions
+								or = Double.parseDouble(txtOrFunctionsType.getText());
+								if(or < 0 || or > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.OR_FUNCTION_TYPE + " value must be between 0 and 1");
 								simulationFeatures.setProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE, txtOrFunctionsType.getText());
-							}
 
-							//Sets the canalizing type functions
-							if(txtCanalizingFunctionsType.getText().equals("")){
-								simulationFeatures.setProperty(SimulationFeaturesConstants.CANALIZED_TYPE, "0.0");
-							}else{
+								//Sets the canalizing type functions
+								canalizing = Double.parseDouble(txtCanalizingFunctionsType.getText());
+								if(canalizing < 0 || canalizing > 1.0)
+									throw new FeaturesException(SimulationFeaturesConstants.CANALIZED_TYPE + " value must be between 0 and 1");
 								simulationFeatures.setProperty(SimulationFeaturesConstants.CANALIZED_TYPE, txtCanalizingFunctionsType.getText());
+
+								if(random + biased + and + or + canalizing != 1.0)
+									throw new FeaturesException("The sum of " + SimulationFeaturesConstants.RANDOM_TYPE + "," +
+											SimulationFeaturesConstants.BIAS_TYPE + "," +
+											SimulationFeaturesConstants.AND_FUNCTION_TYPE + "," +
+											SimulationFeaturesConstants.OR_FUNCTION_TYPE + "," +
+											SimulationFeaturesConstants.CANALIZED_TYPE + " must be 1.0");
+
+								//Shows the features in the table.
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.RANDOM_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.RANDOM_TYPE)});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BIAS_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.BIAS_TYPE)});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BIAS_VALUE, simulationFeatures.getProperty(SimulationFeaturesConstants.BIAS_VALUE)});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AND_FUNCTION_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE)});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.OR_FUNCTION_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE)});
+								networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.CANALIZED_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.CANALIZED_TYPE)});
+
+								//Next step: experiments page
+								lblExperimentsList.setBackground(Color.LIGHT_GRAY);
+								((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
+								form = "attractors-params";
+								btnNext.setEnabled(true);
 							}
-
-							//Shows the features in the table.
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.RANDOM_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.RANDOM_TYPE)});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BIAS_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.BIAS_TYPE)});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.BIAS_VALUE, simulationFeatures.getProperty(SimulationFeaturesConstants.BIAS_VALUE)});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.AND_FUNCTION_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE)});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.OR_FUNCTION_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE)});
-							networkFeaturesTableModel.addRow(new String[] {SimulationFeaturesConstants.CANALIZED_TYPE, simulationFeatures.getProperty(SimulationFeaturesConstants.CANALIZED_TYPE)});
-
-							//Next step: experiments page
-							lblExperimentsList.setBackground(Color.LIGHT_GRAY);
-							((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
-							form = "attractors-params";
-							btnNext.setEnabled(true);
+						}catch(Exception ex){
+							JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 						}
 					}
+
+
 				});
 				featuresNextPreviousPanel.add(btnAddFeature);
 
@@ -1883,8 +1954,8 @@ public class Wizard extends JDialog {
 					}
 				}
 			});
-			
-			
+
+
 			GroupLayout gl_InputTreePanel = new GroupLayout(InputTreePanel);
 			gl_InputTreePanel.setHorizontalGroup(
 					gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
@@ -2044,7 +2115,7 @@ public class Wizard extends JDialog {
 		return 1;
 
 	}
-	
+
 	/**
 	 * This method closes the wizard window.
 	 */
@@ -2193,9 +2264,22 @@ public class Wizard extends JDialog {
 
 					}
 				}else if(form.equals("attractors-params")){
-					if(cmbSamplingType.getSelectedItem().equals(SimulationFeaturesConstants.BRUTE_FORCE)){
+					if(cmbSamplingType.getSelectedItem().equals(SimulationFeaturesConstants.BRUTE_FORCE) && !txtCutoff.getText().equals("")){
 						simulationFeatures.setProperty(SimulationFeaturesConstants.SAMPLING_METHOD, SimulationFeaturesConstants.BRUTE_FORCE);
+						if(Integer.parseInt(txtCutoff.getText()) < -1){
+							throw new FeaturesException(SimulationFeaturesConstants.MAX_SIMULATION_TIMES + " value must be greater than 0 or -1");
+						}
+						simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_SIMULATION_TIMES, txtCutoff.getText());
+						form = "atm-params";
+						((CardLayout)experimentsSubPanel.getLayout()).show(experimentsSubPanel, "atmPanel");
 					}else if(!txtInitialConditions.getText().equals("") && !txtCutoff.getText().equals("")){
+						//Sets the beta and k parameters
+						if(Integer.parseInt(txtInitialConditions.getText()) <= 0){
+							throw new FeaturesException(SimulationFeaturesConstants.INITIAL_CONDITIONS + " value must be greater than 0");
+						}
+						if(Integer.parseInt(txtCutoff.getText()) < -1){
+							throw new FeaturesException(SimulationFeaturesConstants.MAX_SIMULATION_TIMES + " value must be greater than 0 or -1");
+						}
 						//Adds the features about the attractors finding.
 						simulationFeatures.setProperty(SimulationFeaturesConstants.SAMPLING_METHOD, SimulationFeaturesConstants.PARTIAL_SAMPLING);
 						simulationFeatures.setProperty(SimulationFeaturesConstants.INITIAL_CONDITIONS, txtInitialConditions.getText());
@@ -2213,17 +2297,40 @@ public class Wizard extends JDialog {
 									SimulationFeaturesConstants.NO);
 						if(!txtRatioStatesMutations.getText().equals("") && !txtExperimentsNumber.getText().equals("")){
 							//Adds the RATIO_OF_STATES_TO_PERTURB and HOW_MANY_PERTURB_EXP features
+							if(Double.parseDouble(txtRatioStatesMutations.getText()) < 0 ||
+									Double.parseDouble(txtRatioStatesMutations.getText()) > 1){
+								throw new FeaturesException(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB + " value must be between 0 and 1.");
+							}
 							simulationFeatures.setProperty(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB, txtRatioStatesMutations.getText());
+							if(Integer.parseInt(txtExperimentsNumber.getText()) <= 0){
+								throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP + " value must be greater than 0.");
+							}
 							simulationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP, txtExperimentsNumber.getText());
 
 							if(mutationsTypeComboBox.getSelectedItem().equals("Flip")){
 								if(!txtNumberOfFlips.getText().equals("") && !txtMinFlipTimes.getText().equals("") && !txtMaxFlipTimes.getText().equals("")){
+									Integer minT, maxT;
 									//Adds the flip mutations features
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MUTATION_TYPE, SimulationFeaturesConstants.FLIP_MUTATIONS);
+									if(Integer.parseInt(txtNumberOfFlips.getText()) <= 0 ||
+											Integer.parseInt(txtNumberOfFlips.getText()) > Integer.parseInt(txtNodesNumber.getText())){
+										throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " value must be between 0 and the number of nodes.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB, txtNumberOfFlips.getText());
+									minT = Integer.parseInt(txtMinFlipTimes.getText());
+									if(minT <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB, txtMinFlipTimes.getText());
+									maxT = Integer.parseInt(txtMaxFlipTimes.getText());
+									if(maxT <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB, txtMaxFlipTimes.getText());
-
+									if(minT > maxT)
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value must be smaller than " +
+												SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " value");
+									
 									form = "tree-matching";
 									lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
 									((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
@@ -2232,15 +2339,49 @@ public class Wizard extends JDialog {
 							}else{
 								if(!txtKnockInNodes.getText().equals("") && !txtMinKnockInTimes.getText().equals("") && !txtMaxKnockInTimes.getText().equals("") &&
 										!txtKnockOutNodes.getText().equals("") && !txtMinKnockOutTimes.getText().equals("") && !txtMaxKnockOutTimes.getText().equals("")){
+									Integer minTKI, maxTKI, minTKO, maxTKO, kin, kon;
 									//Adds the knock-in/knock-out mutations features
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MUTATION_TYPE, SimulationFeaturesConstants.KNOCKIN_KNOCKOUT_MUTATIONS);
+									kin = Integer.parseInt(txtKnockInNodes.getText());
+									if(kin < 0)
+										throw new FeaturesException(SimulationFeaturesConstants.KNOCKIN_NODES + " value must be greater or equal than 0.");
 									simulationFeatures.setProperty(SimulationFeaturesConstants.KNOCKIN_NODES, txtKnockInNodes.getText());
+									
+									minTKI = Integer.parseInt(txtMinKnockInTimes.getText());
+									if(minTKI <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKIN_DURATION + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MIN_KNOCKIN_DURATION, txtMinKnockInTimes.getText());
+									maxTKI = Integer.parseInt(txtMaxKnockInTimes.getText());
+									if(maxTKI <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKIN_DURATION + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_KNOCKIN_DURATION, txtMaxKnockInTimes.getText());
+									if(minTKI > maxTKI)
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKIN_DURATION + " value must be smaller than " +
+												SimulationFeaturesConstants.MAX_KNOCKIN_DURATION + " value");
+									
+									kon = Integer.parseInt(txtKnockOutNodes.getText());
+									if(kon < 0)
+										throw new FeaturesException(SimulationFeaturesConstants.KNOCKOUT_NODES + " value must be greater or equal than 0.");
 									simulationFeatures.setProperty(SimulationFeaturesConstants.KNOCKOUT_NODES, txtKnockOutNodes.getText());
+									
+									minTKO = Integer.parseInt(txtMinKnockOutTimes.getText());
+									if(minTKO <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION, txtMinKnockOutTimes.getText());
+									maxTKO = Integer.parseInt(txtMaxKnockOutTimes.getText());
+									if(maxTKO <= 0){
+										throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION + " value must be greater than 0.");
+									}
 									simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION, txtMaxKnockOutTimes.getText());
-
+									if(minTKO > maxTKO)
+										throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION + " value must be smaller than " +
+												SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION + " value");
+									if(kin + kon > Integer.parseInt(txtNodesNumber.getText()))
+										throw new FeaturesException("The sum of " + SimulationFeaturesConstants.KNOCKIN_NODES + " value and " +
+												SimulationFeaturesConstants.KNOCKOUT_NODES + " value must be smaller or equal than the number of nodes.");
 									form = "tree-matching";
 									((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
 									lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
@@ -2265,8 +2406,12 @@ public class Wizard extends JDialog {
 							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.PERFECT_MATCH);
 						}else if(rdbtnMinDistance.isSelected()){
 							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.MIN_DISTANCE);
+							if(Integer.parseInt(txtThreshold.getText()) < 0)
+								throw new FeaturesException(CABERNETConstants.MATCHING_THRESHOLD + " value must be greater or equal than 0");
 							tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, txtThreshold.getText());
 						}else{
+							if(Integer.parseInt(txtThreshold.getText()) < 0)
+								throw new FeaturesException(CABERNETConstants.MATCHING_THRESHOLD + " value must be greater or equal than 0");
 							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.HISTOGRAM_DISTANCE);
 							tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, txtThreshold.getText());
 						}
@@ -2293,6 +2438,8 @@ public class Wizard extends JDialog {
 					}
 				}else if(form.equals("output-form")){
 					if(!txtRequiredNetworks.getText().equals("")){
+						if(Integer.parseInt(txtRequiredNetworks.getText()) < 0)
+							throw new FeaturesException(SimulationFeaturesConstants.MATCHING_NETWORKS + " value must be greater or equal than 0");
 						simulationFeatures.setProperty(SimulationFeaturesConstants.MATCHING_NETWORKS, txtRequiredNetworks.getText());
 						//Network view on Cytoscape
 						if(chkNetworksOutput.isSelected())
@@ -2310,7 +2457,7 @@ public class Wizard extends JDialog {
 
 				}
 			}catch(Exception ex){
-
+				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 			}
 		}
 	}
