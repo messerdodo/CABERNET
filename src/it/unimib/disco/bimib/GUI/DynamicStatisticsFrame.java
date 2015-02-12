@@ -1,23 +1,25 @@
+/**
+ * This view is used in order to set the perturbations that have to be applied to the system.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
 package it.unimib.disco.bimib.GUI;
 
-//GESTODifferent imports
-import it.unimib.disco.bimib.GESTODifferent.Simulation;
+//GRNSim imports
+import it.unimib.disco.bimib.CABERNET.Simulation;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Task.DynamicStatisticsComputationTask;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 
-
 //System imports
 import java.awt.BorderLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
-
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
-
 import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import javax.swing.JLabel;
@@ -26,20 +28,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-
 import java.awt.CardLayout;
-
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Properties;
-
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -84,7 +82,7 @@ public class DynamicStatisticsFrame extends JFrame {
 	private CySwingAppAdapter adapter;
 	private CyNetwork currentNetwork;
 	
-	//GESTODifferent Objects
+	//CABERNET Objects
 	private Simulation simulation;
 	private VizMapperManager vizMapperManager;
 	

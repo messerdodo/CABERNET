@@ -1,11 +1,19 @@
+/**
+ * This view is used in order to select the objects that have to be exported.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
 package it.unimib.disco.bimib.GUI;
 
-
-import it.unimib.disco.bimib.GESTODifferent.Simulation;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.Simulation;
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
+//GRNSim imports
 import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Statistics.DynamicalStatistics;
 
+//System imports
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -17,17 +25,18 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Set;
 
+//Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.swing.DialogTaskManager;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Set;
 
 public class ExportView extends JFrame {
 
@@ -195,7 +204,7 @@ public class ExportView extends JFrame {
 
 		@Override
 		public void run(TaskMonitor taskMonitor) throws Exception {
-			taskMonitor.setTitle("GESTODifferent - Export network");
+			taskMonitor.setTitle("CABERNET - Export network");
 			//Selected network
 			if(rdbtnSelectedNetwork.isSelected()){
 				taskMonitor.setStatusMessage("Esporting network: "  + currentSimulation.getNetworkId() );

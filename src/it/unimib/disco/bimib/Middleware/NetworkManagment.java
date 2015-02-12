@@ -1,12 +1,16 @@
+/**
+ * This class is a bridge between the app and the Cytoscape's networks management service.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.Middleware;
 
 //System imports
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
-
 
 //Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
@@ -21,10 +25,7 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 
-
-
-
-//GESTODifferent packages
+//GRNSim packages
 import it.unimib.disco.bimib.Networks.GraphManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -47,8 +48,8 @@ public class NetworkManagment {
 	}
 
 	/**
-	 * Creates a Cytoscape network from the given GESTODifferent RBN
-	 * @param graphManager: the GESTODifferent RBN
+	 * Creates a Cytoscape network from the given CABERNET RBN
+	 * @param graphManager: the CABERNET RBN
 	 * @param rbnId: the name of the rbn
 	 */
 	public CyNetwork createNetwork(GraphManager graphManager, String rbnId) throws NotExistingNodeException{

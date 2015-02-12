@@ -1,15 +1,15 @@
-package it.unimib.disco.bimib.GESTODifferent;
-
-//System imports
-import java.util.HashMap;
-import java.util.Set;
-
 /**
  * This class is container for the computed simulations.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
+
+package it.unimib.disco.bimib.CABERNET;
+
+//System imports
+import java.util.HashMap;
+import java.util.Set;
 
 public class SimulationsContainer{
 	

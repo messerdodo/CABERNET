@@ -1,5 +1,3 @@
-package it.unimib.disco.bimib.GUI;
-
 /**
  * Wizard GUI
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
@@ -7,14 +5,16 @@ package it.unimib.disco.bimib.GUI;
  * @year 2014
  */
 
+package it.unimib.disco.bimib.GUI;
+
+
 //GRNSim imports
-import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
+import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
 import it.unimib.disco.bimib.IO.*;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
-
 
 //Swing and awt imports
 import javax.swing.DefaultListModel;
@@ -45,7 +45,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.CardLayout;
@@ -61,14 +60,9 @@ import java.awt.Insets;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
-
-
-
-
 //System imports
 import java.util.ArrayList;
 import java.util.Properties;
-
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -266,7 +260,7 @@ public class Wizard extends JDialog {
 		this.netManagment = new NetworkManagment(adapter, adapter.getCyApplicationManager());
 		this.tree = null;
 
-		setTitle("GESTODifferent Wizard");
+		setTitle("CABERNET Wizard");
 
 		//Data initialization
 		this.inputNetworks = new ArrayList<String>();
@@ -285,7 +279,7 @@ public class Wizard extends JDialog {
 		getContentPane().add(pnlList, BorderLayout.WEST);
 		pnlList.setLayout(new GridLayout(5, 1, 0, 0));
 		
-		JLabel lblLogo = new JLabel(new ImageIcon("/Users/messerdodo/Google Drive/BIMIB/Java_projects/GESTODifferent/Images/logo.png"));
+		JLabel lblLogo = new JLabel(new ImageIcon(Wizard.class.getResource("/it/unimib/disco/bimib/resources/logo.png")));
 		lblLogo.setText("");
 		lblLogo.setHorizontalAlignment(SwingConstants.LEFT);
 		
@@ -2104,19 +2098,19 @@ public class Wizard extends JDialog {
 				//Shows features input method form
 				if(form.equals("network-input-method")){
 					if(inputMethod.equals("Complete network from GRNML file")){
-						tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.OPEN);
+						tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.OPEN);
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
 						form = "attractors-params";
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
 					}else{
 						if(inputMethod.equals("New random networks from features")){
-							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.NEW);
+							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.NEW);
 						}else if(inputMethod.equals("Partial network from GRNML file")){
-							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.EDIT);
+							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.EDIT);
 							editing = true;
 						}else if(inputMethod.equals("Partial network from Cytoscape selected view")){
 							editing = true;
-							tasks.setProperty(GESTODifferentConstants.NETWORK_CREATION, GESTODifferentConstants.CYTOSCAPE_EDIT);
+							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.CYTOSCAPE_EDIT);
 						}
 
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
@@ -2212,7 +2206,7 @@ public class Wizard extends JDialog {
 				}else if(form.equals("atm-params")){
 					//Adds the features about the atm creation
 					if(chkAtmCalculation.isSelected()){
-						tasks.setProperty(GESTODifferentConstants.ATM_COMPUTATION, GESTODifferentConstants.YES);
+						tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.YES);
 						//Sets the avalanches distribution and sensitivity computation.
 						simulationFeatures.setProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY,
 								chkAvalanchesAndSensitivity.isSelected() ? SimulationFeaturesConstants.YES :
@@ -2255,7 +2249,7 @@ public class Wizard extends JDialog {
 						}
 					}else{
 						//No atm computation.
-						tasks.setProperty(GESTODifferentConstants.ATM_COMPUTATION, GESTODifferentConstants.NO);
+						tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.NO);
 						//Next step: Output elements chosen
 						form = "output-form";
 						lblOutputsList.setBackground(Color.LIGHT_GRAY);
@@ -2265,16 +2259,16 @@ public class Wizard extends JDialog {
 				}else if(form.equals("tree-matching")){
 					//Reads the tree from file
 					if(chckbxMatchNetworksWith.isSelected()){
-						tasks.setProperty(GESTODifferentConstants.TREE_MATCHING, GESTODifferentConstants.YES);
+						tasks.setProperty(CABERNETConstants.TREE_MATCHING, CABERNETConstants.YES);
 						//Gets the matching type
 						if(rdbtnPerfectMatch.isSelected()){
-							tasks.setProperty(GESTODifferentConstants.MATCHING_TYPE, GESTODifferentConstants.PERFECT_MATCH);
+							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.PERFECT_MATCH);
 						}else if(rdbtnMinDistance.isSelected()){
-							tasks.setProperty(GESTODifferentConstants.MATCHING_TYPE, GESTODifferentConstants.MIN_DISTANCE);
-							tasks.setProperty(GESTODifferentConstants.MATCHING_THRESHOLD, txtThreshold.getText());
+							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.MIN_DISTANCE);
+							tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, txtThreshold.getText());
 						}else{
-							tasks.setProperty(GESTODifferentConstants.MATCHING_TYPE, GESTODifferentConstants.HISTOGRAM_DISTANCE);
-							tasks.setProperty(GESTODifferentConstants.MATCHING_THRESHOLD, txtThreshold.getText());
+							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.HISTOGRAM_DISTANCE);
+							tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, txtThreshold.getText());
 						}
 						if(!txtTreeFilePath.getText().equals("") || tree != null){
 							if(!txtTreeFilePath.getText().equals("") && !chkTreeFromCytoscape.isSelected()){
@@ -2291,7 +2285,7 @@ public class Wizard extends JDialog {
 							}
 						}
 					}else{
-						tasks.setProperty(GESTODifferentConstants.TREE_MATCHING, GESTODifferentConstants.NO);
+						tasks.setProperty(CABERNETConstants.TREE_MATCHING, CABERNETConstants.NO);
 						//New step: outputs page
 						form = "output-form";
 						lblOutputsList.setBackground(Color.LIGHT_GRAY);
@@ -2302,14 +2296,14 @@ public class Wizard extends JDialog {
 						simulationFeatures.setProperty(SimulationFeaturesConstants.MATCHING_NETWORKS, txtRequiredNetworks.getText());
 						//Network view on Cytoscape
 						if(chkNetworksOutput.isSelected())
-							outputs.setProperty(GESTODifferentConstants.NETWORK_VIEW, GESTODifferentConstants.YES);
+							outputs.setProperty(CABERNETConstants.NETWORK_VIEW, CABERNETConstants.YES);
 						else
-							outputs.setProperty(GESTODifferentConstants.NETWORK_VIEW, GESTODifferentConstants.NO);
+							outputs.setProperty(CABERNETConstants.NETWORK_VIEW, CABERNETConstants.NO);
 						//Attractors network view on Cytoscape
 						if(chkAttractorsNetworkOutput.isSelected())
-							outputs.setProperty(GESTODifferentConstants.ATTRACTORS_NETWORK_VIEW, GESTODifferentConstants.YES);
+							outputs.setProperty(CABERNETConstants.ATTRACTORS_NETWORK_VIEW, CABERNETConstants.YES);
 						else
-							outputs.setProperty(GESTODifferentConstants.ATTRACTORS_NETWORK_VIEW, GESTODifferentConstants.NO);
+							outputs.setProperty(CABERNETConstants.ATTRACTORS_NETWORK_VIEW, CABERNETConstants.NO);
 
 						parent.dispose();
 					}

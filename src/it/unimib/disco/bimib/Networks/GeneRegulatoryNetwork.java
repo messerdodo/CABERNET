@@ -1,5 +1,3 @@
-package it.unimib.disco.bimib.Networks;
-
 /**
  * This class is the GeneRegulatoryNetwork interface that 
  * specifies all the methods that the network must have.
@@ -9,6 +7,8 @@ package it.unimib.disco.bimib.Networks;
  * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
  * @year 2013
  */
+
+package it.unimib.disco.bimib.Networks;
 
 //System imports
 import java.util.ArrayList;

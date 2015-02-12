@@ -1,7 +1,14 @@
+/**
+ * DynamicalStatsMenuAction class
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GESTODifferent imports
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.DynamicalStatisticsView;
 
 //System imports
@@ -34,7 +41,7 @@ public class DynamicalStatsMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 		
-		setPreferredMenu("Apps.GESTODifferent");
+		setPreferredMenu("Apps.CABERNET");
 	}
 
 	//Menu action pressed

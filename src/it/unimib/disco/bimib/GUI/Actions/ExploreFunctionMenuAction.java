@@ -1,16 +1,25 @@
+/**
+ * ExploreFunctionMenuAction class.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GESTODifferent imports
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
+import it.unimib.disco.bimib.GUI.ExploresFunctionView;
+//GRNSim imports
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
 import it.unimib.disco.bimib.Functions.Function;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
-import it.unimib.disco.bimib.GUI.ExploresFunctionView;
 
 //System imports
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -39,7 +48,7 @@ public class ExploreFunctionMenuAction extends AbstractCyAction{
 
 		this.appManager = adapter.getCyApplicationManager();
 		this.simulationsContainer = simulationsContainer;
-		setPreferredMenu("Apps.GESTODifferent");
+		setPreferredMenu("Apps.CABERNET");
 		
 	}
 

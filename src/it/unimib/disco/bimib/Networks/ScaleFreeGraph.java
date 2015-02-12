@@ -10,12 +10,12 @@ package it.unimib.disco.bimib.Networks;
  */
 
 //System imports
+
+//System imports
 import java.util.ArrayList;
 //GRNSim imports
 import it.unimib.disco.bimib.Utility.UtilityRandom;
 import it.unimib.disco.bimib.Exceptions.*;
-
-
 
 public class ScaleFreeGraph extends IncidenceMatrixGraph{
 	/**

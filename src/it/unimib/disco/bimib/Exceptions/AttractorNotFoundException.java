@@ -6,6 +6,7 @@
  * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
  * @year 2013
  */
+
 package it.unimib.disco.bimib.Exceptions;
 
 public class AttractorNotFoundException extends Exception {

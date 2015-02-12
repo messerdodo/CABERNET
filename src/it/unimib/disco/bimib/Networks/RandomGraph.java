@@ -1,4 +1,3 @@
-package it.unimib.disco.bimib.Networks;
 /**
  * This class is a random graph implementation.
  * RandomGraph derived from the IncidentMatrixGraph class
@@ -9,10 +8,11 @@ package it.unimib.disco.bimib.Networks;
  * @year 2013
  */
 
+package it.unimib.disco.bimib.Networks;
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Utility.UtilityRandom;
-
 
 public class RandomGraph extends IncidenceMatrixGraph {
 

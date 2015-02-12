@@ -1,23 +1,18 @@
-package it.unimib.disco.bimib.Utility;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
-import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;
-
-
-/**
- * BIMIB @ Milan University - Bicocca 
- * 2013
- */
-
 /**
  * This class implements the common random functions.
- * 
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @author Giorgia Previtali (g.previtali6@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
  * 
  */
+package it.unimib.disco.bimib.Utility;
+
+//System imports
+import java.util.ArrayList;
+import java.util.Collections;
+//GRNSim imports
+import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;
 
 public class UtilityRandom {
 

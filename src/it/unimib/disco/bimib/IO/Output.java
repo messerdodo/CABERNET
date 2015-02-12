@@ -23,16 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
-
-
-
-
-
-
-
-
-
 //GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -41,18 +31,9 @@ import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Sampling.BruteForceSampling;
 import it.unimib.disco.bimib.Utility.OutputConstants;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
-/*import Statistics.DynamicPerturbation;
-import Statistics.NetworkStructureStatistics;
-import Statistics.SimulationResult;
-import Statistics.StandardDynamicStatistics;
-import Statistics.StoredResults;
-import TES.TesTree;*/
+
 
 public class Output {
-
-	//Constants
-	//private final static int NETWORK_STATISTICS_NUMBER = 5;
-	//private final static int COUPLE = 2;
 
 
 	public Output() {

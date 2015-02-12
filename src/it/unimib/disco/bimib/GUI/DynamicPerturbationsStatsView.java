@@ -1,15 +1,19 @@
+/**
+ * This view is used in order to show the perturbations statistics likes avalanches and sensitivity.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2013
+ */
+
 package it.unimib.disco.bimib.GUI;
 
-//GESTODifferent imports
+//GRNSim imports
 import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
-
-
 
 //System imports
 import java.awt.BorderLayout;
 import java.util.ArrayList;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -19,20 +23,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-
 import java.awt.FlowLayout;
 import java.awt.Component;
-
 import javax.swing.Box;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 
-
+//Math3 imports
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 //JFreeChart imports
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

@@ -1,13 +1,13 @@
-package it.unimib.disco.bimib.GESTODifferent;
-
 /**
- * This class contains all the constants used in GESTODifferent app.
+ * This class contains all the constants used in CABERNET app.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
 
-public class GESTODifferentConstants {
+package it.unimib.disco.bimib.CABERNET;
+
+public class CABERNETConstants {
 
 	/**
 	 * Yes value

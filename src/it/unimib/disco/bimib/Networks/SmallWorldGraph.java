@@ -1,4 +1,3 @@
-package it.unimib.disco.bimib.Networks;
 /**
  * This class is a Small World graph implementation
  * 
@@ -8,6 +7,8 @@ package it.unimib.disco.bimib.Networks;
  * @year 2013
  * 
  */
+
+package it.unimib.disco.bimib.Networks;
 
 //System imports
 import java.util.List;

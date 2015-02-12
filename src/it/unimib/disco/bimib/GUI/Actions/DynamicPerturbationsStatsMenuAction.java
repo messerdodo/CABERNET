@@ -1,9 +1,17 @@
+/**
+ * DynamicPerturbationsStatsMenuAction class
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GESTODifferent imports
-import it.unimib.disco.bimib.GESTODifferent.Simulation;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.Simulation;
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.DynamicPerturbationsStatsView;
+//GRNSim imports
 import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
 
 //System imports
@@ -37,7 +45,7 @@ public class DynamicPerturbationsStatsMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 
-		setPreferredMenu("Apps.GESTODifferent");
+		setPreferredMenu("Apps.CABERNET");
 	}
 
 	//Menu action pressed

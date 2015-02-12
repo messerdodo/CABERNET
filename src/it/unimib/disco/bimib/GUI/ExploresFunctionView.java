@@ -1,16 +1,23 @@
+/**
+ * This view is used in order to show the details of the selected function.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI;
 
-
+//GRNSim imports
 import it.unimib.disco.bimib.Functions.CanalizedFunction;
 import it.unimib.disco.bimib.Functions.Function;
 
+//System imports
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;

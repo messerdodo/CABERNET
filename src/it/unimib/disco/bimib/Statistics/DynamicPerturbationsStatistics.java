@@ -1,3 +1,12 @@
+/**
+ * This class contains all the methods for the dynamic perturbations statistics computation.
+ * 
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @author Giorgia Previtali (g.previtali6@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
+ * @year 2013
+ * 
+ */
 package it.unimib.disco.bimib.Statistics;
 
 //System imports

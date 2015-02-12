@@ -1,27 +1,28 @@
-package it.unimib.disco.bimib.GUI.Actions;
-
 /**
+ * ExploreFunctionAction class
  * This class is the function exploration event handler.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
 
+package it.unimib.disco.bimib.GUI.Actions;
+
+
+
+//GRNSim imports
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
+import it.unimib.disco.bimib.GUI.ExploresFunctionView;
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
 import it.unimib.disco.bimib.Functions.Function;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
-import it.unimib.disco.bimib.GUI.ExploresFunctionView;
-
 
 //System imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JMenuItem;
-
 import javax.swing.JOptionPane;
 
 //Cytoscape imports
@@ -56,7 +57,7 @@ public class ExploreFunctionAction implements CyNodeViewContextMenuFactory{
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView, View<CyNode> nodeView) {
 		//Defines the menu 
-		JMenuItem menuItem = new JMenuItem("Explores function (GESTODifferent)");
+		JMenuItem menuItem = new JMenuItem("Explores function (CABERNET)");
 		menuItem.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent event)

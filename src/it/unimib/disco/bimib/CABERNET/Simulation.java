@@ -1,11 +1,11 @@
-package it.unimib.disco.bimib.GESTODifferent;
-
 /**
  * This class is a single simulation container.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
+
+package it.unimib.disco.bimib.CABERNET;
 
 import java.util.Properties;
 

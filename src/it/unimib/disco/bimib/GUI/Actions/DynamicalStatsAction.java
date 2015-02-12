@@ -1,17 +1,19 @@
-
+/**
+ * DynamicalStatsAction class
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GRNSim imports
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.DynamicalStatisticsView;
-
 
 //System imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JMenuItem;
-
 import javax.swing.JOptionPane;
 
 //Cytoscape imports

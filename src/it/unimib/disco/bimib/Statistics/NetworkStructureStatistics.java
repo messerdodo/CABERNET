@@ -1,20 +1,17 @@
-package it.unimib.disco.bimib.Statistics;
 /**
- * BIMIB @ Milan University - Bicocca 
- * 2013
- */
-
-/**
- * This class calculates the statistics of the network's structure
+ * This class calculates the statistics of the network's structure.
  * 
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @author Giorgia Previtali (g.previtali6@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
+ * @year 2013
  * 
  */
 
+package it.unimib.disco.bimib.Statistics;
+
 //System imports
 import java.util.ArrayList;
-
 
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;

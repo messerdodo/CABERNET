@@ -1,5 +1,3 @@
-package it.unimib.disco.bimib.Networks;
-
 /**
  * This class is partially random graph implementation.
  * Partially random means that the number of input of each node is controlled.
@@ -9,6 +7,9 @@ package it.unimib.disco.bimib.Networks;
  * @year 2014
  */
 
+package it.unimib.disco.bimib.Networks;
+
+//GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Utility.UtilityRandom;
 

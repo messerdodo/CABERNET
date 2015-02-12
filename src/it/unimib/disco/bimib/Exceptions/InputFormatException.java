@@ -1,11 +1,11 @@
-package it.unimib.disco.bimib.Exceptions;
-
 /**
  * This class defines the input format exceptions
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
  *
  */
+
+package it.unimib.disco.bimib.Exceptions;
 
 public class InputFormatException extends Exception {
 

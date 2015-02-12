@@ -1,8 +1,15 @@
+/**
+ * WizardAction class.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GESTODifferent imports
-import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.Wizard;
 import it.unimib.disco.bimib.Task.NetworkCreation;
 import it.unimib.disco.bimib.Task.NetworkEditingFromCytoscape;
@@ -10,6 +17,7 @@ import it.unimib.disco.bimib.Task.NetworkEditingFromCytoscape;
 //System imports
 import java.awt.event.ActionEvent;
 import java.util.Properties;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -31,12 +39,12 @@ public class WizardAction extends AbstractCyAction{
 		this.adapter = adapter;
 		this.appManager = this.adapter.getCyApplicationManager();
 		this.simulationsContainer = simulationsContainer;
-		setPreferredMenu("Apps.GESTODifferent");
+		setPreferredMenu("Apps.CABERNET");
 	}
 
 
 	/**
-	 * GESTODifferent entry point.
+	 * CABERNET entry point.
 	 * This method opens the wizard view.
 	 */
 	public void actionPerformed(ActionEvent e) {
@@ -56,22 +64,22 @@ public class WizardAction extends AbstractCyAction{
 			simulationFeatures = wizard.getSimulationFeatures();
 			tasks = wizard.getTaskToDo();
 			outputs = wizard.getOutputs();
-			atm_computation = tasks.getProperty(GESTODifferentConstants.ATM_COMPUTATION).equals(GESTODifferentConstants.YES);
-			tree_matching = tasks.getProperty(GESTODifferentConstants.TREE_MATCHING).equals(GESTODifferentConstants.YES);
+			atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
+			tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
 			//Network Creation from features
 			try{
 				//Create the network randomly
-				if(tasks.getProperty(GESTODifferentConstants.NETWORK_CREATION).equals(GESTODifferentConstants.NEW)){
+				if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.NEW)){
 					if(!tree_matching){
 						dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 								this.appManager, this.simulationsContainer, atm_computation)));
 					}else{
-						matching_type = tasks.getProperty(GESTODifferentConstants.MATCHING_TYPE);
-						if(matching_type.equals(GESTODifferentConstants.PERFECT_MATCH)){
+						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
+						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree())));
 						}else{
-							threshold = Integer.parseInt(tasks.getProperty(GESTODifferentConstants.MATCHING_THRESHOLD));
+							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold)));
@@ -80,17 +88,17 @@ public class WizardAction extends AbstractCyAction{
 					}
 					
 				//Gets the original network from Cytoscape
-				}else if(tasks.getProperty(GESTODifferentConstants.NETWORK_CREATION).equals(GESTODifferentConstants.CYTOSCAPE_EDIT)){
+				}else if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.CYTOSCAPE_EDIT)){
 					if(!tree_matching){
 						dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
 								this.appManager, this.simulationsContainer, atm_computation)));
 					}else{
-						matching_type = tasks.getProperty(GESTODifferentConstants.MATCHING_TYPE);
-						if(matching_type.equals(GESTODifferentConstants.PERFECT_MATCH)){
+						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
+						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
 							dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree())));
 						}else{
-							threshold = Integer.parseInt(tasks.getProperty(GESTODifferentConstants.MATCHING_THRESHOLD));
+							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
 							dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold)));

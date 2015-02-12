@@ -1,11 +1,11 @@
-package it.unimib.disco.bimib.Middleware;
-
 /**
  * This class is a bridge between the app and the VizMapperManager.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
+
+package it.unimib.disco.bimib.Middleware;
 
 //System imports
 import java.awt.Color;
@@ -76,7 +76,7 @@ public class VizMapperManager {
 		VisualMappingFunctionFactory vmfFactoryP = registrar.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
 
 		// To create a new VisualStyle object and set the mapping function
-		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("GESTODifferent Network");
+		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("CABERNET Network");
 
 		//Use pass-through mapping
 		vs.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ELLIPSE);                  
@@ -112,7 +112,7 @@ public class VizMapperManager {
 
 		// Add the new style to the VisualMappingManager
 		vmmServiceRef.addVisualStyle(vs);
-		this.appStyles.put("GESTODifferent Network", vs);
+		this.appStyles.put("CABERNET Network", vs);
 
 	}
 
@@ -130,7 +130,7 @@ public class VizMapperManager {
 		VisualStyleFactory visualStyleFactoryServiceRef = registrar.getService(VisualStyleFactory.class); 
 		
 		// To create a new VisualStyle object and set the mapping function
-		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("GESTODifferent Attractors");
+		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("CABERNET Attractors");
 
 		//Nodes style
 		vs.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
@@ -142,7 +142,7 @@ public class VizMapperManager {
 
 		// Add the new style to the VisualMappingManager
 		vmmServiceRef.addVisualStyle(vs);
-		this.appStyles.put("GESTODifferent Attractors", vs);
+		this.appStyles.put("CABERNET Attractors", vs);
 
 	}
 	
@@ -164,7 +164,7 @@ public class VizMapperManager {
 		VisualMappingFunctionFactory vmfFactoryP = registrar.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
 
 		// To create a new VisualStyle object and set the mapping function
-		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("GESTODifferent TES");
+		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("CABERNET TES");
 
 
 		//Use pass-through mapping
@@ -201,7 +201,7 @@ public class VizMapperManager {
 
 		// Add the new style to the VisualMappingManager
 		vmmServiceRef.addVisualStyle(vs);
-		this.appStyles.put("GESTODifferent TES", vs);
+		this.appStyles.put("CABERNET TES", vs);
 
 	}
 	
@@ -223,7 +223,7 @@ public class VizMapperManager {
 		VisualMappingFunctionFactory vmfFactoryP = registrar.getService(VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
 
 		// To create a new VisualStyle object and set the mapping function
-		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("GESTODifferent Collapsed TES");
+		VisualStyle vs = visualStyleFactoryServiceRef.createVisualStyle("CABERNET Collapsed TES");
 
 
 		//Use pass-through mapping
@@ -260,7 +260,7 @@ public class VizMapperManager {
 
 		// Add the new style to the VisualMappingManager
 		vmmServiceRef.addVisualStyle(vs);
-		this.appStyles.put("GESTODifferent Collapsed TES", vs);
+		this.appStyles.put("CABERNET Collapsed TES", vs);
 
 	}
 

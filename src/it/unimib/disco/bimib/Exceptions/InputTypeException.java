@@ -1,15 +1,10 @@
 /**
- * BIMIB @ Milan University - Bicocca 
- * 2013
- */
-
-/**
  * InputTypeException. 
  * This exception will lift up when a input type isn't correct for the function
- * 
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @author Giorgia Previtali (g.previtali6@campus.unimib.it)
- * 
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ *
  */
 
 package it.unimib.disco.bimib.Exceptions;

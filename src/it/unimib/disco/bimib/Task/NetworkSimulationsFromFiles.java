@@ -1,5 +1,13 @@
+/**
+ * This class defines the thread for the network simulation process.
+ * Each network is read from a GRNML file.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.Task;
-//GESTODifferent imports
+//GRNSim imports
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
@@ -7,18 +15,19 @@ import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.InputFormatException;
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
-import it.unimib.disco.bimib.GESTODifferent.GESTODifferentConstants;
-import it.unimib.disco.bimib.GESTODifferent.Simulation;
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
 import it.unimib.disco.bimib.IO.Input;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
-
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
+import it.unimib.disco.bimib.CABERNET.Simulation;
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 //System imports
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Properties;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -56,7 +65,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 			TesTree tree, ArrayList<String> filesPath, boolean editing) throws NumberFormatException, NullPointerException, 
 			FileNotFoundException, TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, atmComputation, 
-				treeMatching, tree, GESTODifferentConstants.PERFECT_MATCH, -1, filesPath, editing);
+				treeMatching, tree, CABERNETConstants.PERFECT_MATCH, -1, filesPath, editing);
 	}
 
 	public NetworkSimulationsFromFiles(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
@@ -82,7 +91,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 
 	public void run(final TaskMonitor taskMonitor) throws Exception {
 		// Give the task a title.
-		taskMonitor.setTitle("GESTODifferent");
+		taskMonitor.setTitle("CABERNET");
 		taskMonitor.setProgress(0.0);
 		String networkId;
 		int requiredNetworks = Integer.parseInt(this.simulationFeatures.getProperty(SimulationFeaturesConstants.MATCHING_NETWORKS));
@@ -131,10 +140,10 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 						//Creates the TES manager in order to match the network with the tree
 						tesManager = new TesManager(atmManager, samplingManager);
 						try{
-							if(this.matchingType.equals(GESTODifferentConstants.PERFECT_MATCH)){
+							if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 								//Tries to match the network with the given differentiation tree
 								deltas = tesManager.findCorrectTesTree(this.givenTree);
-							}else if(this.matchingType.equals(GESTODifferentConstants.MIN_DISTANCE)){
+							}else if(this.matchingType.equals(CABERNETConstants.MIN_DISTANCE)){
 								//Min distance comparison
 								distance = tesManager.findMinDistanceTesTree(this.givenTree);
 								if(distance == -1){
@@ -166,11 +175,11 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 					this.simulationsContainer.addSimulation(networkId, newSim);
 
 					//Creates the network view on Cytoscape (if required)
-					if(this.requiredOutputs.getProperty(GESTODifferentConstants.NETWORK_VIEW).equals(GESTODifferentConstants.YES))
+					if(this.requiredOutputs.getProperty(CABERNETConstants.NETWORK_VIEW).equals(CABERNETConstants.YES))
 						parent = this.cytoscapeBridge.createNetwork(graphManager, networkId);
 
 					//Creates the attractors view on Cytoscape (if required)
-					if(this.requiredOutputs.getProperty(GESTODifferentConstants.ATTRACTORS_NETWORK_VIEW).equals(GESTODifferentConstants.YES))
+					if(this.requiredOutputs.getProperty(CABERNETConstants.ATTRACTORS_NETWORK_VIEW).equals(CABERNETConstants.YES))
 						if(parent == null)
 							this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId);
 						else

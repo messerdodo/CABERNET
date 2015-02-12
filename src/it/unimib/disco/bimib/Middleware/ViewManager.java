@@ -1,11 +1,11 @@
-package it.unimib.disco.bimib.Middleware;
-
 /**
  * This class is a bridge between the app and the Cytoscape view service.
  * @author Andrea Paroni (a.paroni@campus.unimib.it)
  * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
  * @year 2014
  */
+
+package it.unimib.disco.bimib.Middleware;
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;

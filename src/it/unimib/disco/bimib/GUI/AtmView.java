@@ -1,14 +1,22 @@
+/**
+ * This view is used in order to show the ATM matrix.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2013
+ */
+
 package it.unimib.disco.bimib.GUI;
 
+//GRNSim imports
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Middleware.ViewManager;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 
+//Java Swing and AWT imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,12 +28,14 @@ import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingConstants;
+import javax.swing.JCheckBox;
 
+//Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyNetwork;
 
-import javax.swing.JCheckBox;
+
 
 public class AtmView extends JFrame {
 
@@ -147,12 +157,12 @@ public class AtmView extends JFrame {
 				if(chkCollapsed.isSelected()){
 					network = middleware.createCollapsedTesGraph(atmManager, networkId, threshold, currentNetwork);
 					//Show the network in a new view.
-					viewManager.createView(network, vizMapperManager.getStyle("GESTODifferent Collapsed TES"));
+					viewManager.createView(network, vizMapperManager.getStyle("CABERNET Collapsed TES"));
 				}else{
 					network = middleware.createTesGraph(samplingManager.getAttractorFinder(), atmManager, networkId, 
 							threshold, currentNetwork);
 					//Show the network in a new view.
-					viewManager.createView(network, vizMapperManager.getStyle("GESTODifferent TES"));
+					viewManager.createView(network, vizMapperManager.getStyle("CABERNET TES"));
 				}
 				
 			} catch (Exception exception){

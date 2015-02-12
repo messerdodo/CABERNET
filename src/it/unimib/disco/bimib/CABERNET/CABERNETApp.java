@@ -1,6 +1,13 @@
-package it.unimib.disco.bimib.GESTODifferent;
+/**
+ * The app entry point.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
 
-//GESTODifferent imports
+package it.unimib.disco.bimib.CABERNET;
+
+//CABERNET imports
 import it.unimib.disco.bimib.GUI.Actions.ATMExplorationMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsAction;
 import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsMenuAction;
@@ -18,12 +25,8 @@ import it.unimib.disco.bimib.GUI.Actions.TesNumberComputingMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.WizardAction;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 
-
-
 //System imports
 import java.util.Properties;
-
-
 
 //Cytoscape imports
 import org.cytoscape.app.swing.AbstractCySwingApp;
@@ -32,18 +35,11 @@ import org.cytoscape.application.swing.CyNetworkViewContextMenuFactory;
 import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.service.util.CyServiceRegistrar;
 
-/**
- * The app entry point.
- * @author Andrea Paroni (a.paroni@campus.unimib.it)
- * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
- * @year 2014
- */
-
-public class GESTODifferentApp extends AbstractCySwingApp{
+public class CABERNETApp extends AbstractCySwingApp{
 
 	private SimulationsContainer simulationsContainer;
 
-	public GESTODifferentApp(CySwingAppAdapter swingAdapter) {
+	public CABERNETApp(CySwingAppAdapter swingAdapter) {
 		super(swingAdapter);
 
 		//Creates a new simulations container

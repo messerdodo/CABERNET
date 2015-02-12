@@ -1,5 +1,11 @@
+/**
+ * This class defines the thread used for the dynamic statistics computation
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
 package it.unimib.disco.bimib.Task;
-//GESTODifferent imports
+//GRNSim imports
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
@@ -9,7 +15,6 @@ import it.unimib.disco.bimib.GUI.DynamicPerturbationsStatsView;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
-
 
 //System imports
 import java.util.ArrayList;
@@ -70,7 +75,7 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 
 
 	public void run(final TaskMonitor taskMonitor) throws Exception {
-		taskMonitor.setTitle("GESTODifferent - Dynamic perturbations analysis");
+		taskMonitor.setTitle("CABERNET - Dynamic perturbations analysis");
 		
 		//Defines the mutation manager
 		MutationManager mutationManager = new MutationManager(this.mutatedNetworkManager, this.samplingManager, this.perturbationFeatures);

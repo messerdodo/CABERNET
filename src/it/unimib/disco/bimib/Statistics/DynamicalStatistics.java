@@ -1,6 +1,15 @@
+/**
+ * This class contains all the methods for the dynamical statistics computation.
+ * 
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @author Giorgia Previtali (g.previtali6@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
+ * @year 2013
+ * 
+ */
 package it.unimib.disco.bimib.Statistics;
 
-//GESTODifferent imports
+//GRNSim imports
 import it.unimib.disco.bimib.Exceptions.InputTypeException;
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
 import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;

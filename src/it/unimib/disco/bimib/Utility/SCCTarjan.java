@@ -1,3 +1,13 @@
+/**
+ * 
+ * SCC calculator.
+ * Method taken from http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
+ * 
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca
+ * @year 2013
+ * 
+ */
 package it.unimib.disco.bimib.Utility;
 
 import java.util.*;

@@ -1,7 +1,14 @@
+/**
+ * ExportMenuAction class.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ DISCo (Department of Information Technology, Systems and Communication) of Milan University - Bicocca 
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI.Actions;
 
-//GESTODifferent imports
-import it.unimib.disco.bimib.GESTODifferent.SimulationsContainer;
+//CABERNET imports
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.ExportView;
 
 //System imports
@@ -26,7 +33,7 @@ public class ExportMenuAction extends AbstractCyAction{
 
 	public ExportMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
 
-		super("GESTODifferent Objects", 
+		super("CABERNET Objects", 
 				adapter.getCyApplicationManager(),
 				"network",
 				adapter.getCyNetworkViewManager());

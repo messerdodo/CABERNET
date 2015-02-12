@@ -1,14 +1,17 @@
+/**
+ * This view is used in order to show the TES chart.
+ * @author Andrea Paroni (a.paroni@campus.unimib.it)
+ * @group BIMIB @ Disco (Department of Information Technology, Systems and Communication) of Milan University - Bicocca  
+ * @year 2014
+ */
+
 package it.unimib.disco.bimib.GUI;
 
-//GESTODifferent imports
+//GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
-
-
-
 
 //System imports
 import java.awt.BorderLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +21,8 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import java.awt.Component;
 import javax.swing.Box;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 //JFreeChart imports
 import org.jfree.chart.ChartFactory;
@@ -27,8 +32,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class TesView extends JFrame {
 
