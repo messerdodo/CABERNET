@@ -339,6 +339,14 @@ public class NetworkManagment {
 		return tesGraph;
 
 	}
+	
+	/**
+	 * This method returns true if a Cytoscape network is selected
+	 * @return
+	 */
+	public boolean isNetworkSelected(){
+		return appManager.getCurrentNetwork() != null;
+	}
 
 	/**
 	 * This method returns a GRNSim GraphManager from the current Cytoscape view.
@@ -349,6 +357,8 @@ public class NetworkManagment {
 	public GraphManager getNetworkFromCytoscape() throws ParamDefinitionException, NotExistingNodeException{
 		GraphManager graphManager = new GraphManager();
 		CyNetwork currentNetwork = appManager.getCurrentNetwork();
+		if(currentNetwork == null)
+			throw new NullPointerException("No networks selected");
 		List<CyNode> nodes = currentNetwork.getNodeList();
 		List<CyEdge> edges = currentNetwork.getEdgeList();
 		HashMap<CyNode, Integer> mapping = new HashMap<CyNode, Integer>();

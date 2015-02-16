@@ -2193,8 +2193,12 @@ public class Wizard extends JDialog {
 							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.EDIT);
 							editing = true;
 						}else if(inputMethod.equals("Partial network from Cytoscape selected view")){
+							//Checks if a view exist...
+							if(!netManagment.isNetworkSelected())
+								throw new NullPointerException("No networks selected.");
 							editing = true;
 							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.CYTOSCAPE_EDIT);
+							
 						}
 
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
