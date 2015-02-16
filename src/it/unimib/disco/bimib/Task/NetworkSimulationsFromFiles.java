@@ -106,10 +106,12 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 		double[] deltas;
 		boolean match;
 		int net;
+		int file_number = 0;
 		GraphManager originalNetwork;
 		for(String networkFile : this.filesPath){
 			originalNetwork = Input.readGRNMLFile(networkFile);
 			net = 0;
+			file_number = file_number + 1;
 			while(net < requiredNetworks){
 				parent = null;
 				taskMonitor.setStatusMessage("Network " + (net + 1) + ": Network creation");
@@ -117,12 +119,12 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 				deltas = null;
 				//Creates the network
 				graphManager = originalNetwork.copy();
-				graphManager.modify(this.simulationFeatures);
+				
 				//Edits the given network (if required)
 				if(this.editing)
 					graphManager.modify(simulationFeatures);
 				
-				networkId = "network_" + (net + 1);
+				networkId = "network_" + (net + 1) + "_file_" + file_number;
 
 				//Samples the network in order to find the attractors
 				taskMonitor.setStatusMessage("Network " + (net + 1) + ": Attractors sampling");

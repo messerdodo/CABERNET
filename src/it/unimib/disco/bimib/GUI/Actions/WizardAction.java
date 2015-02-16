@@ -13,10 +13,13 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.GUI.Wizard;
 import it.unimib.disco.bimib.Task.NetworkCreation;
 import it.unimib.disco.bimib.Task.NetworkEditingFromCytoscape;
+import it.unimib.disco.bimib.Task.NetworkSimulationsFromFiles;
+
 
 //System imports
 import java.awt.event.ActionEvent;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 
 
 //Cytoscape imports
@@ -61,13 +64,13 @@ public class WizardAction extends AbstractCyAction{
 
 		int response = wizard.showWizard();
 		if(response == 1){
-			simulationFeatures = wizard.getSimulationFeatures();
-			tasks = wizard.getTaskToDo();
-			outputs = wizard.getOutputs();
-			atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
-			tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
-			//Network Creation from features
 			try{
+				simulationFeatures = wizard.getSimulationFeatures();
+				tasks = wizard.getTaskToDo();
+				outputs = wizard.getOutputs();
+				atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
+				tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
+				//Network Creation from features
 				//Create the network randomly
 				if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.NEW)){
 					if(!tree_matching){
@@ -83,11 +86,43 @@ public class WizardAction extends AbstractCyAction{
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold)));
-							
 						}
 					}
-					
-				//Gets the original network from Cytoscape
+					//Reads the networks from the GRNML files
+				}else if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.OPEN)){
+					if(!tree_matching){
+						dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter, 
+								this.appManager, this.simulationsContainer, atm_computation, wizard.getInputNetworks(), false)));
+					}else{
+						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
+						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
+							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(), wizard.getInputNetworks(), false)));
+						}else{
+							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
+							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
+									matching_type, threshold, wizard.getInputNetworks(), false)));
+						}
+					}
+					//Gets the original network from file and complete it.
+				}else if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.EDIT)){
+					if(!tree_matching){
+						dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter, 
+								this.appManager, this.simulationsContainer, atm_computation, wizard.getInputNetworks(), true)));
+					}else{
+						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
+						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
+							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(), wizard.getInputNetworks(), true)));
+						}else{
+							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
+							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
+									matching_type, threshold, wizard.getInputNetworks(), true)));
+						}
+					}
+					//Gets the original network from Cytoscape
 				}else if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.CYTOSCAPE_EDIT)){
 					if(!tree_matching){
 						dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
@@ -102,16 +137,13 @@ public class WizardAction extends AbstractCyAction{
 							dialogTaskManager.execute(new TaskIterator(new NetworkEditingFromCytoscape(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold)));
-							
+
 						}
 					}
 				}
 			}catch(Exception ex){
-
+				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 			}
-
-
-
 		}
 	}
 }

@@ -19,6 +19,7 @@ import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 
 
 
+
 //Swing and awt imports
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -67,6 +68,7 @@ import java.awt.event.ItemEvent;
 //System imports
 import java.util.ArrayList;
 import java.util.Properties;
+
 
 
 
@@ -1406,22 +1408,22 @@ public class Wizard extends JDialog {
 			pnlInnerNetworkEditing.add(lblRandom_1);
 
 			txtEditingRandomType = new JTextField();
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingRandomType, 6, SpringLayout.EAST, lblRandom_1);
 			txtEditingRandomType.setText("0.2");
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingRandomType, 7, SpringLayout.SOUTH, lblFunctionsType_1);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingRandomType, 6, SpringLayout.EAST, lblRandom_1);
 			pnlInnerNetworkEditing.add(txtEditingRandomType);
 			txtEditingRandomType.setColumns(10);
 
 			lblBias = new JLabel("Bias:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingRandomType, -10, SpringLayout.WEST, lblBias);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblBias, 0, SpringLayout.NORTH, lblRandom_1);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblBias, 10, SpringLayout.WEST, cmbEditingFunctionType);
 			pnlInnerNetworkEditing.add(lblBias);
 
 			txtEditingBiasType = new JTextField();
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingBiasType, -478, SpringLayout.EAST, pnlInnerNetworkEditing);
 			txtEditingBiasType.setText("0.2");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingRandomType, -46, SpringLayout.WEST, txtEditingBiasType);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingBiasType, 159, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingBiasType, -461, SpringLayout.EAST, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingBiasType, 0, SpringLayout.SOUTH, cmbEditingFunctionType);
 			txtEditingBiasType.setColumns(10);
 			pnlInnerNetworkEditing.add(txtEditingBiasType);
@@ -2153,6 +2155,15 @@ public class Wizard extends JDialog {
 	}
 
 	/**
+	 * Returns the loaded networks paths
+	 * @return the networks pathes
+	 */
+	public ArrayList<String> getInputNetworks(){
+		return inputNetworks;
+	}
+	
+
+	/**
 	 * This action changes the form
 	 *
 	 */
@@ -2171,6 +2182,8 @@ public class Wizard extends JDialog {
 					if(inputMethod.equals("Complete network from GRNML file")){
 						tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.OPEN);
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
+						lblNetworksStructureList.setBackground(Color.LIGHT_GRAY);
+						lblExperimentsList.setBackground(Color.LIGHT_GRAY);
 						form = "attractors-params";
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "experimentsPanel");	
 					}else{
@@ -2224,19 +2237,77 @@ public class Wizard extends JDialog {
 							!txtEditingOrType.getText().equals("") && !txtEditingAndType.getText().equals("") &&
 							!txtEditingCanalizingType.getText().equals("")){
 
+						Integer nodes;
+						Double random, and, or, biased, bias, canalizing;
+						
 						//Sets the properties
 						simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
+						nodes = Integer.parseInt(txtEditingNodesNumber.getText());
+						if(nodes  <= 0){
+							throw new FeaturesException(SimulationFeaturesConstants.NODES + " value must be greater than 0");
+						}
 						simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtEditingNodesNumber.getText());
+						
+						if(Integer.parseInt(txtEditingEdgesNumber.getText())  <= 0){
+							throw new FeaturesException(SimulationFeaturesConstants.EDGES + " value must be greater than 0");
+						}
 						simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEditingEdgesNumber.getText());
+						
+						if(Integer.parseInt(txtFixedInputs.getText())  < -1 ||
+							Integer.parseInt(txtFixedInputs.getText())  == 0 ||
+							Integer.parseInt(txtFixedInputs.getText()) > Math.pow(nodes - 1, 2)){
+							throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be between 1 and (nodes - 1)^2 or -1");
+						}
 						if(!txtFixedInputs.getText().equals("-1"))
 							simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedInputs.getText());
+						
 						simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbEditingFunctionType.getSelectedItem().toString());
+						
+						random = Double.parseDouble(txtEditingRandomType.getText());
+						if(random < 0 || random > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.RANDOM_TYPE + " value must be between 0 and 1.");
+						}
+						
+						canalizing = Double.parseDouble(txtEditingCanalizingType.getText());
+						if(canalizing < 0 || canalizing > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.CANALIZED_TYPE + " value must be between 0 and 1.");
+						}
+						
+						biased = Double.parseDouble(txtEditingBiasType.getText());
+						if(biased < 0 || biased > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.BIAS_TYPE + " value must be between 0 and 1.");
+						}
+						
+						bias = Double.parseDouble(txtEditingBiasValue.getText());
+						if(bias < 0 || bias > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.BIAS_VALUE + " value must be between 0 and 1.");
+						}
+						
+						and = Double.parseDouble(txtEditingAndType.getText());
+						if(and < 0 || and > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.AND_FUNCTION_TYPE + " value must be between 0 and 1.");
+						}
+						
+						or = Double.parseDouble(txtEditingOrType.getText());
+						if(or < 0 || or > 1){
+							throw new FeaturesException(SimulationFeaturesConstants.OR_FUNCTION_TYPE + " value must be between 0 and 1.");
+						}
+						
+						if(random + biased + and + or + canalizing != 1){
+							throw new FeaturesException("The sum of " + SimulationFeaturesConstants.RANDOM_TYPE + ", " +
+									SimulationFeaturesConstants.BIAS_TYPE + ", " +
+									SimulationFeaturesConstants.AND_FUNCTION_TYPE + ", " +
+									SimulationFeaturesConstants.OR_FUNCTION_TYPE + ", " +
+										SimulationFeaturesConstants.CANALIZED_TYPE + " values must be 1.");
+						}
+						
 						simulationFeatures.setProperty(SimulationFeaturesConstants.RANDOM_TYPE, txtEditingRandomType.getText());
 						simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_TYPE, txtEditingBiasType.getText());
 						simulationFeatures.setProperty(SimulationFeaturesConstants.BIAS_VALUE, txtEditingBiasValue.getText());
 						simulationFeatures.setProperty(SimulationFeaturesConstants.AND_FUNCTION_TYPE, txtEditingAndType.getText());
 						simulationFeatures.setProperty(SimulationFeaturesConstants.OR_FUNCTION_TYPE, txtEditingOrType.getText());
 						simulationFeatures.setProperty(SimulationFeaturesConstants.CANALIZED_TYPE, txtEditingCanalizingType.getText());
+
 						simulationFeatures.setProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS, chckbxComplitellyDefined.isSelected()?SimulationFeaturesConstants.YES:SimulationFeaturesConstants.NO);
 
 						ArrayList<String> noTarget = null;
