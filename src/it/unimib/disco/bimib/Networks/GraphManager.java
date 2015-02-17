@@ -14,6 +14,7 @@ package it.unimib.disco.bimib.Networks;
 import java.util.ArrayList;
 import java.util.Properties;
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Utility.*;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -202,39 +203,43 @@ public class GraphManager {
 				throw new ParamDefinitionException("The sum of the rates must be 1");
 
 			int createdFunctions = 0;
-
+			Integer[] functionsNumber = new Integer[nodes];
+			for(int i = 0; i < nodes; i++)
+				functionsNumber[i] = i;
+			functionsNumber = (Integer[]) UtilityRandom.randomPermutation(functionsNumber);
+			
 			//Creates the random functions
 			for(int i = 0; i < Math.floor(randomRate * nodes); i++){
-				functions[createdFunctions] = new RandomFunction(
-						geneRegulatoryNetwork.getIncomingNodes(createdFunctions), completelyDefined);
+				functions[functionsNumber[createdFunctions]] = new RandomFunction(
+						geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]), completelyDefined);
 				createdFunctions++;
 			}
 
 			//Creates the bias random functions
 			for(int i = 0; i < Math.floor(biasRate * nodes); i++){
-				functions[createdFunctions] = new RandomFunction(
-						geneRegulatoryNetwork.getIncomingNodes(createdFunctions), biasValue, completelyDefined);
+				functions[functionsNumber[createdFunctions]] = new RandomFunction(
+						geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]), biasValue, completelyDefined);
 				createdFunctions++;
 			}
 
 			//Creates the or functions
 			for(int i = 0; i < Math.floor(orRate * nodes); i++){
-				functions[createdFunctions] = new AndOrFunction(false,
-						geneRegulatoryNetwork.getIncomingNodes(createdFunctions));
+				functions[functionsNumber[createdFunctions]] = new AndOrFunction(false,
+						geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]));
 				createdFunctions++;
 			}
 
 			//Creates the and functions
 			for(int i = 0; i < Math.floor(andRate * nodes); i++){
-				functions[createdFunctions] = new AndOrFunction(true,
-						geneRegulatoryNetwork.getIncomingNodes(createdFunctions));
+				functions[functionsNumber[createdFunctions]] = new AndOrFunction(true,
+						geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]));
 				createdFunctions++;
 			}
 
 			//Creates the canalized functions
 			for(int i = 0; i < Math.floor(canalizedRate * nodes); i++){
-				functions[createdFunctions] = new CanalizedFunction(
-						geneRegulatoryNetwork.getIncomingNodes(createdFunctions),completelyDefined);
+				functions[functionsNumber[createdFunctions]] = new CanalizedFunction(
+						geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]),completelyDefined);
 				createdFunctions++;
 			}
 
@@ -247,28 +252,28 @@ public class GraphManager {
 				if(maxRate == randomRate){
 					//Creates the other random functions
 					for(; createdFunctions < nodes; createdFunctions++)
-						functions[createdFunctions] = new RandomFunction(
-								geneRegulatoryNetwork.getIncomingNodes(createdFunctions), completelyDefined);
+						functions[functionsNumber[createdFunctions]] = new RandomFunction(
+								geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]), completelyDefined);
 				}else if(maxRate == biasRate){
 					//Creates the other bias random functions
 					for(; createdFunctions < nodes; createdFunctions++)
-						functions[createdFunctions] = new RandomFunction(
-								geneRegulatoryNetwork.getIncomingNodes(createdFunctions), biasValue, completelyDefined);
+						functions[functionsNumber[createdFunctions]] = new RandomFunction(
+								geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]), biasValue, completelyDefined);
 				}else if(maxRate == andRate){
 					//Creates the other and functions
 					for(; createdFunctions < nodes; createdFunctions++)
-						functions[createdFunctions] = new AndOrFunction(true,
-								geneRegulatoryNetwork.getIncomingNodes(createdFunctions));
+						functions[functionsNumber[createdFunctions]] = new AndOrFunction(true,
+								geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]));
 				}else if(maxRate == orRate){
 					//Creates the other or functions
 					for(; createdFunctions < nodes; createdFunctions++)
-						functions[createdFunctions] = new AndOrFunction(false,
-								geneRegulatoryNetwork.getIncomingNodes(createdFunctions));
+						functions[functionsNumber[createdFunctions]] = new AndOrFunction(false,
+								geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]));
 				}else if(maxRate == canalizedRate){
 					//Creates the other or functions
 					for(; createdFunctions < nodes; createdFunctions++)
-						functions[createdFunctions] = new CanalizedFunction(
-								geneRegulatoryNetwork.getIncomingNodes(createdFunctions), completelyDefined);
+						functions[functionsNumber[createdFunctions]] = new CanalizedFunction(
+								geneRegulatoryNetwork.getIncomingNodes(functionsNumber[createdFunctions]), completelyDefined);
 				}
 
 				//BIOLOGICAL FUNCTIONS TO BE IMPLEMENTED SOON
@@ -479,9 +484,9 @@ public class GraphManager {
 					undefinedFunctions.add(i);
 				}
 			}
-
+			//Functions permutation
+			undefinedFunctions = UtilityRandom.randomPermutation(undefinedFunctions);
 			
-
 			int createdFunctions = 0;
 			boolean completelyDefined = features.getProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS).equals(SimulationFeaturesConstants.YES);
 

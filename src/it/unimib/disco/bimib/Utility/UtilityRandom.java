@@ -264,4 +264,25 @@ public class UtilityRandom {
 		}
 		return array;
 	}
+	
+	/**
+	 * This method returns a permutation of the passed array.
+	 * @param array: An object array list
+	 * @return  permutation of the passed array.
+	 */
+	public static ArrayList<Integer> randomPermutation(ArrayList<Integer> array){
+		if(array == null)
+			throw new NullPointerException("The array must be not null");
+		
+		Integer swap;
+		int index;
+		//Performs a permutation of the array
+		for(int i = 0; i < array.size() - 1; i++){
+			index = randomUniform(i + 1, array.size() - 1);
+			swap = array.get(i);
+			array.set(i, array.get(index));
+			array.set(index, swap);
+		}
+		return array;
+	}
 }
