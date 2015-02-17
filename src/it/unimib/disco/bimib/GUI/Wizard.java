@@ -2198,7 +2198,6 @@ public class Wizard extends JDialog {
 								throw new NullPointerException("No networks selected.");
 							editing = true;
 							tasks.setProperty(CABERNETConstants.NETWORK_CREATION, CABERNETConstants.CYTOSCAPE_EDIT);
-							
 						}
 
 						((CardLayout)networkDefinitionSubPanel.getLayout()).show(networkDefinitionSubPanel, "networkInputFeaturesMethod");	
@@ -2223,14 +2222,51 @@ public class Wizard extends JDialog {
 					}else{
 						//Loads the features from file
 						if(!txtFeaturesFilePath.getText().equals("")){
-							simulationFeatures = Input.readSimulationFeatures(txtFeaturesFilePath.getText());
+							Properties readFeatures = Input.readSimulationFeatures(txtFeaturesFilePath.getText());
+							if(!readFeatures.containsKey(CABERNETConstants.ATM_COMPUTATION)){
+								throw new FeaturesException(CABERNETConstants.ATM_COMPUTATION + " key missed");
+							}
+							tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, readFeatures.getProperty(CABERNETConstants.ATM_COMPUTATION));
+							
+							if(!readFeatures.containsKey(CABERNETConstants.TREE_MATCHING)){
+								throw new FeaturesException(CABERNETConstants.TREE_MATCHING + " key missed");
+							}
+							tasks.setProperty(CABERNETConstants.TREE_MATCHING, readFeatures.getProperty(CABERNETConstants.TREE_MATCHING));
+							if(readFeatures.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES)){
+								if(!readFeatures.containsKey(CABERNETConstants.MATCHING_TYPE)){
+									throw new FeaturesException(CABERNETConstants.MATCHING_TYPE + " key missed");
+								}else if(!readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE).equals(CABERNETConstants.PERFECT_MATCH) &&
+										!readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE).equals(CABERNETConstants.MIN_DISTANCE) &&	
+										!readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE).equals(CABERNETConstants.HISTOGRAM_DISTANCE)){
+									throw new FeaturesException("The " + CABERNETConstants.MATCHING_TYPE + " value must be " +
+											CABERNETConstants.PERFECT_MATCH + " or " + CABERNETConstants.MIN_DISTANCE + " or " + 
+											CABERNETConstants.HISTOGRAM_DISTANCE);	
+								}else if(readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE).equals(CABERNETConstants.MIN_DISTANCE) ||	
+										readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE).equals(CABERNETConstants.HISTOGRAM_DISTANCE)){
+									if(!readFeatures.containsKey(CABERNETConstants.MATCHING_THRESHOLD)){
+										throw new FeaturesException(CABERNETConstants.MATCHING_THRESHOLD + " key missed");
+									}else{
+										tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, readFeatures.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
+									}
+								}
+								tasks.setProperty(CABERNETConstants.MATCHING_TYPE, readFeatures.getProperty(CABERNETConstants.MATCHING_TYPE));
+							}
+							//Simulation features checking
+							if(!readFeatures.containsKey(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY)){
+								throw new FeaturesException(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY + " key missed");
+							}
+//							simulationFeatures.setProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY, 
+//									readFeatures.getProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY));
+							
+							simulationFeatures = readFeatures;
+							
 							//New step: outputs page
 							lblNetworksStructureList.setBackground(Color.LIGHT_GRAY);
 							lblExperimentsList.setBackground(Color.LIGHT_GRAY);
 							lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
-							lblOutputsList.setBackground(Color.LIGHT_GRAY);
-							form = "output-form";
-							((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");	
+							
+							form = "tree-matching";
+							((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
 						}
 					}
 					//Network editing form

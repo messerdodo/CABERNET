@@ -65,6 +65,8 @@ public class SamplingManager {
 
 			//Sampling
 			this.sampling = new PartialSampling(graph, initialConditions, cutoff);
+		}else{
+			throw new ParamDefinitionException("Not valid value for " + SimulationFeaturesConstants.SAMPLING_METHOD);
 		}
 
 	}

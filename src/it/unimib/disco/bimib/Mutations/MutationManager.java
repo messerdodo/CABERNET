@@ -58,7 +58,15 @@ public class MutationManager {
 			int minTimes = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB).toString());
 			int maxTimes = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB).toString());
 			int nodesToPerturb = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB).toString());
-
+			if(minTimes <= 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value must be greater than 0.");
+			if(maxTimes <= 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " value must be greater than 0.");
+			if(minTimes > maxTimes)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " value must be greater or equal than " +
+						SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value.");
+			if(nodesToPerturb < 0 || nodesToPerturb > graphManager.getNodesNumber())
+				throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " value must be between 1 and nodes.");
 			//Parses the list of the specific nodes to flip and converts it from a string of names to an array of ids.
 			ArrayList<Integer> specificFlips;
 			if(simulationFeatures.containsKey(SimulationFeaturesConstants.SPECIFIC_PERTURB_NODES)){
@@ -96,6 +104,28 @@ public class MutationManager {
 			int minKnockOutDuration = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION).toString());
 			int maxKnockOutDuration = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION).toString());
 
+			//Params checking
+			if(knockInNodes < 0 || knockInNodes > graphManager.getNodesNumber())
+				throw new FeaturesException(SimulationFeaturesConstants.KNOCKIN_NODES + " value must be between 0 and nodes - 1");
+			if(knockOutNodes < 0 || knockOutNodes > graphManager.getNodesNumber())
+				throw new FeaturesException(SimulationFeaturesConstants.KNOCKOUT_NODES + " value must be between 0 and nodes - 1");
+			if(knockInNodes + knockOutNodes > graphManager.getNodesNumber())
+				throw new FeaturesException("The sum of " + SimulationFeaturesConstants.KNOCKOUT_NODES + " and " + 
+						SimulationFeaturesConstants.KNOCKIN_NODES + " values must be smaller than the number of nodes ");
+			if(minKnockInDuration < 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKIN_DURATION + " value must be greater than 0");
+			if(maxKnockInDuration < 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKIN_DURATION + " value must be greater than 0");
+			if(minKnockInDuration > maxKnockInDuration)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKIN_DURATION + " value must be greater or equal than " +
+						SimulationFeaturesConstants.MIN_KNOCKIN_DURATION + " value.");
+			if(minKnockOutDuration < 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION + " value must be greater than 0");
+			if(maxKnockOutDuration < 0)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION + " value must be greater than 0");
+			if(minKnockOutDuration > maxKnockOutDuration)
+				throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION + " value must be greater or equal than " +
+						SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION + " value.");
 			
 			//Parses the list of the specific nodes to perturb and converts it from a string of names to an array of ids.
 			ArrayList<Integer> specificKnockIn = null;
