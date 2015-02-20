@@ -57,7 +57,7 @@ public class ExploreFunctionAction implements CyNodeViewContextMenuFactory{
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView, View<CyNode> nodeView) {
 		//Defines the menu 
-		JMenuItem menuItem = new JMenuItem("Explores function (CABERNET)");
+		JMenuItem menuItem = new JMenuItem("Explore node function (CABERNET)");
 		menuItem.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent event)

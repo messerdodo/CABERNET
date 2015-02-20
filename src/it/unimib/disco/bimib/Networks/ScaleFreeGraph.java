@@ -52,12 +52,13 @@ public class ScaleFreeGraph extends IncidenceMatrixGraph{
 	 * @param n : numbers of total nodes
 	 * @param ni : numbers of initial nodes
 	 * @param k : connectivity
+	 * @param inOutProb: ingoing/outgoing probability
 	 * @throws NotExistingNodeException
 	 * @throws ParamDefinitionException
 	 */
-	public ScaleFreeGraph(int ni, int n, int k) throws NotExistingNodeException, ParamDefinitionException{
+	public ScaleFreeGraph(int ni, int n, int k, double inOutProb) throws NotExistingNodeException, ParamDefinitionException{
 		this(n);
-		barabasiGraph(ni, n ,k);
+		barabasiGraph(ni, n ,k, inOutProb);
 		//Introduces a sort of confusion in the nodes in order to randomly distributes the hubs
 		this.nodesPermutation();
 	}
@@ -121,13 +122,16 @@ public class ScaleFreeGraph extends IncidenceMatrixGraph{
 	 * @param ni: number of initial nodes
 	 * @param nt: total nodes
 	 * @param k: connectivity
+	 * @param inOutProb: ingoing/outgoing probability
 	 * @throws NotExistingNodeException 
 	 * @throws ParamDefinitionException 
 	 */
-	private void barabasiGraph(int ni, int nt, int k) throws NotExistingNodeException, ParamDefinitionException{
+	private void barabasiGraph(int ni, int nt, int k, double inOutProb) throws NotExistingNodeException, ParamDefinitionException{
 		if(ni > nt || k > nt || k >= ni){
 			throw new ParamDefinitionException("the initial node or the conncetivity are incorrect");
 		}
+		if(inOutProb < 0 || inOutProb > 1)
+			throw new ParamDefinitionException("The ingoing/outgoing probability must be between 0 and 1");
 		double[] probabilities;
 
 		//Initial connections
@@ -155,7 +159,12 @@ public class ScaleFreeGraph extends IncidenceMatrixGraph{
 					nodeB = UtilityRandom.randomIntegerDiscreteDistribuitedChoice(probabilities);
 				}while(this.areNodesConnected(nodeA, nodeB) || (nodeA == nodeB));
 				//Creates a new edge between the two nodes
-				this.addEdge(nodeA, nodeB);
+				//Select the edge direction
+				if(UtilityRandom.randomBooleanChoice(inOutProb)){
+					this.addEdge(nodeA, nodeB); //Ingoing
+				}else{
+					this.addEdge(nodeB, nodeA); //Outgoing
+				}
 			}
 		}
 	}                                                                                                                                                            

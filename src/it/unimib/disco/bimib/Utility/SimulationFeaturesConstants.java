@@ -109,6 +109,12 @@ public class SimulationFeaturesConstants {
 	public static final String NI = "ni";
 	
 	/**
+	 * Ingoing/Outgoing probability key. It defines the probability of the
+	 * edge direction. 
+	 */
+	public static final String INGOING_OUTGOING_PROBABILITY = "in-out-probability";
+	
+	/**
 	 * Fixed inputs number key. It defines the  number of incoming edges 
 	 * that each node must have.
 	 */

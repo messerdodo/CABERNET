@@ -41,7 +41,7 @@ public class DynamicalStatsAction implements CyNetworkViewContextMenuFactory{
 
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView) {
-		JMenuItem menuItem = new JMenuItem("Show dynamical statistics");
+		JMenuItem menuItem = new JMenuItem("Show network dynamical properties");
 		menuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event)
 			{

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 //Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
@@ -25,12 +26,14 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 
+
 //GRNSim packages
 import it.unimib.disco.bimib.Networks.GraphManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Networks.GeneRegulatoryNetwork;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
+import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
 
 public class NetworkManagment {
@@ -299,8 +302,36 @@ public class NetworkManagment {
 	 * @throws InputTypeException
 	 */
 	public CyNetwork createCollapsedTesGraph(AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-		double[][] newAtm = atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold);
-
+		double[][] tesChartMatrix = TesManager.getTesGraph(atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold));
+		int nodes = tesChartMatrix.length;
+		int k = 0;
+		//Gets the real number of attractors related with a TES
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			k = 0;
+			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0)
+				k++;
+			if(k == tesChartMatrix.length)
+				nodes = nodes - 1;
+		}
+		double[][] restrictedTesMatrix = new double[nodes][nodes];
+		
+		//Restricted TES matrix initialization
+		for(int i = 0; i < nodes; i++)
+			for(int j = 0; j < nodes; j++)
+				restrictedTesMatrix[i][j] = 0;
+		
+		//Restricted TES matrix population
+		int ri = 0, rj;
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			rj = 0;
+			for(int j = 0; j < tesChartMatrix.length; j++){
+				if(tesChartMatrix[i][j] != 0)
+					restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
+					rj = rj + 1;
+			}
+			ri = ri + 1;
+		}
+		
 		//Get the parent group
 		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
 		//Adds a new sub network
@@ -313,20 +344,20 @@ public class NetworkManagment {
 		CyTable edgeTable = tesGraph.getDefaultEdgeTable();
 		if(edgeTable.getColumn("Transition probability") == null)
 			edgeTable.createColumn("Transition probability", Double.class, true);
-
-		CyNode[] attractorsNodes = new CyNode[newAtm.length];
+		
+		CyNode[] attractorsNodes = new CyNode[nodes];
 
 		//Adds the collapsed attractors
-		for(int i = 0; i < newAtm.length; i++)
+		for(int i = 0; i < nodes; i++)
 			//Sets the virtual attractor node.
 			attractorsNodes[i] = tesGraph.addNode();
 
 		CyEdge transitionEdge;
-		for(int i = 0; i < newAtm.length; i++){
-			for(int j = 0; j < newAtm.length; j++){
-				if(newAtm[i][j] != 0.0){
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			for(int j = 0; j < restrictedTesMatrix.length; j++){
+				if(restrictedTesMatrix[i][j] != 0.0){
 					transitionEdge = tesGraph.addEdge(attractorsNodes[i], attractorsNodes[j], true);
-					tesGraph.getRow(transitionEdge).set("Transition probability", newAtm[i][j]);
+					tesGraph.getRow(transitionEdge).set("Transition probability", restrictedTesMatrix[i][j]);
 					tesGraph.getRow(transitionEdge).set("Interaction", "Attractors Transition");
 				}
 			}

@@ -32,7 +32,7 @@ public class DynamicalStatsMenuAction extends AbstractCyAction{
 
 	public DynamicalStatsMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
 
-		super("Show dynamical statistics", 
+		super("Show network dynamical properties", 
 				adapter.getCyApplicationManager(),
 	            "network",
 	            adapter.getCyNetworkViewManager());
@@ -41,7 +41,7 @@ public class DynamicalStatsMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 		
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions");
 	}
 
 	//Menu action pressed

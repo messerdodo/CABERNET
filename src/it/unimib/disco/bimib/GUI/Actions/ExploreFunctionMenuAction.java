@@ -41,14 +41,14 @@ public class ExploreFunctionMenuAction extends AbstractCyAction{
 	public ExploreFunctionMenuAction(CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer) {
 
-		super("Explore selected node function", 
+		super("Explore node function", 
 				adapter.getCyApplicationManager(),
-				"selectedNetworkObjs",
+				"network",
 				adapter.getCyNetworkViewManager());
 
 		this.appManager = adapter.getCyApplicationManager();
 		this.simulationsContainer = simulationsContainer;
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions");
 		
 	}
 

@@ -45,7 +45,7 @@ public class ComputeDynamicPerturbationsAction implements CyNetworkViewContextMe
 	
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView) {
-		JMenuItem menuItem = new JMenuItem("Compute dynamic perturbations");
+		JMenuItem menuItem = new JMenuItem("Perform robustness analysis (avalanches and sensitivity)");
 		menuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event)
 			{

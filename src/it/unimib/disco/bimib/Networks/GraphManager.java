@@ -52,7 +52,7 @@ public class GraphManager {
 
 		int nodes, edges, averageConnectivity, ni, fixedInputsNumber;
 		float beta;
-		double randomRate = 0, biasRate = 0, andRate = 0, orRate = 0, canalizedRate = 0, biasValue = 0.5, gamma;
+		double randomRate = 0, biasRate = 0, andRate = 0, orRate = 0, canalizedRate = 0, biasValue = 0.5, gamma, inOutProb = 1.0;
 		boolean completelyDefined;
 		Function[] functions;
 
@@ -91,8 +91,12 @@ public class GraphManager {
 				averageConnectivity = Integer.valueOf(simulationFeatures.get(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY).toString());
 				if(averageConnectivity < 1 || averageConnectivity >= nodes)
 					throw new ParamDefinitionException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be between 1 and nodes - 1");
+				
+				if(!simulationFeatures.containsKey(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY))
+					throw new ParamDefinitionException("Ingoing/Outgoing probability parameter missed");
+				inOutProb = Double.valueOf(simulationFeatures.get(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY).toString());
 				//Creates the graph which follows the Barabasi Albertz Model
-				this.geneRegulatoryNetwork = new ScaleFreeGraph(ni, nodes, averageConnectivity);
+				this.geneRegulatoryNetwork = new ScaleFreeGraph(ni, nodes, averageConnectivity, inOutProb);
 
 			}else if(simulationFeatures.get(SimulationFeaturesConstants.ALGORITHM).equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
 				if(!simulationFeatures.containsKey(SimulationFeaturesConstants.GAMMA))

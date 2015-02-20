@@ -15,16 +15,37 @@ import java.util.*;
 //optimized version of http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
 public class SCCTarjan {
 
-	ArrayList<ArrayList<Integer>> graph;
-	boolean[] visited;
-	Stack<Integer> stack;
-	int time;
-	int[] lowlink;
-	ArrayList<ArrayList<Integer>> components;
+	private ArrayList<ArrayList<Integer>> graph;
+	private boolean[] visited;
+	private Stack<Integer> stack;
+	private int time;
+	private int[] lowlink;
+	private ArrayList<ArrayList<Integer>> components;
 
-	public ArrayList<ArrayList<Integer>> scc(ArrayList<ArrayList<Integer>> graph) {
+	/**
+	 * Generic constructor
+	 * Creates the graph in the correct format from the
+	 * given adjacency matrix
+	 * @param adjacencyMatrix: a n by n adjacency matrix.
+	 */
+	public SCCTarjan(double[][] adjacencyMatrix){
+		int n = adjacencyMatrix.length;
+		this.graph = new ArrayList<ArrayList<Integer>>(n);
+		for (int i = 0; i < n; i++)
+			this.graph.add(new ArrayList<Integer>());
+
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < n; j++){
+				if(adjacencyMatrix[i][j] > 0.0){
+					this.graph.get(i).add(j);
+				}
+			}
+		}
+		System.out.println(this.graph);
+	}
+
+	public ArrayList<ArrayList<Integer>> scc() {
 		int n = graph.size();
-		this.graph = graph;
 		visited = new boolean[n];
 		stack = new Stack<Integer>();
 		time = 0;
@@ -65,23 +86,59 @@ public class SCCTarjan {
 			components.add(component);
 		}
 	}
-	
+
 
 
 	// Usage example
 	public static void main(String[] args) {
-		ArrayList<ArrayList<Integer>> g = new ArrayList<ArrayList<Integer>>(3);
-		for (int i = 0; i < 3; i++)
-			g.add(new ArrayList<Integer>());
 
-		g.get(2).add(0);
-		g.get(2).add(1);
-		g.get(0).add(1);
-		g.get(1).add(0);
-		g.get(1).add(2);
+		double[][] adj_mat = new double[4][4];
+		adj_mat[0][0] = 0.0;
+		adj_mat[0][1] = 1.0;
+		adj_mat[0][2] = 1.0;
+		adj_mat[0][3] = 1.0;
+		adj_mat[1][0] = 0.0;
+		adj_mat[1][1] = 0.0;
+		adj_mat[1][2] = 1.0;
+		adj_mat[1][3] = 0.0;
+		adj_mat[2][0] = 0.0;
+		adj_mat[2][1] = 1.0;
+		adj_mat[2][2] = 0.0;
+		adj_mat[2][3] = 0.0;
+		adj_mat[3][0] = 0.0;
+		adj_mat[3][1] = 0.0;
+		adj_mat[3][2] = 0.0;
+		adj_mat[3][3] = 0.0;
+
+		ArrayList<ArrayList<Integer>> components = new SCCTarjan(adj_mat).scc();
+		System.out.println("SCC graph " + components);
+
+		//Each position of the array contains the number of the scc of the element.
+		int[] assignments = new int[adj_mat.length];
+		for(int i  = 0; i < components.size(); i++){
+			for(Integer att : components.get(i))
+				assignments[att] = i;
+		}
+		System.out.println(Arrays.toString(assignments));
+
+		//All the scc are teses at the beginning.
+		int[] temporaryTesSet = new int[components.size()];
+		for(int i = 0; i < components.size(); i++)
+			temporaryTesSet[i] = 1;
+		int j = 0;
+		System.out.println("TES " + Arrays.toString(temporaryTesSet));
+		//Removes the scc that are not tes.
+		for(int i = 0; i < adj_mat.length; i++){
+			j = 0;
+			while((j < adj_mat.length) && (adj_mat[i][j] == 0 || (!((adj_mat[i][j] >= 0) && (assignments[i] != assignments[j])))) ){
+				j = j + 1;
+			}
+			if(j < adj_mat.length){
+				temporaryTesSet[assignments[i]] = 0;
+			}
+		}
+		System.out.println("TES " + Arrays.toString(temporaryTesSet));
 		
-
-		ArrayList<ArrayList<Integer>> components = new SCCTarjan().scc(g);
-		System.out.println(components);
+		
 	}
 }

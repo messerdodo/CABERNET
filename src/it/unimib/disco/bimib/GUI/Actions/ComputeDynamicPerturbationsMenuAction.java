@@ -40,7 +40,7 @@ public class ComputeDynamicPerturbationsMenuAction extends AbstractCyAction{
 	public ComputeDynamicPerturbationsMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer,
 			VizMapperManager vizMapperManager) {
 
-		super("Compute dynamic perturbations", 
+		super("Perform robustness analysis (avalanches and sensitivity)", 
 				adapter.getCyApplicationManager(),
 	            "network",
 	            adapter.getCyNetworkViewManager());
@@ -50,7 +50,7 @@ public class ComputeDynamicPerturbationsMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 		this.vizMapperManager = vizMapperManager;	
 		
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions");
 	}
 
 	//Menu action pressed

@@ -45,7 +45,7 @@ public class DynamicPerturbationsStatsMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions");
 	}
 
 	//Menu action pressed

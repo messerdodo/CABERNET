@@ -18,6 +18,7 @@ import java.util.Collections;
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
+import it.unimib.disco.bimib.Utility.SCCTarjan;
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Atms.AtmManager;
 
@@ -104,7 +105,7 @@ public class TesManager {
 	public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
-		
+
 		//Checks if the number of attractor is enough
 		if(k < givenTreeDeepness){
 			return -1;
@@ -142,7 +143,7 @@ public class TesManager {
 	public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
-	
+
 		//Checks if the number of attractor is enough
 		if(k < givenTreeDeepness){
 			return -1;
@@ -177,39 +178,39 @@ public class TesManager {
 		//Returns the min distance between the given tree and the created tree with the selected deltas
 		return minDistance;
 	}
-	
-	
-	
+
+
+
 	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException{
 		//Initializes the ArraList
-				ArrayList<Double> values = new ArrayList<Double>();
-				ArrayList<double[]> combinations = new ArrayList<double[]>();
-				for(double delta = 0.01; delta < 0.15; delta = delta + 0.01){
-					values.add(delta);
+		ArrayList<Double> values = new ArrayList<Double>();
+		ArrayList<double[]> combinations = new ArrayList<double[]>();
+		for(double delta = 0.01; delta < 0.15; delta = delta + 0.01){
+			values.add(delta);
+		}
+
+		//Sorts all the value in a crescent order
+		Collections.sort(values); 
+
+		if(requiredTreeDeepness > values.size())
+			return null;
+		else{
+			//Gets the unstructured combinations 
+			ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
+			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
+				double[] singleCombination = new double[requiredTreeDeepness + 1];
+				singleCombination[0] = 0.0;
+				for(int j = 1; j < requiredTreeDeepness + 1; j++){
+					singleCombination[j] = e.get(i+j-1);
 				}
-				
-				//Sorts all the value in a crescent order
-				Collections.sort(values); 
-				
-				if(requiredTreeDeepness > values.size())
-					return null;
-				else{
-					//Gets the unstructured combinations 
-					ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
-					for(int i = 0; i < e.size(); i += requiredTreeDeepness){
-						double[] singleCombination = new double[requiredTreeDeepness + 1];
-						singleCombination[0] = 0.0;
-						for(int j = 1; j < requiredTreeDeepness + 1; j++){
-							singleCombination[j] = e.get(i+j-1);
-						}
-						//Adds the combination in the array list "Combinations"
-						combinations.add(singleCombination);
-					}
-				}
-				//Returns all k-sized combinations 
-				return combinations;
+				//Adds the combination in the array list "Combinations"
+				combinations.add(singleCombination);
+			}
+		}
+		//Returns all k-sized combinations 
+		return combinations;
 	}
-	
+
 	/**
 	 * This method return all the possible delta values combinations. Each combination is ascending sorted. 
 	 * @param atm: The attractors threshold matrix.
@@ -229,13 +230,13 @@ public class TesManager {
 					values.add(atm[line][pillar]);	
 			}
 		}
-		
+
 		//Sorts all the value in a crescent order
 		Collections.sort(values); 
 		//Removes the zero if it is present.
 		if(values.contains(0.0))
 			values.remove(new Double(0.0));
-		
+
 		if(requiredTreeDeepness > values.size())
 			throw new TesTreeException("k ("+requiredTreeDeepness+") is bigger then the threshold's values ("+values.size() +")");
 		else{
@@ -349,6 +350,51 @@ public class TesManager {
 	 */
 	private static void addNodeManually(int nodeId, int level, int parentId, TesTree tree) throws TesTreeException{
 		tree.addNodeManually(nodeId, level, parentId);
+	}
+
+	public static double[][] getTesGraph(double[][] atm){
+		SCCTarjan sccCalculator = new SCCTarjan(atm);
+		ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
+
+		//Each position of the array contains the number of the scc of the element.
+		int[] assignments = new int[atm.length];
+		for(int i  = 0; i < scc.size(); i++){
+			for(Integer att : scc.get(i))
+				assignments[att] = i;
+		}
+
+		//All the scc are teses at the beginning.
+		int[] temporaryTesSet = new int[scc.size()];
+		for(int i = 0; i < scc.size(); i++)
+			temporaryTesSet[i] = 1;
+
+		int j = 0;
+		//Removes the scc that are not tes.
+		for(int i = 0; i < atm.length; i++){
+			j = 0;
+			while((j < atm.length) && (atm[i][j] == 0 || (!((atm[i][j] >= 0) 
+					&& (assignments[i] != assignments[j])))) ){
+				j = j + 1;
+			}
+			if(j < atm.length){
+				temporaryTesSet[assignments[i]] = 0;
+			}
+		}
+		
+		double[][] tesGraphMatrix = new double[atm.length][atm.length]; 
+		for(int i = 0; i < atm.length; i++){
+			for(int k = 0; k < atm.length; k++){
+				tesGraphMatrix[i][k] = 0.0;
+			}
+		}
+		for(int t = 0; t < temporaryTesSet.length; t++){
+			if(temporaryTesSet[t] == 1){
+				for(int a1 = 0; a1 < scc.get(t).size(); a1++)
+					for(int a2 = 0; a2 < scc.get(t).size(); a2++)
+						tesGraphMatrix[a1][a2] = atm[a1][a2];
+			}
+		}
+		return tesGraphMatrix;
 	}
 
 

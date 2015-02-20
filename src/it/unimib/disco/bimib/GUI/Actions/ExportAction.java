@@ -42,7 +42,7 @@ public class ExportAction implements CyNetworkViewContextMenuFactory{
 
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView) {
-		JMenuItem menuItem = new JMenuItem("Export (CABERNET)");
+		JMenuItem menuItem = new JMenuItem("Export options (CABERNET)");
 		menuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event)
 			{

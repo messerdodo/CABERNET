@@ -357,7 +357,6 @@ public class Atm {
 	public int getTesNumber(double threshold){
 		int tes = 0;
 		int[] assignments, temporaryTesSet;
-		ArrayList<ArrayList<Integer>> supportGraph = new ArrayList<ArrayList<Integer>>();
 		//Param checking
 		if(threshold < 0.0){
 			threshold = 0.0;
@@ -365,19 +364,9 @@ public class Atm {
 			threshold = 1.0;
 		}
 
-		//Creates the atm graph
-		for(int i = 0; i < this.atm.length; i++){
-			supportGraph.add(i, new ArrayList<Integer>());
-			for(int j = 0; j < this.atm.length; j++){
-				if(this.atm[i][j] >= threshold){
-					supportGraph.get(i).add(j);
-				}
-			}
-		}
-
 		//Computes the SCC
-		SCCTarjan scc = new SCCTarjan();
-		ArrayList<ArrayList<Integer>> aux = scc.scc(supportGraph);
+		SCCTarjan sccCalculator = new SCCTarjan(this.atm);
+		ArrayList<ArrayList<Integer>> aux = sccCalculator.scc();
 
 		//Creates the assignments array. 
 		//Each position of the array contains the number of the scc of the element.

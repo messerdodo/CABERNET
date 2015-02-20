@@ -32,7 +32,7 @@ public class TesNumberComputingMenuAction extends AbstractCyAction{
 
 	public TesNumberComputingMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
 
-		super("TES disgregation chart", 
+		super("Show threshold-dependent TES variation chart", 
 				adapter.getCyApplicationManager(),
 				"network",
 				adapter.getCyNetworkViewManager());
@@ -41,7 +41,7 @@ public class TesNumberComputingMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions.Show attractor stability analysis");
 	}
 
 	//Menu action pressed

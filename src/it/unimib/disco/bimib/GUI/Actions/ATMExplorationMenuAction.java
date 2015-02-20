@@ -37,7 +37,7 @@ public class ATMExplorationMenuAction extends AbstractCyAction{
 	public ATMExplorationMenuAction(CyApplicationManager appManager, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, VizMapperManager vizMapperManager) {
 
-		super("Show ATM", 
+		super("Show Attractor Transition Matrix", 
 				adapter.getCyApplicationManager(),
 				"network",
 				adapter.getCyNetworkViewManager());
@@ -47,7 +47,7 @@ public class ATMExplorationMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 		this.vizMapperManager = vizMapperManager;
 
-		setPreferredMenu("Apps.CABERNET");
+		setPreferredMenu("Apps.CABERNET.Functions.Show attractor stability analysis");
 	}
 
 	//Menu action pressed

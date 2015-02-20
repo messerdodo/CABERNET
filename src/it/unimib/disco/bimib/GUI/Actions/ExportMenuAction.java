@@ -33,7 +33,7 @@ public class ExportMenuAction extends AbstractCyAction{
 
 	public ExportMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
 
-		super("CABERNET Objects", 
+		super("Export options", 
 				adapter.getCyApplicationManager(),
 				"network",
 				adapter.getCyNetworkViewManager());
@@ -43,7 +43,7 @@ public class ExportMenuAction extends AbstractCyAction{
 		this.simulationsContainer = simulationsContainer;
 
 
-		setPreferredMenu("File.Export");
+		setPreferredMenu("Apps.CABERNET");
 	}
 
 	//Menu action pressed

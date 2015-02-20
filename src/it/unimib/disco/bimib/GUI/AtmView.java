@@ -14,12 +14,15 @@ import it.unimib.disco.bimib.Middleware.ViewManager;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 
+
 //Java Swing and AWT imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -166,7 +170,8 @@ public class AtmView extends JFrame {
 				}
 				
 			} catch (Exception exception){
-				System.out.println(exception);
+				String message = (String) (exception.getMessage().equals("") ? exception : exception.getMessage());
+				JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE, null);
 			}
 			
 		}

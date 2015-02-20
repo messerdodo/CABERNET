@@ -42,7 +42,7 @@ public class TesNumberComputingAction implements CyNetworkViewContextMenuFactory
 
 	@Override
 	public CyMenuItem createMenuItem(CyNetworkView netView) {
-		JMenuItem menuItem = new JMenuItem("Show TES number chart");
+		JMenuItem menuItem = new JMenuItem("Show threshold-dependent TES variation chart");
 		menuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event)
 			{
