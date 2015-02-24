@@ -41,7 +41,7 @@ public class SCCTarjan {
 				}
 			}
 		}
-		System.out.println(this.graph);
+		//System.out.println(this.graph);
 	}
 
 	public ArrayList<ArrayList<Integer>> scc() {
@@ -93,22 +93,22 @@ public class SCCTarjan {
 	public static void main(String[] args) {
 
 		double[][] adj_mat = new double[4][4];
-		adj_mat[0][0] = 0.0;
-		adj_mat[0][1] = 1.0;
-		adj_mat[0][2] = 1.0;
-		adj_mat[0][3] = 1.0;
+		adj_mat[0][0] = 0.93;
+		adj_mat[0][1] = 0.05;
+		adj_mat[0][2] = 0.02;
+		adj_mat[0][3] = 0.0;
 		adj_mat[1][0] = 0.0;
-		adj_mat[1][1] = 0.0;
-		adj_mat[1][2] = 1.0;
-		adj_mat[1][3] = 0.0;
-		adj_mat[2][0] = 0.0;
-		adj_mat[2][1] = 1.0;
-		adj_mat[2][2] = 0.0;
+		adj_mat[1][1] = 0.99;
+		adj_mat[1][2] = 0.0;
+		adj_mat[1][3] = 0.01;
+		adj_mat[2][0] = 0.08;
+		adj_mat[2][1] = 0.0;
+		adj_mat[2][2] = 0.92;
 		adj_mat[2][3] = 0.0;
 		adj_mat[3][0] = 0.0;
-		adj_mat[3][1] = 0.0;
+		adj_mat[3][1] = 0.01;
 		adj_mat[3][2] = 0.0;
-		adj_mat[3][3] = 0.0;
+		adj_mat[3][3] = 0.99;
 
 		ArrayList<ArrayList<Integer>> components = new SCCTarjan(adj_mat).scc();
 		System.out.println("SCC graph " + components);
@@ -126,7 +126,7 @@ public class SCCTarjan {
 		for(int i = 0; i < components.size(); i++)
 			temporaryTesSet[i] = 1;
 		int j = 0;
-		System.out.println("TES " + Arrays.toString(temporaryTesSet));
+		System.out.println("TES at beginning" + Arrays.toString(temporaryTesSet));
 		//Removes the scc that are not tes.
 		for(int i = 0; i < adj_mat.length; i++){
 			j = 0;
@@ -137,7 +137,7 @@ public class SCCTarjan {
 				temporaryTesSet[assignments[i]] = 0;
 			}
 		}
-		System.out.println("TES " + Arrays.toString(temporaryTesSet));
+		System.out.println("TES at the ending" + Arrays.toString(temporaryTesSet));
 		
 		
 	}

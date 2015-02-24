@@ -352,7 +352,14 @@ public class TesManager {
 		tree.addNodeManually(nodeId, level, parentId);
 	}
 
+	/**
+	 * This static function returns the TES graph adjacency matrix
+	 * given the atm
+	 * @param atm: the Attractors Transition Matrix
+	 * @return the TES graph adjacency matrix
+	 */
 	public static double[][] getTesGraph(double[][] atm){
+		//Gets the Strongly Connected Components
 		SCCTarjan sccCalculator = new SCCTarjan(atm);
 		ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
 
@@ -380,18 +387,22 @@ public class TesManager {
 				temporaryTesSet[assignments[i]] = 0;
 			}
 		}
-		
+		//Initialize the TES graph adjacency matrix
 		double[][] tesGraphMatrix = new double[atm.length][atm.length]; 
 		for(int i = 0; i < atm.length; i++){
 			for(int k = 0; k < atm.length; k++){
 				tesGraphMatrix[i][k] = 0.0;
 			}
 		}
+		//Creates the TES graph adjacency matrix:
+		//Only the links between attractors in a TES are copied
+		ArrayList<Integer> tes;
 		for(int t = 0; t < temporaryTesSet.length; t++){
 			if(temporaryTesSet[t] == 1){
-				for(int a1 = 0; a1 < scc.get(t).size(); a1++)
-					for(int a2 = 0; a2 < scc.get(t).size(); a2++)
-						tesGraphMatrix[a1][a2] = atm[a1][a2];
+				tes = scc.get(t);
+				for(int a1 = 0; a1 < tes.size(); a1++)
+					for(int a2 = 0; a2 < tes.size(); a2++)
+						tesGraphMatrix[tes.get(a1)][tes.get(a2)] = atm[tes.get(a1)][tes.get(a2)];
 			}
 		}
 		return tesGraphMatrix;

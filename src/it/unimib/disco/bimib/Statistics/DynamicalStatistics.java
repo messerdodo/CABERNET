@@ -32,7 +32,7 @@ public class DynamicalStatistics {
 	}
 
 	/**
-	 * This method returns an Array List with all the attractors lengths.
+	 * This method returns an Array List with all the attractor lengths.
 	 * The array is not computed when the method is invoked, but is returned the stored version.
 	 * @return all the attractors lengths.
 	 * @throws ParamDefinitionException

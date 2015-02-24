@@ -15,26 +15,34 @@ import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;
 import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Statistics.DynamicalStatistics;
 
+
 //System imports
 import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTabbedPane;
 import javax.swing.JCheckBox;
+
 import java.awt.FlowLayout;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Component;
+
 import javax.swing.Box;
+
 
 //MATH3 imports
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -105,14 +113,14 @@ public class DynamicalStatisticsView extends JFrame {
 	private JPanel pnlOscillatingNodes;
 	private ChartPanel pnlOscillatingNodesChart;
 	
-
 	/**
 	 * Create the frame.
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws ParamDefinitionException 
 	 */
-	public DynamicalStatisticsView(String currentNetwork, final SimulationsContainer simulations) throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
+	public DynamicalStatisticsView(final String currentNetwork, final SimulationsContainer simulations) 
+			throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
 		this.simulations = simulations;
 		//Current network dynamical statistics
 		dynStats = new DynamicalStatistics(this.simulations.getSimulation(currentNetwork).getSamplingManager());
@@ -221,7 +229,7 @@ public class DynamicalStatisticsView extends JFrame {
 					final JFileChooser fc = new JFileChooser();
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					DynamicalStatistics dymStatsAux;
-					ArrayList<Integer> attractorsLengths;
+					HashMap<String, ArrayList<Integer>> attractorLengths = new HashMap<String, ArrayList<Integer>>();
 					String outputPath;
 					//In response to a button click:
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
@@ -229,16 +237,16 @@ public class DynamicalStatisticsView extends JFrame {
 						outputPath = outputPath + "/attractors_lengths.csv";
 						//Get all the values of lengths if the checkbox is selected
 						if(chckbxAttLenAllNetworks.isSelected()){
-							attractorsLengths = new ArrayList<Integer>();
+							attractorLengths = new HashMap<String, ArrayList<Integer>>();
 							for(String simId : simulations.getSimulationsId()){
 								dymStatsAux = new DynamicalStatistics(simulations.getSimulation(simId).getSamplingManager());
-								attractorsLengths.addAll(dymStatsAux.getAttractorsLength(true));
+								attractorLengths.put(simId, dymStatsAux.getAttractorsLength(true));
 							}
 						}else{
-							attractorsLengths = dynStats.getAttractorsLength();
+							attractorLengths.put(currentNetwork, dynStats.getAttractorsLength());
 						}
 						//Stores the attractors lengths in the selected path
-						Output.saveAttractorsLengths(outputPath, attractorsLengths);
+						Output.saveAttractorsLengths(outputPath, attractorLengths);
 					}
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
@@ -373,7 +381,7 @@ public class DynamicalStatisticsView extends JFrame {
 					final JFileChooser fc = new JFileChooser();
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					DynamicalStatistics dymStatsAux;
-					ArrayList<Integer> basinsOfAttraction;
+					HashMap<String, ArrayList<Integer>> basinsOfAttraction = new HashMap<String, ArrayList<Integer>>();
 					String outputPath;
 					//In response to a button click:
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
@@ -381,13 +389,13 @@ public class DynamicalStatisticsView extends JFrame {
 						outputPath = outputPath + "/basins_of_attraction.csv";
 						//Get all the values of basins of attraction if the checkbox is selected
 						if(chckbxBasinAllNetworks.isSelected()){
-							basinsOfAttraction = new ArrayList<Integer>();
+							basinsOfAttraction = new HashMap<String, ArrayList<Integer>>();
 							for(String simId : simulations.getSimulationsId()){
 								dymStatsAux = new DynamicalStatistics(simulations.getSimulation(simId).getSamplingManager());
-								basinsOfAttraction.addAll(dymStatsAux.getBasinOfAttraction(true));
+								basinsOfAttraction.put(simId, dymStatsAux.getBasinOfAttraction(true));
 							}
 						}else{
-							basinsOfAttraction = dynStats.getBasinOfAttraction();
+							basinsOfAttraction.put(currentNetwork, dynStats.getBasinOfAttraction());
 						}
 						//Stores the basins of attraction in the selected path
 						Output.saveBasinOfAttractionFile(outputPath, basinsOfAttraction);

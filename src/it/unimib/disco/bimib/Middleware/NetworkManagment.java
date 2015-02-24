@@ -353,7 +353,7 @@ public class NetworkManagment {
 			attractorsNodes[i] = tesGraph.addNode();
 
 		CyEdge transitionEdge;
-		for(int i = 0; i < tesChartMatrix.length; i++){
+		for(int i = 0; i < restrictedTesMatrix.length; i++){
 			for(int j = 0; j < restrictedTesMatrix.length; j++){
 				if(restrictedTesMatrix[i][j] != 0.0){
 					transitionEdge = tesGraph.addEdge(attractorsNodes[i], attractorsNodes[j], true);

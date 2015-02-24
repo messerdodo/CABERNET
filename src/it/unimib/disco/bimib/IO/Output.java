@@ -457,7 +457,7 @@ public class Output {
 	 * @param lengths: The integer array list object with the lengths
 	 * @throws IOException
 	 */
-	public static void saveAttractorsLengths(String fileName, ArrayList<Integer> lengths) throws IOException{
+	public static void saveAttractorsLengths(String fileName, HashMap<String,ArrayList<Integer>> lengths) throws IOException{
 		//Checks the param values
 		if(fileName == null)
 			throw new NullPointerException("The file name must not be null for the attractors lengths file.");
@@ -466,9 +466,15 @@ public class Output {
 		//Defines the writer streams
 		FileWriter writer = new FileWriter(fileName);
 		PrintWriter printer = new PrintWriter(writer);
-		for(Integer observation : lengths){
-			printer.print(observation + ",");
+		for(String network_id : lengths.keySet()){
+			printer.print(network_id + ",");
 			printer.flush();
+			for(Integer observation : lengths.get(network_id)){
+				printer.print(observation + ",");
+				printer.flush();
+			}
+			//New line
+			printer.println("");
 		}
 		//Closes the stream
 		printer.close();
@@ -481,7 +487,8 @@ public class Output {
 	 * @param dimensions: The integer array with the basin of attraction dimensions
 	 * @throws IOException
 	 */
-	public static void saveBasinOfAttractionFile(String fileName, ArrayList<Integer> dimensions) throws IOException{
+	public static void saveBasinOfAttractionFile(String fileName, HashMap<String, ArrayList<Integer>> dimensions) 
+			throws IOException{
 		//Checks the param values
 		if(fileName == null)
 			throw new NullPointerException("The file name must not be null for the basin of attraction dimension file.");
@@ -490,9 +497,15 @@ public class Output {
 		//Defines the writer streams
 		FileWriter writer = new FileWriter(fileName);
 		PrintWriter printer = new PrintWriter(writer);
-		for(Integer observation : dimensions){
-			printer.print(observation + ",");
+		for(String network_id : dimensions.keySet()){
+			printer.print(network_id + ",");
 			printer.flush();
+			for(Integer observation : dimensions.get(network_id)){
+				printer.print(observation + ",");
+				printer.flush();
+			}
+			//New line
+			printer.println("");
 		}
 		//Closes the stream
 		printer.close();

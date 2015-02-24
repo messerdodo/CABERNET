@@ -13,6 +13,7 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Statistics.DynamicalStatistics;
 
+
 //System imports
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,10 +26,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -264,13 +268,15 @@ public class ExportView extends JFrame {
 			//Basins of attraction
 			if(chkBasinsOfAttraction.isSelected()){
 				DynamicalStatistics dynStats = new DynamicalStatistics(sim.getSamplingManager());
-				ArrayList<Integer> basins = dynStats.getBasinOfAttraction(true);
+				HashMap<String, ArrayList<Integer>> basins = new HashMap<String, ArrayList<Integer>>();
+				basins.put(sim.getNetworkId(), dynStats.getBasinOfAttraction(true));
 				Output.saveBasinOfAttractionFile(networkName + "_basins_of_attraction.csv", basins);
 			}
 			//Attractors lengths
 			if(chkAttractorsLengths.isSelected()){
 				DynamicalStatistics dynStats = new DynamicalStatistics(sim.getSamplingManager());
-				ArrayList<Integer> lengths = dynStats.getAttractorsLength(true);
+				HashMap<String, ArrayList<Integer>> lengths = new HashMap<String, ArrayList<Integer>>();
+				lengths.put(sim.getNetworkId(), dynStats.getAttractorsLength(true));
 				Output.saveAttractorsLengths(networkName + "_attractors_lengths.csv", lengths);
 			}
 		}

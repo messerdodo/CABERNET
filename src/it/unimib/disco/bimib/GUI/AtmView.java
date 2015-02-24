@@ -70,7 +70,7 @@ public class AtmView extends JFrame {
 	public AtmView(AtmManager atmManager, SamplingManager samplingManager, CySwingAppAdapter adapter, 
 			CyApplicationManager appManager, String networkId, VizMapperManager vizMapperManager, 
 			CyNetwork currentNetwork) {
-		setTitle("ATM");
+		setTitle("ATM (" + networkId + ")");
 		setResizable(false);
 		this.atmManager = atmManager;
 		this.samplingManager = samplingManager;
