@@ -7,6 +7,7 @@
 package it.unimib.disco.bimib.Task;
 //GRNSim imports
 import it.unimib.disco.bimib.Sampling.SamplingManager;
+import it.unimib.disco.bimib.Utility.UtilityRandom;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.NotExistingNodeException;
 import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;
@@ -16,9 +17,11 @@ import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
 
+
 //System imports
 import java.util.ArrayList;
 import java.util.Properties;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -40,7 +43,32 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 	private VizMapperManager vizMapperManager;
 
 	
-
+	public DynamicStatisticsComputationTask(GraphManager graphManager, SamplingManager samplingManager, 
+			int permanentKnockIn, int permanentKnockOut,
+			Properties perturbationFeatures, String networkId,
+			CySwingAppAdapter adapter, VizMapperManager vizMapperManager, 
+			CyNetwork currentNetwork) throws ParamDefinitionException, NotExistingNodeException{
+		
+		this.perturbationFeatures = perturbationFeatures;
+		this.adapter = adapter;
+		this.appManager = this.adapter.getCyApplicationManager();
+		this.networkId = networkId;
+		
+		this.mutatedNetworkManager = graphManager.copy();
+		this.samplingManager = samplingManager;
+		
+		this.currentNetwork = currentNetwork;
+		this.vizMapperManager = vizMapperManager;
+		
+		//Sets the permanent mutations (knock-in and knock-out)
+		ArrayList<Integer> knockIn = UtilityRandom.randomSubset(graphManager.getNodesNumber(), permanentKnockIn);
+		ArrayList<Integer> knockOut = UtilityRandom.randomSubset(graphManager.getNodesNumber(), permanentKnockOut, knockIn);
+		for(Integer node: knockIn)
+			this.mutatedNetworkManager.perpetuallyChangeFunctionValue(node, true);
+		for(Integer node: knockOut)
+			this.mutatedNetworkManager.perpetuallyChangeFunctionValue(node, false);
+	}
+	
 	public DynamicStatisticsComputationTask(GraphManager graphManager, SamplingManager samplingManager, 
 			ArrayList<String> permanentKnockIn, ArrayList<String> permanentKnockOut,
 			Properties perturbationFeatures, String networkId,
@@ -59,13 +87,13 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 		this.currentNetwork = currentNetwork;
 		this.vizMapperManager = vizMapperManager;
 		
-		//Fixes the knock-in nodes if specified
+		//Sets the knock-in nodes if specified
 		if(permanentKnockIn != null){
 			for(String geneName : permanentKnockIn)
 				this.mutatedNetworkManager.perpetuallyChangeFunctionValue(geneName, true);
 		}
 		
-		//Fixes the knock-out nodes if specified
+		//Sets the knock-out nodes if specified
 		if(permanentKnockOut != null){
 			for(String geneName : permanentKnockOut)
 				this.mutatedNetworkManager.perpetuallyChangeFunctionValue(geneName, false);
