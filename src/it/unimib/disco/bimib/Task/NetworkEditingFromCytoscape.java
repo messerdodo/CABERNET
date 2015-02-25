@@ -8,12 +8,15 @@
 package it.unimib.disco.bimib.Task;
 //GRNSim imports
 import it.unimib.disco.bimib.Sampling.SamplingManager;
+import it.unimib.disco.bimib.Statistics.DynamicalStatistics;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
+import it.unimib.disco.bimib.Utility.OutputConstants;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Exceptions.InputFormatException;
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
+import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -22,9 +25,15 @@ import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
 import it.unimib.disco.bimib.CABERNET.Simulation;
 import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 
+
+
 //System imports
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
+
+
 
 
 
@@ -99,9 +108,10 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		double[] deltas;
 		boolean match;
 		int net = 0;
+		String outputPath;
 		CyNetwork parent;
 		GraphManager cytoscapeNetwork = cytoscapeBridge.getNetworkFromCytoscape();
-		
+
 		while(net < requiredNetworks){
 			taskMonitor.setStatusMessage("Network " + (net + 1) + ": Network creation");
 			match = true;
@@ -109,7 +119,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			parent = null;
 			//Creates the network
 			graphManager = cytoscapeNetwork.copy();
-			
+
 			graphManager.modify(this.simulationFeatures);
 			networkId = "network_" + (net + 1);
 
@@ -155,6 +165,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			}
 			//Stores the network only if it matches with the given tree (if the tree matching is required else it always match)
 			if(match){
+				taskMonitor.setStatusMessage("Network " + (net + 1) + ": Exporting");
 				taskMonitor.setProgress((net + 1)/((double)requiredNetworks));
 				//Adds the simulation in the container
 				newSim = new Simulation(networkId);
@@ -174,9 +185,72 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 					else
 						this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId, parent);
 				net = net + 1;
+
+				//Exporting
+				if(requiredOutputs.getProperty(OutputConstants.EXPORT_TO_FILE_SYSTEM, OutputConstants.NO).equals(OutputConstants.YES)){
+					outputPath = requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "");
+					outputPath = outputPath + "/" + networkId;
+					//Creates the network folder
+					Output.createFolder(outputPath);
+
+					//GRNML File
+					if(requiredOutputs.getProperty(OutputConstants.GRNML_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.createGRNMLFile(graphManager.getGraph(), outputPath + "/network.grnml");
+					}
+
+					//SIF File
+					if(requiredOutputs.getProperty(OutputConstants.SIF_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.createSIFFile(graphManager.getGraph(), outputPath + "/network.sif");
+					}
+
+					//ATM File
+					if(requiredOutputs.getProperty(OutputConstants.ATM_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.createATMFile(atmManager.getAtm(), outputPath + "/atm.csv");
+					}
+
+					//STATES IN EACH ATTRACTOR FILE
+					if(requiredOutputs.getProperty(OutputConstants.STATES_IN_EACH_ATTRACTOR, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.saveStatesAttractorsFile(outputPath + "/states_in_each_attractor.csv", samplingManager.getAttractorFinder());
+					}
+
+					//ATTRACTORS FILE
+					if(requiredOutputs.getProperty(OutputConstants.ATTRACTORS, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.saveAttractorsFile(samplingManager.getAttractorFinder(), outputPath + "/attractors.csv");
+					}
+
+					//SYNTHESIS FILE
+					if(requiredOutputs.getProperty(OutputConstants.SYNTHESIS_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
+						Output.createSynthesisFile(newSim.getNetworkStatistics(), outputPath + "/synthesis.csv");
+					}
+				}
+
 			}else{
 				taskMonitor.setStatusMessage("Network " + (net + 1) + ": No match");
 			}
+		}
+		//COMMON STATISTICS
+
+		DynamicalStatistics dymStats;
+
+		//
+		if(requiredOutputs.getProperty(OutputConstants.ATTRACTOR_LENGTHS, OutputConstants.NO).equals(OutputConstants.YES)){
+			HashMap<String, ArrayList<Integer>> attractorLengths = new HashMap<String, ArrayList<Integer>>();
+			for(String simId : this.simulationsContainer.getSimulationsId()){
+				dymStats = new DynamicalStatistics(this.simulationsContainer.getSimulation(simId).getSamplingManager());
+				attractorLengths.put(simId, dymStats.getAttractorsLength(true));
+			}
+			Output.saveAttractorsLengths(requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "") + "/attractor_lengths.csv", 
+					attractorLengths);
+		}
+		//Basins of attraction
+		if(requiredOutputs.getProperty(OutputConstants.BASINS_OF_ATTRACTION, OutputConstants.NO).equals(OutputConstants.YES)){
+			HashMap<String, ArrayList<Integer>> basinsOfAttraction = new HashMap<String, ArrayList<Integer>>();
+			for(String simId : this.simulationsContainer.getSimulationsId()){
+				dymStats = new DynamicalStatistics(this.simulationsContainer.getSimulation(simId).getSamplingManager());
+				basinsOfAttraction.put(simId, dymStats.getBasinOfAttraction(true));
+			}
+			Output.saveAttractorsLengths(requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "") + "/basins_of_attraction.csv", 
+					basinsOfAttraction);
 		}
 	}
 }

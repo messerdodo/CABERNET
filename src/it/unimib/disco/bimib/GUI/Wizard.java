@@ -2879,10 +2879,13 @@ public class Wizard extends JDialog {
 						}
 						//Sets the output parameters
 						outputs.setProperty(OutputConstants.EXPORT_TO_FILE_SYSTEM, OutputConstants.YES);
+						outputs.setProperty(OutputConstants.OUTPUT_PATH, txtOutputPath.getText());
 						outputs.setProperty(OutputConstants.GRNML_FILE, 
 								chkGrnml.isSelected() ? OutputConstants.YES : OutputConstants.NO);
 						outputs.setProperty(OutputConstants.SIF_FILE, 
 								chkSif.isSelected() ? OutputConstants.YES : OutputConstants.NO);
+						outputs.setProperty(OutputConstants.ATM_FILE, 
+								chkAtm.isSelected() ? OutputConstants.YES : OutputConstants.NO);
 						outputs.setProperty(OutputConstants.STATES_IN_EACH_ATTRACTOR, 
 								chkStates.isSelected() ? OutputConstants.YES : OutputConstants.NO);
 						outputs.setProperty(OutputConstants.ATTRACTORS, 

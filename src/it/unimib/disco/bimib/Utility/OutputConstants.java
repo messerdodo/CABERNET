@@ -70,6 +70,11 @@ public class OutputConstants {
 	public static final String NO = "no";
 	
 	/**
+	 * This key is used in order to specify the output path.
+	 */
+	public static final String OUTPUT_PATH = "output-path";
+	
+	/**
 	 * GRNML file export key
 	 */
 	public static final String GRNML_FILE = "grnml-file-export";
@@ -78,6 +83,11 @@ public class OutputConstants {
 	 * SIF file export key
 	 */
 	public static final String SIF_FILE = "sif-file-export";
+	
+	/**
+	 * ATM csv file export key
+	 */
+	public static final String ATM_FILE = "atm-file";
 	
 	/**
 	 * States in each attractor export key
