@@ -413,6 +413,39 @@ public class Output {
 		writer.close();
 	}
 
+	/**
+	 * This method saves the avalanches in a csv file. 
+	 * The first line of the file is the header.
+	 * @param fileName: The name of the file
+	 * @param avalanches: networks-avalanches hash-map
+	 * @throws Exception 
+	 */
+	public static void saveAvalaches(String fileName, HashMap<String, ArrayList<Integer>> avalanches) throws IOException{
+		//Checks the param values
+		if(fileName == null)
+			throw new NullPointerException("The file name must not be null for the avalanches distribution file");
+		if(avalanches == null)
+			throw new NullPointerException("The avalanches object must be not null for saving the file");
+
+		//Defines the writer streams
+		FileWriter writer = new FileWriter(fileName);
+		PrintWriter printer = new PrintWriter(writer);
+
+		for(String networkId : avalanches.keySet()){
+			printer.print(networkId);
+			printer.flush();
+			for(Integer ava : avalanches.get(networkId)){
+				printer.print("," + ava);
+				printer.flush();
+			}
+			printer.println();
+			printer.flush();
+		}
+
+		//Closes the stream
+		printer.close();
+		writer.close();
+	}
 
 	/**
 	 * This method saves the sensitivity in a csv file. 
@@ -446,6 +479,53 @@ public class Output {
 			printer.flush();
 		}
 
+		//Closes the stream
+		printer.close();
+		writer.close();
+	}
+	
+	/**
+	 * This method saves the sensitivity in a csv file. 
+	 * The first line of the file is the header.
+	 * @param fileName: The name of the file
+	 * @param sensitivity: networks-sensitivities hash-map
+	 * @throws Exception 
+	 */
+	public static void saveSensitivity(String fileName, ArrayList<String> genesNames, HashMap<String, int[]>sensitivity) throws Exception{
+		//Checks the param values
+		if(fileName == null)
+			throw new NullPointerException("The file name must not be null for the sensitivity file");
+		if(genesNames == null)
+			throw new NullPointerException("The names of the genes must be not null for saving the file");
+		if(sensitivity == null)
+			throw new NullPointerException("The sensitivity must be not null for saving the file");
+		
+		//Defines the writer streams
+		FileWriter writer = new FileWriter(fileName);
+		PrintWriter printer = new PrintWriter(writer);
+
+		//Header
+		printer.print("NETWORK_ID");
+		printer.flush();
+		
+		for(String gene_name : genesNames){
+			printer.print("," + gene_name);
+			printer.flush();
+		}
+		printer.println();
+		
+		for(String networkId : sensitivity.keySet()){
+			printer.print(networkId);
+			printer.flush();
+			//Writes the sensitivity for each gene
+			for(Integer sen : sensitivity.get(networkId)){
+				printer.print("," + sen);
+				printer.flush();
+			}
+			printer.println();
+			printer.flush();
+		}
+		
 		//Closes the stream
 		printer.close();
 		writer.close();

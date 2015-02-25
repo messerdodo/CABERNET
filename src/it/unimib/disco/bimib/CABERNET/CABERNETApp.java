@@ -11,8 +11,6 @@ package it.unimib.disco.bimib.CABERNET;
 import it.unimib.disco.bimib.GUI.Actions.ATMExplorationMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsAction;
 import it.unimib.disco.bimib.GUI.Actions.ComputeDynamicPerturbationsMenuAction;
-import it.unimib.disco.bimib.GUI.Actions.DynamicPerturbationsStatsAction;
-import it.unimib.disco.bimib.GUI.Actions.DynamicPerturbationsStatsMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.DynamicalStatsAction;
 import it.unimib.disco.bimib.GUI.Actions.DynamicalStatsMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.ExploreFunctionMenuAction;
@@ -62,11 +60,6 @@ public class CABERNETApp extends AbstractCySwingApp{
 				CyNetworkViewContextMenuFactory.class,
 				new Properties());
 		swingAdapter.getCySwingApplication().addAction(new ATMExplorationMenuAction(swingAdapter.getCyApplicationManager(), swingAdapter, this.simulationsContainer, viz));
-
-		//Registers the dynamic perturbations statistics view service
-		registrar.registerService(new DynamicPerturbationsStatsAction(swingAdapter, this.simulationsContainer), CyNetworkViewContextMenuFactory.class,
-				new Properties());
-		swingAdapter.getCySwingApplication().addAction(new DynamicPerturbationsStatsMenuAction(swingAdapter, this.simulationsContainer));
 
 		//Registers the dynamic perturbations statistics computation service
 		registrar.registerService(new ComputeDynamicPerturbationsAction(swingAdapter, this.simulationsContainer, viz), CyNetworkViewContextMenuFactory.class,

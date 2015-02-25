@@ -27,6 +27,7 @@ public class TesManager {
 	private Atm atm;
 	private AttractorsFinder attractorsFinder;
 	private TesTree createdTree;
+	private double[] thresholds;
 
 	/**
 	 * Default constructor 
@@ -38,6 +39,7 @@ public class TesManager {
 
 		this.atm = atm.getAtm();
 		this.attractorsFinder = sampling.getAttractorFinder();	
+		this.thresholds = null;
 		this.setCreatedTree(null);
 	}
 
@@ -53,6 +55,10 @@ public class TesManager {
 	 */
 	private void setCreatedTree(TesTree createdTree) {
 		this.createdTree = createdTree;
+	}
+	
+	public double[] getThresholds(){
+		return this.thresholds;
 	}
 
 	/**

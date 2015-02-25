@@ -7,13 +7,11 @@
 package it.unimib.disco.bimib.GUI;
 
 //GRNSim imports
-import it.unimib.disco.bimib.CABERNET.Simulation;
+import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 import it.unimib.disco.bimib.Exceptions.FeaturesException;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Task.DynamicStatisticsComputationTask;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
-
-
 
 
 //System imports
@@ -49,6 +47,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Properties;
+
+
+
 
 
 
@@ -98,27 +99,34 @@ public class DynamicStatisticsFrame extends JFrame {
 	private JCheckBox chkPermanentSpecific;
 	private JTextField txtPermRandomKnockIn;
 	private JTextField txtPermRandomKnockOut;
+	private JCheckBox chkAllNetworks;
 
 	//Cytoscape app objects
 	private CySwingAppAdapter adapter;
 	private CyNetwork currentNetwork;
 
 	//CABERNET Objects
-	private Simulation simulation;
+	private SimulationsContainer simulations;
 	private VizMapperManager vizMapperManager;
 
 
+	public DynamicStatisticsFrame(CySwingAppAdapter adapter, SimulationsContainer simulations, CyNetwork currentNetwork, 
+			VizMapperManager vizMapperManager){
+
+		//Creates the view
+		this();
+
+		this.adapter = adapter;
+		this.simulations = simulations;
+		this.currentNetwork = currentNetwork;
+		this.vizMapperManager = vizMapperManager;
+
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public DynamicStatisticsFrame(CySwingAppAdapter adapter, Simulation simulation, CyNetwork currentNetwork, 
-			VizMapperManager vizMapperManager) {
-
-		this.adapter = adapter;
-		this.simulation = simulation;
-		this.currentNetwork = currentNetwork;
-		this.vizMapperManager = vizMapperManager;
+	public DynamicStatisticsFrame() {
 
 		setTitle("Dynamic Statistics");
 		setResizable(false);
@@ -149,13 +157,13 @@ public class DynamicStatisticsFrame extends JFrame {
 
 		JPanel experimentsPanel = new JPanel();
 		pnlTemporaryMutations.add(experimentsPanel, BorderLayout.SOUTH);
-		
-				JLabel lblNewLabel_1 = new JLabel("Number of randomly selected single/multiple node perturbations for each attractor state");
-		
-				txtNumberOfExperiments = new JTextField();
-				txtNumberOfExperiments.setHorizontalAlignment(SwingConstants.CENTER);
-				txtNumberOfExperiments.setText("1");
-				txtNumberOfExperiments.setColumns(10);
+
+		JLabel lblNewLabel_1 = new JLabel("Number of randomly selected single/multiple node perturbations for each attractor state");
+
+		txtNumberOfExperiments = new JTextField();
+		txtNumberOfExperiments.setHorizontalAlignment(SwingConstants.CENTER);
+		txtNumberOfExperiments.setText("1");
+		txtNumberOfExperiments.setColumns(10);
 
 		JLabel lblNewLabel = new JLabel("Ratio of randomly selected attractor states in which performing the perturbations ");
 
@@ -163,31 +171,39 @@ public class DynamicStatisticsFrame extends JFrame {
 		txtRatioOfStatesToPerturb.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRatioOfStatesToPerturb.setText("0.5");
 		txtRatioOfStatesToPerturb.setColumns(10);
+
+		chkAllNetworks = new JCheckBox("Repeat for all the networks");
 		GroupLayout gl_experimentsPanel = new GroupLayout(experimentsPanel);
 		gl_experimentsPanel.setHorizontalGroup(
-			gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
+				gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_experimentsPanel.createSequentialGroup()
-					.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE))
-					.addGap(18)
-					.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE))
-					.addGap(36))
-		);
+						.addContainerGap()
+						.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
+								.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
+										.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+										.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE))
+										.addGap(36))
+										.addGroup(gl_experimentsPanel.createSequentialGroup()
+												.addComponent(chkAllNetworks)
+												.addContainerGap())
+				);
 		gl_experimentsPanel.setVerticalGroup(
-			gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
+				gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_experimentsPanel.createSequentialGroup()
-					.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
+						.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
+										.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(chkAllNetworks)
+										.addContainerGap())
+				);
 		experimentsPanel.setLayout(gl_experimentsPanel);
 
 		JPanel pnlMutationType = new JPanel();
@@ -274,16 +290,16 @@ public class DynamicStatisticsFrame extends JFrame {
 		txtNumberFlipNodes.setColumns(10);
 
 		txtSpecificFlipGenes = new JTextArea();
-		txtSpecificFlipGenes.setEnabled(false);
-		sl_pnlFlips.putConstraint(SpringLayout.WEST, txtSpecificFlipGenes, 10, SpringLayout.WEST, pnlFlips);
+		sl_pnlFlips.putConstraint(SpringLayout.NORTH, txtSpecificFlipGenes, 100, SpringLayout.NORTH, pnlFlips);
+		sl_pnlFlips.putConstraint(SpringLayout.WEST, txtSpecificFlipGenes, 0, SpringLayout.WEST, lblPerturbationDuration);
+		sl_pnlFlips.putConstraint(SpringLayout.SOUTH, txtSpecificFlipGenes, -64, SpringLayout.SOUTH, pnlFlips);
 		sl_pnlFlips.putConstraint(SpringLayout.EAST, txtSpecificFlipGenes, 0, SpringLayout.EAST, txtMaxFlipTimes);
+		txtSpecificFlipGenes.setEnabled(false);
 		pnlFlips.add(txtSpecificFlipGenes);
 
 		JLabel lblSetTheSpecific = new JLabel("Specify the name of the nodes to perturb, separated by a comma symbol");
-		sl_pnlFlips.putConstraint(SpringLayout.NORTH, txtSpecificFlipGenes, 6, SpringLayout.SOUTH, lblSetTheSpecific);
-		sl_pnlFlips.putConstraint(SpringLayout.SOUTH, txtSpecificFlipGenes, 106, SpringLayout.SOUTH, lblSetTheSpecific);
-		sl_pnlFlips.putConstraint(SpringLayout.SOUTH, lblSetTheSpecific, -195, SpringLayout.SOUTH, pnlFlips);
 		sl_pnlFlips.putConstraint(SpringLayout.WEST, lblSetTheSpecific, 0, SpringLayout.WEST, lblPerturbationDuration);
+		sl_pnlFlips.putConstraint(SpringLayout.SOUTH, lblSetTheSpecific, -6, SpringLayout.NORTH, txtSpecificFlipGenes);
 		pnlFlips.add(lblSetTheSpecific);
 
 		pnlKnockInKnockOut = new JPanel();
@@ -602,18 +618,24 @@ public class DynamicStatisticsFrame extends JFrame {
 
 				closeView = true;
 				DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
-				if(chkPermanentSpecific.isSelected()){
-				dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(simulation.getGraphManager(),
-						simulation.getSamplingManager(), permanentKnockIn, permanentKnockOut, perturbationFeatures, 
-						simulation.getNetworkId(), adapter, vizMapperManager, currentNetwork)));
+				SimulationsContainer sims;
+				String selectedNetwork = currentNetwork.getRow(currentNetwork).get(CyNetwork.NAME, String.class);
+				if(!chkAllNetworks.isSelected()){
+					sims = new SimulationsContainer();
+					sims.addSimulation(selectedNetwork, simulations.getSimulation(selectedNetwork));
 				}else{
-					dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(simulation.getGraphManager(),
-							simulation.getSamplingManager(), randomKI, randomKO, perturbationFeatures, 
-							simulation.getNetworkId(), adapter, vizMapperManager, currentNetwork)));
+					sims = simulations;
+				}
+				if(chkPermanentSpecific.isSelected()){
+					dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(sims, permanentKnockIn,
+							permanentKnockOut, perturbationFeatures, adapter, vizMapperManager, currentNetwork)));
+				}else{
+					dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(sims, randomKI,
+							randomKO, perturbationFeatures, adapter, vizMapperManager, currentNetwork)));
 				}
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-				
+
 			}finally{
 				//Closes the view only if the exception is related to the computation
 				if(closeView){

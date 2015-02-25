@@ -51,5 +51,12 @@ public class SimulationsContainer{
 	public Set<String> getSimulationsId(){
 		return this.simulations.keySet();
 	}
+	
+	/**
+	 * This method returns the number of stored simulations
+	 */
+	public int size(){
+		return this.simulations.size();
+	}
 
 }

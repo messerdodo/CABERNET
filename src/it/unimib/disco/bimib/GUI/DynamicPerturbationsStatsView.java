@@ -9,11 +9,12 @@ package it.unimib.disco.bimib.GUI;
 
 //GRNSim imports
 import it.unimib.disco.bimib.IO.Output;
-import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
 
 //System imports
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -29,6 +30,11 @@ import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JComboBox;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.DefaultComboBoxModel;
 
 //Math3 imports
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -45,7 +51,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 
-
 public class DynamicPerturbationsStatsView extends JFrame {
 
 	/**
@@ -53,25 +58,54 @@ public class DynamicPerturbationsStatsView extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private HashMap<String, ArrayList<Integer>> avalanches;
+	private HashMap<String, int[]> sensitivity;
 	private double[] avalanchesObs;
+	private final ArrayList<String> geneNames;
+
 	private JPanel contentPane;
 	private JTextField txtAvalanchesBin;
 	private JPanel avalanchesPanel;
 	private ChartPanel avalchesChartPanel;
 	private JPanel pnlSensitivity;
 	private ChartPanel sensitivityChartPanel;
+	private JComboBox<String> cmbSelectedNetworks;
+	private JLabel lblAvalanchesMean;	
+	private JLabel lblAvalanchesStdDev;	
+	private JLabel lblAvalanchesMedian;
+	private JLabel lblAvalanchesGeomean;	
+	private JLabel lblAvalanchesMinValue;	
+	private JLabel lblAvalanchesMaxValue;
+	private JLabel lblAvalanchesMidrange;
+	private JLabel lblAvalanchesKurtosis;
+	private JLabel lblAvalanchesObservations;
+	private JLabel lblSensitivityMean;
+	private JLabel lblSensitivityStdDeviation;	
+	private JLabel lblSensitivityMedian;
+	private JLabel lblSensitivityGeoMean;
+	private JLabel lblSensitivityMinValue;	
+	private JLabel lblSensitivityMaxValue;
+	private JLabel lblSensitivityMidrange;	
+	private JLabel lblSensitivityKurtosisIndex;
+	private JLabel lblSensitivityObservations;
+
 
 
 	/**
 	 * Create the frame.
 	 * @throws Exception 
 	 */
-	public DynamicPerturbationsStatsView(final DynamicPerturbationsStatistics statsToView, final ArrayList<String> genesNames) throws Exception {
+	public DynamicPerturbationsStatsView(final HashMap<String, ArrayList<Integer>> avalanches,
+			final HashMap<String, int[]> sensitivity, final ArrayList<String> geneNames, String selectedNetwork) throws Exception {
 
+		this.avalanches = avalanches;
+		this.sensitivity = sensitivity;
+		this.geneNames = geneNames;
+		
 		//Gets the avalanches dataset
-		this.avalanchesObs = new double[statsToView.getAvalanches().size()];
-		for(int i = 0; i < statsToView.getAvalanches().size(); i++)
-			this.avalanchesObs[i] = statsToView.getAvalanches().get(i);
+		this.avalanchesObs = new double[avalanches.get(selectedNetwork).size()];
+		for(int i = 0; i < avalanches.get(selectedNetwork).size(); i++)
+			this.avalanchesObs[i] = avalanches.get(selectedNetwork).get(i);
 
 		setTitle("Dynamic Perturbations Statistics");
 		setBounds(100, 100, 648, 449);
@@ -113,7 +147,6 @@ public class DynamicPerturbationsStatsView extends JFrame {
 				avalchesChartPanel = new ChartPanel(createHistChart("Avalanches distribution", avalanchesDataset, "Avalanches dimension", "Frequency"));
 				avalanchesPanel.add(avalchesChartPanel, BorderLayout.CENTER);
 				avalanchesPanel.updateUI();
-
 			}
 		});
 
@@ -127,32 +160,31 @@ public class DynamicPerturbationsStatsView extends JFrame {
 		for(double obs : this.avalanchesObs)
 			avalanchesStats.addValue(obs);
 
-		JLabel lblAvalanchesMean = new JLabel("Mean: " + String.format("%.4f", avalanchesStats.getMean()));
+		lblAvalanchesMean = new JLabel("Mean: " + String.format("%.4f", avalanchesStats.getMean()));
 		pnlAvalanchesStatistics.add(lblAvalanchesMean);
 
-
-		JLabel lblAvalanchesStdDev = new JLabel("Std deviation: " + String.format("%.4f", avalanchesStats.getStandardDeviation()));
+		lblAvalanchesStdDev = new JLabel("Std deviation: " + String.format("%.4f", avalanchesStats.getStandardDeviation()));
 		pnlAvalanchesStatistics.add(lblAvalanchesStdDev);
 
-		JLabel lblAvalanchesMedian = new JLabel("Median: " + String.format("%.4f", avalanchesStats.getPercentile(50)));
+		lblAvalanchesMedian = new JLabel("Median: " + String.format("%.4f", avalanchesStats.getPercentile(50)));
 		pnlAvalanchesStatistics.add(lblAvalanchesMedian);
 
-		JLabel lblAvalanchesGeomean = new JLabel("Geo-Mean: " + String.format("%.4f", avalanchesStats.getGeometricMean()));
+		lblAvalanchesGeomean = new JLabel("Geo-Mean: " + String.format("%.4f", avalanchesStats.getGeometricMean()));
 		pnlAvalanchesStatistics.add(lblAvalanchesGeomean);
 
-		JLabel lblAvalanchesMinValue = new JLabel("Min-Value: " + String.format("%.4f", avalanchesStats.getMin()));
+		lblAvalanchesMinValue = new JLabel("Min-Value: " + String.format("%.4f", avalanchesStats.getMin()));
 		pnlAvalanchesStatistics.add(lblAvalanchesMinValue);
 
-		JLabel lblAvalanchesMaxValue = new JLabel("Max-Value: " + String.format("%.4f", avalanchesStats.getMax()));
+		lblAvalanchesMaxValue = new JLabel("Max-Value: " + String.format("%.4f", avalanchesStats.getMax()));
 		pnlAvalanchesStatistics.add(lblAvalanchesMaxValue);
 
-		JLabel lblAvalanchesMidrange = new JLabel("Mid-Range: " + String.format("%.4f", (avalanchesStats.getMax() - avalanchesStats.getMin())/2.0));
+		lblAvalanchesMidrange = new JLabel("Mid-Range: " + String.format("%.4f", (avalanchesStats.getMax() - avalanchesStats.getMin())/2.0));
 		pnlAvalanchesStatistics.add(lblAvalanchesMidrange);
 
-		JLabel lblAvalanchesCurtosi = new JLabel("Kurtosis index: " + String.format("%.4f", avalanchesStats.getKurtosis()));
-		pnlAvalanchesStatistics.add(lblAvalanchesCurtosi);
+		lblAvalanchesKurtosis = new JLabel("Kurtosis index: " + String.format("%.4f", avalanchesStats.getKurtosis()));
+		pnlAvalanchesStatistics.add(lblAvalanchesKurtosis);
 
-		JLabel lblAvalanchesObservations = new JLabel("Observations: " + avalanchesStats.getN());
+		lblAvalanchesObservations = new JLabel("Observations: " + avalanchesStats.getN());
 		pnlAvalanchesStatistics.add(lblAvalanchesObservations);
 
 
@@ -170,11 +202,13 @@ public class DynamicPerturbationsStatsView extends JFrame {
 					final JFileChooser fc = new JFileChooser();
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					String outputPath;
+
 					//In response to a button click:
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 						outputPath = fc.getSelectedFile().getPath();
 						outputPath = outputPath + "/avalanches.csv";
-						Output.saveAvalachesDistribution(outputPath, statsToView.getAvalanchesDistribution());
+						Output.saveAvalaches(outputPath, avalanches); 
 					}
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
@@ -182,7 +216,7 @@ public class DynamicPerturbationsStatsView extends JFrame {
 				}
 			}
 		});
-		
+
 		avalanchesDistributionControlPanel.add(btnExportCsvFile);
 		Integer bins = Integer.valueOf(txtAvalanchesBin.getText());
 		HistogramDataset avalanchesDataset = (HistogramDataset) this.prepareHistogramDataset(this.avalanchesObs, bins, "Avalanches");
@@ -193,8 +227,9 @@ public class DynamicPerturbationsStatsView extends JFrame {
 		tabbedPane.addTab("Sensitivity", null, pnlSensitivity, null);
 		pnlSensitivity.setLayout(new BorderLayout(0, 0));
 
+		//Statistics object 
 		DescriptiveStatistics sensitivityStats = new DescriptiveStatistics();
-		for(double obs : statsToView.getSensitivity())
+		for(double obs : sensitivity.get(selectedNetwork))
 			sensitivityStats.addValue(obs);
 
 		JPanel pnlSensitivityStatisticsControl = new JPanel();
@@ -211,10 +246,11 @@ public class DynamicPerturbationsStatsView extends JFrame {
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					String outputPath;
 					//In response to a button click:
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if(fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 						outputPath = fc.getSelectedFile().getPath();
 						outputPath = outputPath + "/sensitivity.csv";
-						Output.saveSensitivity(outputPath , genesNames, statsToView.getSensitivity());
+						Output.saveSensitivity(outputPath, geneNames, sensitivity);
 					}
 				}catch(Exception ex){
 					JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
@@ -229,37 +265,81 @@ public class DynamicPerturbationsStatsView extends JFrame {
 		pnlSensitivity.add(pnlSesitivityStatistics, BorderLayout.EAST);
 		pnlSesitivityStatistics.setLayout(new GridLayout(0, 1, 0, 0));
 
-		JLabel lblSensitivityMean = new JLabel("Mean: " + String.format("%.4f", sensitivityStats.getMean()));
+		lblSensitivityMean = new JLabel("Mean: " + String.format("%.4f", sensitivityStats.getMean()));
 		pnlSesitivityStatistics.add(lblSensitivityMean);
 
-		JLabel lblSensitivityStdDeviation = new JLabel("Std deviation: " + String.format("%.4f", sensitivityStats.getStandardDeviation()));
+		lblSensitivityStdDeviation = new JLabel("Std deviation: " + String.format("%.4f", sensitivityStats.getStandardDeviation()));
 		pnlSesitivityStatistics.add(lblSensitivityStdDeviation);
 
-		JLabel lblSensitivityMedian = new JLabel("Median: " + String.format("%.4f", sensitivityStats.getPercentile(50)));
+		lblSensitivityMedian = new JLabel("Median: " + String.format("%.4f", sensitivityStats.getPercentile(50)));
 		pnlSesitivityStatistics.add(lblSensitivityMedian);
 
-		JLabel lblSensitivityGeoMean = new JLabel("Geo-Mean: " + String.format("%.4f", sensitivityStats.getGeometricMean()));
+		lblSensitivityGeoMean = new JLabel("Geo-Mean: " + String.format("%.4f", sensitivityStats.getGeometricMean()));
 		pnlSesitivityStatistics.add(lblSensitivityGeoMean);
 
-		JLabel lblSensitivityMinValue = new JLabel("Min-Value: " + String.format("%.4f", sensitivityStats.getMin()));
+		lblSensitivityMinValue = new JLabel("Min-Value: " + String.format("%.4f", sensitivityStats.getMin()));
 		pnlSesitivityStatistics.add(lblSensitivityMinValue);
 
-		JLabel lblSensitivityMaxValue = new JLabel("Max-value: " + String.format("%.4f", sensitivityStats.getMax()));
+		lblSensitivityMaxValue = new JLabel("Max-value: " + String.format("%.4f", sensitivityStats.getMax()));
 		pnlSesitivityStatistics.add(lblSensitivityMaxValue);
 
-		JLabel lblSensitivityMidrange = new JLabel("Mid-Range: " + String.format("%.4f", (sensitivityStats.getMax() - sensitivityStats.getMin())/2.0));
+		lblSensitivityMidrange = new JLabel("Mid-Range: " + String.format("%.4f", (sensitivityStats.getMax() - sensitivityStats.getMin())/2.0));
 		pnlSesitivityStatistics.add(lblSensitivityMidrange);
 
-		JLabel lblSensitivityKurtosisIndex = new JLabel("Kurtosis index: " + String.format("%.4f", sensitivityStats.getKurtosis()));
+		lblSensitivityKurtosisIndex = new JLabel("Kurtosis index: " + String.format("%.4f", sensitivityStats.getKurtosis()));
 		pnlSesitivityStatistics.add(lblSensitivityKurtosisIndex);
 
-		JLabel lblSensitivityObservations = new JLabel("Observations: " + sensitivityStats.getN());
+		lblSensitivityObservations = new JLabel("Observations: " + sensitivityStats.getN());
 		pnlSesitivityStatistics.add(lblSensitivityObservations);
 
-		//Creates and shows the avalanche distribution chart
-		DefaultCategoryDataset sensitivityDataset = this.prepareCategoryDataset(genesNames, statsToView.getSensitivity(), "Sensitivity");
+		//Creates and shows the sensitivity distribution chart
+		DefaultCategoryDataset sensitivityDataset = this.prepareCategoryDataset(this.geneNames, sensitivity.get(selectedNetwork), "Sensitivity");
 		sensitivityChartPanel = new ChartPanel(this.createBarChart("Sensitivity", sensitivityDataset, "Genes names", "Sensitivity"));
 		pnlSensitivity.add(sensitivityChartPanel, BorderLayout.CENTER);
+
+		JPanel panel = new JPanel();
+		contentPane.add(panel, BorderLayout.NORTH);
+
+		JLabel lblDataset = new JLabel("Dataset:");
+
+		//Defines and populates the network selection combobox.
+		cmbSelectedNetworks = new JComboBox<String>();
+		cmbSelectedNetworks.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					updateStatistics();
+				} catch (Exception ex) {
+					String message = (String) (ex.getMessage().equals("") ? ex : ex.getMessage());
+					JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE, null);
+				}
+			}
+		});
+		DefaultComboBoxModel<String> selectedNetworkModel = new DefaultComboBoxModel<String>();
+		selectedNetworkModel.addElement("All");
+		for(String simId : avalanches.keySet()){
+			selectedNetworkModel.addElement(simId);
+		}
+		cmbSelectedNetworks.setModel(selectedNetworkModel);
+		cmbSelectedNetworks.setSelectedItem(selectedNetwork);
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+				gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(lblDataset)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(cmbSelectedNetworks, GroupLayout.PREFERRED_SIZE, 359, GroupLayout.PREFERRED_SIZE)
+						.addGap(209))
+				);
+		gl_panel.setVerticalGroup(
+				gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+						.addGap(5)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblDataset)
+								.addComponent(cmbSelectedNetworks, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+				);
+		panel.setLayout(gl_panel);
 
 	}
 
@@ -328,5 +408,91 @@ public class DynamicPerturbationsStatsView extends JFrame {
 			dataset.addValue(Double.valueOf(yValues[i]), seriesName, xValues.get(i));
 		}
 		return dataset;
+	}
+
+	private void updateStatistics() throws Exception{
+
+		String selectedNetwork = this.cmbSelectedNetworks.getSelectedItem().toString();
+		DescriptiveStatistics avalanchesStats = new DescriptiveStatistics();
+		DescriptiveStatistics sensitivityStats = new DescriptiveStatistics();
+		int[] sensitivityObs;
+		if(!selectedNetwork.equals("All")){
+			//Gets the avalanches dataset
+			this.avalanchesObs = new double[avalanches.get(selectedNetwork).size()];
+			for(int i = 0; i < avalanches.get(selectedNetwork).size(); i++)
+				this.avalanchesObs[i] = avalanches.get(selectedNetwork).get(i);
+			//Avalanches statistics
+			for(double obs : this.avalanchesObs)
+				avalanchesStats.addValue(obs);
+			//Sensitivity statistics
+			sensitivityObs = sensitivity.get(selectedNetwork);
+			for(double obs : sensitivity.get(selectedNetwork))
+				sensitivityStats.addValue(obs);
+		}else{
+			int obsSize = 0;
+			for(String simId : this.avalanches.keySet()){
+				obsSize = obsSize + avalanches.get(simId).size();
+			}
+			this.avalanchesObs = new double[obsSize];
+			int i = 0;
+			for(String simId : this.avalanches.keySet()){
+				for(Integer simAvalanches : this.avalanches.get(simId)){
+					this.avalanchesObs[i] = simAvalanches;
+					i = i + 1;
+				}
+			}
+			//Avalanches statistics
+			for(double obs : this.avalanchesObs)
+				avalanchesStats.addValue(obs);
+
+			sensitivityObs = new int[geneNames.size()];
+			for(int j = 0; j < geneNames.size(); j++)
+				sensitivityObs[j] = 0;
+			
+			for(String simId : this.avalanches.keySet()){
+				
+				for(int j = 0; j < sensitivity.get(simId).length; j++){
+					sensitivityStats.addValue(sensitivity.get(simId)[j]);
+					sensitivityObs[j] = sensitivityObs[j] + sensitivity.get(simId)[j];
+				}
+			}
+		}
+
+		//Avalanches
+		lblAvalanchesMean.setText("Mean: " + String.format("%.4f", avalanchesStats.getMean()));
+		lblAvalanchesStdDev.setText("Std deviation: " + String.format("%.4f", avalanchesStats.getStandardDeviation()));
+		lblAvalanchesMedian.setText("Median: " + String.format("%.4f", avalanchesStats.getPercentile(50)));
+		lblAvalanchesGeomean.setText("Geo-Mean: " + String.format("%.4f", avalanchesStats.getGeometricMean()));
+		lblAvalanchesMinValue.setText("Min-Value: " + String.format("%.4f", avalanchesStats.getMin()));
+		lblAvalanchesMaxValue.setText("Max-Value: " + String.format("%.4f", avalanchesStats.getMax()));
+		lblAvalanchesMidrange.setText("Mid-Range: " + String.format("%.4f", (avalanchesStats.getMax() - avalanchesStats.getMin())/2.0));
+		lblAvalanchesKurtosis.setText("Kurtosis index: " + String.format("%.4f", avalanchesStats.getKurtosis()));
+		lblAvalanchesObservations.setText("Observations: " + avalanchesStats.getN());
+
+		//Avalanches chart
+		Integer bins = Integer.valueOf(txtAvalanchesBin.getText());
+		avalanchesPanel.remove(avalchesChartPanel);
+		HistogramDataset avalanchesDataset = (HistogramDataset) prepareHistogramDataset(avalanchesObs, bins, "Avalanches");
+		avalchesChartPanel = new ChartPanel(createHistChart("Avalanches distribution", avalanchesDataset, "Avalanches dimension", "Frequency"));
+		avalanchesPanel.add(avalchesChartPanel, BorderLayout.CENTER);
+		avalanchesPanel.updateUI();
+
+		//Sensitivity
+		lblSensitivityMean.setText("Mean: " + String.format("%.4f", sensitivityStats.getMean()));
+		lblSensitivityStdDeviation.setText("Std deviation: " + String.format("%.4f", sensitivityStats.getStandardDeviation()));
+		lblSensitivityMedian.setText("Median: " + String.format("%.4f", sensitivityStats.getPercentile(50)));
+		lblSensitivityGeoMean.setText("Geo-Mean: " + String.format("%.4f", sensitivityStats.getGeometricMean()));
+		lblSensitivityMinValue.setText("Min-Value: " + String.format("%.4f", sensitivityStats.getMin()));
+		lblSensitivityMaxValue.setText("Max-value: " + String.format("%.4f", sensitivityStats.getMax()));
+		lblSensitivityMidrange.setText("Mid-Range: " + String.format("%.4f", (sensitivityStats.getMax() - sensitivityStats.getMin())/2.0));
+		lblSensitivityKurtosisIndex.setText("Kurtosis index: " + String.format("%.4f", sensitivityStats.getKurtosis()));
+		lblSensitivityObservations.setText("Observations: " + sensitivityStats.getN());
+		
+		//Sensitivity chart
+		pnlSensitivity.remove(sensitivityChartPanel);
+		DefaultCategoryDataset sensitivityDataset = this.prepareCategoryDataset(this.geneNames, sensitivityObs, "Sensitivity");
+		sensitivityChartPanel = new ChartPanel(this.createBarChart("Sensitivity", sensitivityDataset, "Genes names", "Sensitivity"));
+		pnlSensitivity.add(sensitivityChartPanel, BorderLayout.CENTER);
+		pnlSensitivity.updateUI();
 	}
 }

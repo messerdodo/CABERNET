@@ -58,7 +58,7 @@ public class ComputeDynamicPerturbationsAction implements CyNetworkViewContextMe
 					//The simulation exists
 					if(currentSimulation != null){
 						//Shows the frame
-						dynStatsFrame = new DynamicStatisticsFrame(adapter, currentSimulation, currentNetwork, vizMapperManager);
+						dynStatsFrame = new DynamicStatisticsFrame(adapter, simulationsContainer, currentNetwork, vizMapperManager);
 						dynStatsFrame.setVisible(true);	
 					}else{
 						//No network is selected

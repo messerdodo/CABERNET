@@ -65,7 +65,7 @@ public class ComputeDynamicPerturbationsMenuAction extends AbstractCyAction{
 			//The simulation exists
 			if(currentSimulation != null){
 				//Shows the frame
-				dynStatsFrame = new DynamicStatisticsFrame(adapter, currentSimulation, currentNetwork, vizMapperManager);
+				dynStatsFrame = new DynamicStatisticsFrame(adapter, simulationsContainer, currentNetwork, vizMapperManager);
 				dynStatsFrame.setVisible(true);	
 			}else{
 				JOptionPane.showMessageDialog(null, "A simulated network must be selected.", "Error", JOptionPane.ERROR_MESSAGE, null);
