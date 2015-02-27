@@ -1,14 +1,41 @@
 package it.unimib.disco.bimib.Tes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import it.unimib.disco.bimib.Exceptions.InputFormatException;
+import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.IO.Input;
 
 public class TESTest {
 
-	public static void main(String[] args) throws IOException {
-
+	public static void main(String[] args) throws IOException, NullPointerException, 
+	InputFormatException, NumberFormatException, TesTreeException {
+		
+		System.out.println("***TEST Tree Generation***");
+		ArrayList<String[]> readTree = Input.readTree("/Users/messerdodo/Desktop/testTree.txt");
+		TesTree givenTree = TesManager.createTesTreeFromFile(readTree);
+		System.out.println("Red tree");
+		givenTree.print();
+		double atm[][] = new double[3][3];
+		atm[0][0] = 0.88;
+		atm[0][1] = 0.12;
+		atm[0][2] = 0.0;
+		atm[1][0] = 0.24;
+		atm[1][1] = 0.75;
+		atm[1][2] = 0.0;
+		atm[2][0] = 0.34;
+		atm[2][1] = 0.09;
+		atm[2][2] = 0.56;
+		Object[] attractors = {"0000000000", "0000000001", "0000000010"};
+		double[] thresholds = {0.0, 0.5, 0.80};
+		TesTree tree = new TesTree(thresholds, atm, attractors);
+		System.out.println("Generated tree");
+		tree.print();
+		
+		
 		//TES Count TEST
+		System.out.println("***TES Count TEST***");
 		double[][] adj_mat = Input.readAtm("/Users/messerdodo/Desktop/Networks/network_2/atm.csv");
 		for(double threshold = 0.0; threshold <= 1.0; threshold+= 0.01){
 			for(int i = 0; i < adj_mat.length; i++){
@@ -21,17 +48,17 @@ public class TESTest {
 		}
 
 		//TES Adjacency matrix TEST
-		adj_mat = Input.readAtm("/Users/messerdodo/Desktop/Networks/network_2/atm.csv");
-		double t = 0.56;
+		//adj_mat = Input.readAtm("/Users/messerdodo/Desktop/Networks/network_2/atm.csv");
+		double t = 0.5;
 		for(double threshold = 0.0; threshold <= 1.0; threshold+= 0.01){
-			for(int i = 0; i < adj_mat.length; i++){
-				for(int k = 0; k < adj_mat.length; k++){
-					if(adj_mat[i][k] <= t)
-						adj_mat[i][k] = 0;
+			for(int i = 0; i < atm.length; i++){
+				for(int k = 0; k < atm.length; k++){
+					if(atm[i][k] <= t)
+						atm[i][k] = 0;
 				}
 			}
 		}
-		double[][] tesMatrix = TesManager.getTesGraph(adj_mat);
+		double[][] tesMatrix = TesManager.getTesGraph(atm);
 		for(int i = 0; i < tesMatrix.length; i++){
 			for(int k = 0; k < tesMatrix.length; k++){
 				System.out.print(tesMatrix[i][k] + " ");

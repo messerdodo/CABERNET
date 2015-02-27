@@ -99,7 +99,7 @@ public class SCCTarjan {
 		
 		for(int i = 0; i < adj_mat.length; i++){
 			for(int k = 0; k < adj_mat.length; k++){
-				if(adj_mat[i][k] <= 0.58)
+				if(adj_mat[i][k] <= 0.0)
 					adj_mat[i][k] = 0;
 				System.out.print(adj_mat[i][k] + " ");
 			}

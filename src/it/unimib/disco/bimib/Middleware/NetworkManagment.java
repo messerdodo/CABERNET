@@ -177,13 +177,15 @@ public class NetworkManagment {
 		CyTable nodeTable = attractorGraph.getDefaultNodeTable();
 		if(nodeTable.getColumn("State") == null)
 			nodeTable.createColumn("State", String.class, true);
+		if(nodeTable.getColumn("Name") == null)
+			nodeTable.createColumn("Name", String.class, true);
 
 		Object[] states;
 		CyNode[] statesInAttractor;
 
 		//Gets all the attractors
 		Object[] attractors = attractorsFinder.getAttractors();
-
+		int attNum = 1;
 		//Gets all the states in each attractor
 		for(Object attractor : attractors){
 			states = attractorsFinder.getStatesInAttractor(attractor);
@@ -193,12 +195,14 @@ public class NetworkManagment {
 			for(int state = 0; state < states.length; state++){
 				statesInAttractor[state] = attractorGraph.addNode();
 				attractorGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
+				attractorGraph.getRow(statesInAttractor[state]).set("Name", "A" + attNum);
 			}
 
 			//Sets the edges
 			for(int state = 0; state < states.length; state++){
 				attractorGraph.addEdge(statesInAttractor[state], statesInAttractor[(state + 1)%states.length], true);
 			}	
+			attNum = attNum + 1;
 		}
 
 		// Add the network to Cytoscape
@@ -225,14 +229,19 @@ public class NetworkManagment {
 
 		int nodes = tesChartMatrix.length;
 		int k = 0;
+		ArrayList<Integer> skippedRows = new ArrayList<Integer>();
+
 		//Gets the real number of attractors related with a TES
 		for(int i = 0; i < tesChartMatrix.length; i++){
 			k = 0;
 			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
 				k++;
-			if(k == tesChartMatrix.length)
+			if(k == tesChartMatrix.length){
 				nodes = nodes - 1;
+				skippedRows.add(i);
+			}
 		}
+
 		double[][] restrictedTesMatrix = new double[nodes][nodes];
 		int[] attractorAssignments = new int[nodes];
 
@@ -244,14 +253,14 @@ public class NetworkManagment {
 		//Restricted TES matrix population
 		int ri = 0, rj;
 		for(int i = 0; i < tesChartMatrix.length; i++){
-			rj = 0;
-			for(int j = 0; j < tesChartMatrix.length; j++){
-				if(tesChartMatrix[i][j] != 0){
-					restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
-					rj = rj + 1;
+			if(!skippedRows.contains(i)){
+				rj = 0;
+				for(int j = 0; j < tesChartMatrix.length; j++){
+					if(!skippedRows.contains(j)){
+						restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
+						rj = rj + 1;
+					}
 				}
-			}
-			if(rj != 0){
 				attractorAssignments[ri] = i;
 				ri = ri + 1;
 			}
@@ -342,13 +351,17 @@ public class NetworkManagment {
 		double[][] tesChartMatrix = TesManager.getTesGraph(atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold));
 		int nodes = tesChartMatrix.length;
 		int k = 0;
+		ArrayList<Integer> skippedRows = new ArrayList<Integer>();
+
 		//Gets the real number of attractors related with a TES
 		for(int i = 0; i < tesChartMatrix.length; i++){
 			k = 0;
 			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
 				k++;
-			if(k == tesChartMatrix.length)
+			if(k == tesChartMatrix.length){
 				nodes = nodes - 1;
+				skippedRows.add(i);
+			}
 		}
 		double[][] restrictedTesMatrix = new double[nodes][nodes];
 
@@ -360,14 +373,14 @@ public class NetworkManagment {
 		//Restricted TES matrix population
 		int ri = 0, rj;
 		for(int i = 0; i < tesChartMatrix.length; i++){
-			rj = 0;
-			for(int j = 0; j < tesChartMatrix.length; j++){
-				if(tesChartMatrix[i][j] != 0){
-					restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
-					rj = rj + 1;
+			if(!skippedRows.contains(i)){
+				rj = 0;
+				for(int j = 0; j < tesChartMatrix.length; j++){
+					if(!skippedRows.contains(j)){
+						restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
+						rj = rj + 1;
+					}
 				}
-			}
-			if(rj != 0){
 				ri = ri + 1;
 			}
 		}

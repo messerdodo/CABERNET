@@ -13,16 +13,22 @@ package it.unimib.disco.bimib.Tes;
 
 //System imports
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+
+
 //GRNSim imports
-import it.unimib.disco.bimib.Exceptions.TesTreeException;;
+import it.unimib.disco.bimib.Exceptions.TesTreeException;
+import it.unimib.disco.bimib.Utility.SCCTarjan;
 
 
 public class TesTree{
 
 	private TesTreeNode root;
+	
+	private int nextNodeId;
 
 	/**
 	 * This is the default constructor 
@@ -31,12 +37,15 @@ public class TesTree{
 	 * @param attractors
 	 * @throws Exception
 	 */
-	public TesTree(double[] delta,double[][] atm, Object[] attractors) throws TesTreeException {
+	public TesTree(double[] thresholds,double[][] atm, Object[] attractors) throws TesTreeException {
 		this.root = null;
-		this.treeGenerator(delta, atm, attractors);
+		this.nextNodeId = 0;
+		//this.treeGenerator(delta, atm, attractors);
+		createTree(thresholds, atm, attractors);
 	}
 
 	public TesTree(int nodeId){
+		this.nextNodeId = nodeId + 1;
 		this.root = new TesTreeNode(null, nodeId);
 	}
 
@@ -49,174 +58,323 @@ public class TesTree{
 		return this.root;
 	}
 
-	/**
-	 * This method creates the Tes Tree
-	 * @param delta : threshold for the Tes
-	 * @param atm : matrix of all the threshold
-	 * @param attractors : array of attractors
-	 * @throws TesTreeException: An error occurred during the tree creation
-	 */
-	public void treeGenerator(double[] delta, double[][] atm, Object[] attractors) throws TesTreeException{
-		//Initializes the recursive call
-		int[] nodeId = new int[1];
-		nodeId[0] = 0;
-		this.treeGenerator(this.root, delta, 0, atm, attractors, nodeId);
-	}
 
-	/**
-	 * This service method returns the path matrix.
-	 * The path matrix is a boolean matrix in which each i-j entry 
-	 * is true if there is a path between nodes i and j.
-	 * @param matrix: The atm matrix
-	 * @return the path matrix
-	 */
-	private boolean[][] performPathMatrix(double[][] matrix){
-		int nodes = matrix.length;
-		boolean[][] pathMatrix = new boolean[nodes][nodes];
-		//Path matrix initialization
-		for(int i = 0; i < nodes; i++){
-			for(int j = 0; j < nodes; j++){
-				//the i-j entry is true if and only if there is a not zero probability
-				//to pass from attractor i to attractor j
-				pathMatrix[i][j] = matrix[i][j] > 0 ? true : false;
-			}
-		}
-		//Perform the complete path matrix
-		for(int i = 0; i < nodes; i++){
-			for(int j = 0; j < nodes; j++){
-				for(int k = 0; k < nodes; k++){
-					/* There is a path between attractors i and j if and only if 
-					 * they are already connected or if there is a path between attractors i and 
-					 * there is a path k and between attractors k and j
-					 */
-					pathMatrix[i][j] = (pathMatrix[i][j] || (pathMatrix[i][k] && pathMatrix[k][j]));
+	private void createTree(double[] thresholds, double[][] atm, Object[] attractorsSet) throws TesTreeException{
+
+		double[][] rootAtm = removeLinksByDelta(atm, thresholds[0]);
+		double[][] subAtm;
+		Tes tes = null;
+		Object[] attractors = null;
+		SCCTarjan sccCalculator = new SCCTarjan(rootAtm);
+		ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
+		int target = 0, elementsInComp;
+		int si, sj;
+		ArrayList<Integer> component = null;
+		
+		for(ArrayList<Integer> comp : scc){
+			elementsInComp = comp.size();
+			for(int att_s = 0; att_s < elementsInComp; att_s++){
+				target = 0;
+				while(target < rootAtm.length && 
+						((rootAtm[comp.get(att_s)][target] != 0 && comp.contains(target)) ||
+								rootAtm[comp.get(att_s)][target] == 0)){
+					target = target + 1;
+				}
+				if(target != rootAtm.length){
+					comp.remove(att_s);
 				}
 			}
 		}
-		return pathMatrix;
+		//Removes all the empty TESs.
+		for(int i = 0; i < scc.size(); i++){
+			if(scc.get(i).size() == 0){
+				scc.remove(i);
+			}
+		}
+
+		//Root definition
+		if(scc.size() != 1){
+			throw new TesTreeException("Multi-root tree");
+		}
+		component = scc.get(0);
+		Collections.sort(component);
+		//Creates the sub-atm matrix
+		subAtm = new double[component.size()][component.size()];
+		si = 0;
+		for(int i : component){
+			sj = 0;
+			for(int j : component){
+				subAtm[si][sj] = atm[i][j];
+				sj = sj + 1;
+			}
+			si = si + 1;
+		}
+		
+		//Copies the attractors that composes the TES
+		attractors = new Object[component.size()];
+		for(int i = 0; i < component.size(); i++){
+			attractors[i] = attractorsSet[component.get(i)];
+		}
+
+		tes = new Tes(subAtm, attractors);
+		this.root = new TesTreeNode(tes, this.nextNodeId);
+		this.nextNodeId = this.nextNodeId + 1;
+		createTree(thresholds, 1, this.root);
 	}
 
-	/**
-	 * This service method creates the Tes Tree.
-	 * @param node: The starting tree node.
-	 * @param delta : threshold for the Tes.
-	 * @param level: The current tree level.
-	 * @param atm : matrix of all the threshold.
-	 * @param attractors : array of attractors.
-	 * @throws TesTreeException: An error occurred during the tree creation.
-	 */
-	private void treeGenerator(TesTreeNode node, double[] delta, int level, double[][] atm, Object[] attractors, int[] nodeId) throws TesTreeException{
-		//Checks if is at the end of the ArrayLIst of delta
-		if(level < delta.length ){
 
-			//Removes the links from the atm
-			atm = removeLinksByDelta(delta[level], atm, attractors.length);
-			ArrayList<Tes> myTes = new ArrayList<Tes>();
 
-			//Gets the path matrix
-			boolean[][] pathMatrix = this.performPathMatrix(atm);
+	public void createTree(double[] thresholds, int level, TesTreeNode parent) throws TesTreeException{
 
-			//Creates all the Tes(es)
-			for(Object attractor : attractors)
-				myTes.add(new Tes(attractor));
+		//Variable definitions
+		SCCTarjan sccCalculator = null;
+		ArrayList<ArrayList<Integer>> scc = null;
+		int target, elementsInComp;
+		double[][] atm = null;
+		Object[] attractorsSet = null;
+		Tes tes = null;
+		TesTreeNode child = null;
+		Object[] attractors;
+		double[][] subAtm;
+		int si, sj;
 
-			for(int att1 = 0; att1 < attractors.length; att1++){
-				for(int att2 = att1 + 1; att2 < attractors.length; att2++){
-					if(pathMatrix[att1][att2] && pathMatrix[att2][att1]){
-						int t1 = getTesByAttractor(myTes, attractors[att1]);
-						int t2 = getTesByAttractor(myTes, attractors[att2]);
-						//If there is a links between two tes they are merge 
-						if((t1 != -1 && t2 != -1)&&(t1 != t2)){
-							myTes.get(t1).merge(myTes.get(t2));
-							myTes.remove(myTes.get(t2));
-						}
+		//Param checking
+		if(parent == null){
+			throw new NullPointerException("Parent node must be not null in a tree structure");
+		}
+
+		//Exit clause
+		if(level < thresholds.length){
+
+			//Gets the parent's atm and attractors set.
+			atm = removeLinksByDelta(parent.getTes().getAtmMatrix(), thresholds[level]);
+			attractorsSet = parent.getTes().getAttractors();
+			//TES Computation
+			sccCalculator = new SCCTarjan(atm);
+			scc = sccCalculator.scc();
+			target = 0;
+			for(ArrayList<Integer> comp : scc){
+				elementsInComp = comp.size();
+				for(int att_s = 0; att_s < elementsInComp; att_s++){
+					target = 0;
+					while(target < atm.length && 
+							((atm[comp.get(att_s)][target] != 0 && comp.contains(target)) ||
+									atm[comp.get(att_s)][target] == 0)){
+						target = target + 1;
+					}
+					if(target != atm.length){
+						comp.remove(att_s);
 					}
 				}
 			}
-			
-			//Removes the SSC that are not TESs
-			int t1, t2;
-			boolean deleted;
-			for(int att1 = 0; att1 < attractors.length; att1++){
-				int att2 = 0; 
-				deleted = false;
-				t1 = getTesByAttractor(myTes, attractors[att1]);
-				if(t1 != -1){
-					while(att2 < attractors.length && !deleted){
-						if(atm[att1][att2] != 0){
-							t2 = getTesByAttractor(myTes, attractors[att2]);
-							if(t1 != t2){
-								myTes.remove(t1);
-								deleted = true;
-							}
-						}
-						att2 = att2 + 1;
+			//Removes all the empty TESs.
+			for(int i = 0; i < scc.size(); i++){
+				if(scc.get(i).size() == 0){
+					scc.remove(i);
+				}
+			}	
+
+			//Creates a child for each found TES
+			for(ArrayList<Integer> s_scc : scc){
+
+				Collections.sort(s_scc);
+				//Creates the sub-atm matrix
+				subAtm = new double[s_scc.size()][s_scc.size()];
+				si = 0;
+				for(int i : s_scc){
+					sj = 0;
+					for(int j : s_scc){
+						subAtm[si][sj] = atm[i][j];
+						sj = sj + 1;
 					}
+					si = si + 1;
 				}
-			}			
-
-			//Checks if the root is already initializes
-			if(node == null){
-				if(myTes.size() != 1)
-					throw new TesTreeException("This thresholds don't create a tree");
-				else{
-
-					this.root = new TesTreeNode(myTes.get(0), nodeId[0]);
-					nodeId[0] += 1;
-
-					this.treeGenerator(this.root, delta, level + 1, atm, attractors, nodeId);
+				//Copies the attractors that composes the TES
+				attractors = new Object[s_scc.size()];
+				for(int i = 0; i < s_scc.size(); i++){
+					attractors[i] = attractorsSet[s_scc.get(i)];
 				}
-			}else{
-				//Creates a link between the parent and his children
-				for(int i = 0; i < myTes.size(); i++){
-					node.addChild(new TesTreeNode(myTes.get(i), nodeId[0]));
-					nodeId[0] += 1;
-					node.getChild(i).setParent(node);
-				}
-
-				//For every child creates a new atm with the specified attractor in the tes(child)
-				for(TesTreeNode child : node.getChildren()){
-					int nAttractors = child.getTes().sizeTes(), newRow = 0, newCol = 0;
-					double[][] reducedAtm = new double[nAttractors][nAttractors];
-					Object[] reducedAttractors = new Object[nAttractors];
-					ArrayList<Integer> attPositions = new ArrayList<Integer>();
-
-					for(int i = 0; i < attractors.length; i++){
-						if(child.getTes().find(attractors[i]) != -1){
-							attPositions.add(i);
-							reducedAttractors[newCol] = attractors[i];
-							newCol++;
-						}
-					}
-					//Copies all the values in the atm into the reduced atm
-					for(int i : attPositions){
-						newCol = 0;
-						for(int j : attPositions){
-							reducedAtm[newRow][newCol] = atm[i][j];
-							newCol ++;
-						}
-						newRow++;
-					}
-					//Calls the recursive call for the new node
-					this.treeGenerator(child, delta, level + 1, reducedAtm, reducedAttractors, nodeId);
-				}
-			}			
+				//Creates the TES object
+				tes = new Tes(subAtm, attractors);
+				//Add the child to the parent
+				child = new TesTreeNode(tes, this.nextNodeId, parent);
+				parent.addChild(child);
+				this.nextNodeId = this.nextNodeId + 1;
+				createTree(thresholds, level + 1, child);
+			}
 		}
 	}
 
-	/**
-	 * This method returns the specified index for a tes from an attractor
-	 * @param teses
-	 * @param attractor
-	 * @return the specified index of the attractors' tes
-	 */
-	private int getTesByAttractor(ArrayList<Tes> teses, Object attractor){
-		int i = 0;
-		while(i < teses.size() && (teses.get(i).find(attractor) == -1))
-			i++;
-		return (i == teses.size() ? -1 : i);
-	}
 
+
+	//	/**
+	//	 * This method creates the Tes Tree
+	//	 * @param delta : threshold for the Tes
+	//	 * @param atm : matrix of all the threshold
+	//	 * @param attractors : array of attractors
+	//	 * @throws TesTreeException: An error occurred during the tree creation
+	//	 */
+	//	public void treeGenerator(double[] delta, double[][] atm, Object[] attractors) throws TesTreeException{
+	//		//Initializes the recursive call
+	//		int[] nodeId = new int[1];
+	//		nodeId[0] = 0;
+	//		this.treeGenerator(this.root, delta, 0, atm, attractors, nodeId);
+	//	}
+	//
+	//	/**
+	//	 * This service method returns the path matrix.
+	//	 * The path matrix is a boolean matrix in which each i-j entry 
+	//	 * is true if there is a path between nodes i and j.
+	//	 * @param matrix: The atm matrix
+	//	 * @return the path matrix
+	//	 */
+	//	private boolean[][] performPathMatrix(double[][] matrix){
+	//		int nodes = matrix.length;
+	//		boolean[][] pathMatrix = new boolean[nodes][nodes];
+	//		//Path matrix initialization
+	//		for(int i = 0; i < nodes; i++){
+	//			for(int j = 0; j < nodes; j++){
+	//				//the i-j entry is true if and only if there is a not zero probability
+	//				//to pass from attractor i to attractor j
+	//				pathMatrix[i][j] = matrix[i][j] > 0 ? true : false;
+	//			}
+	//		}
+	//		//Perform the complete path matrix
+	//		for(int i = 0; i < nodes; i++){
+	//			for(int j = 0; j < nodes; j++){
+	//				for(int k = 0; k < nodes; k++){
+	//					/* There is a path between attractors i and j if and only if 
+	//					 * they are already connected or if there is a path between attractors i and 
+	//					 * there is a path k and between attractors k and j
+	//					 */
+	//					pathMatrix[i][j] = (pathMatrix[i][j] || (pathMatrix[i][k] && pathMatrix[k][j]));
+	//				}
+	//			}
+	//		}
+	//		return pathMatrix;
+	//	}
+	//
+	//	/**
+	//	 * This service method creates the Tes Tree.
+	//	 * @param node: The starting tree node.
+	//	 * @param delta : threshold for the Tes.
+	//	 * @param level: The current tree level.
+	//	 * @param atm : matrix of all the threshold.
+	//	 * @param attractors : array of attractors.
+	//	 * @throws TesTreeException: An error occurred during the tree creation.
+	//	 */
+	//	private void treeGenerator(TesTreeNode node, double[] delta, int level, double[][] atm, Object[] attractors, int[] nodeId) throws TesTreeException{
+	//		//Checks if is at the end of the ArrayLIst of delta
+	//		if(level < delta.length ){
+	//
+	//			//Removes the links from the atm
+	//			atm = removeLinksByDelta(delta[level], atm, attractors.length);
+	//			ArrayList<Tes> myTes = new ArrayList<Tes>();
+	//
+	//			//Gets the path matrix
+	//			boolean[][] pathMatrix = this.performPathMatrix(atm);
+	//
+	//			//Creates all the Tes(es)
+	//			for(Object attractor : attractors)
+	//				myTes.add(new Tes(attractor));
+	//
+	//			for(int att1 = 0; att1 < attractors.length; att1++){
+	//				for(int att2 = att1 + 1; att2 < attractors.length; att2++){
+	//					if(pathMatrix[att1][att2] && pathMatrix[att2][att1]){
+	//						int t1 = getTesByAttractor(myTes, attractors[att1]);
+	//						int t2 = getTesByAttractor(myTes, attractors[att2]);
+	//						//If there is a links between two tes they are merge 
+	//						if((t1 != -1 && t2 != -1)&&(t1 != t2)){
+	//							myTes.get(t1).merge(myTes.get(t2));
+	//							myTes.remove(myTes.get(t2));
+	//						}
+	//					}
+	//				}
+	//			}
+	//
+	//			//Removes the SSC that are not TESs
+	//			int t1, t2;
+	//			boolean deleted;
+	//			for(int att1 = 0; att1 < attractors.length; att1++){
+	//				int att2 = 0; 
+	//				deleted = false;
+	//				t1 = getTesByAttractor(myTes, attractors[att1]);
+	//				if(t1 != -1){
+	//					while(att2 < attractors.length && !deleted){
+	//						if(atm[att1][att2] != 0){
+	//							t2 = getTesByAttractor(myTes, attractors[att2]);
+	//							if(t1 != t2){
+	//								myTes.remove(t1);
+	//								deleted = true;
+	//							}
+	//						}
+	//						att2 = att2 + 1;
+	//					}
+	//				}
+	//			}			
+	//
+	//			//Checks if the root is already initializes
+	//			if(node == null){
+	//				if(myTes.size() != 1)
+	//					throw new TesTreeException("This thresholds don't create a tree");
+	//				else{
+	//
+	//					this.root = new TesTreeNode(myTes.get(0), nodeId[0]);
+	//					nodeId[0] += 1;
+	//
+	//					this.treeGenerator(this.root, delta, level + 1, atm, attractors, nodeId);
+	//				}
+	//			}else{
+	//				//Creates a link between the parent and his children
+	//				for(int i = 0; i < myTes.size(); i++){
+	//					node.addChild(new TesTreeNode(myTes.get(i), nodeId[0]));
+	//					nodeId[0] += 1;
+	//					node.getChild(i).setParent(node);
+	//				}
+	//
+	//				//For every child creates a new atm with the specified attractor in the tes(child)
+	//				for(TesTreeNode child : node.getChildren()){
+	//					int nAttractors = child.getTes().sizeTes(), newRow = 0, newCol = 0;
+	//					double[][] reducedAtm = new double[nAttractors][nAttractors];
+	//					Object[] reducedAttractors = new Object[nAttractors];
+	//					ArrayList<Integer> attPositions = new ArrayList<Integer>();
+	//
+	//					for(int i = 0; i < attractors.length; i++){
+	//						if(child.getTes().find(attractors[i]) != -1){
+	//							attPositions.add(i);
+	//							reducedAttractors[newCol] = attractors[i];
+	//							newCol++;
+	//						}
+	//					}
+	//					//Copies all the values in the atm into the reduced atm
+	//					for(int i : attPositions){
+	//						newCol = 0;
+	//						for(int j : attPositions){
+	//							reducedAtm[newRow][newCol] = atm[i][j];
+	//							newCol ++;
+	//						}
+	//						newRow++;
+	//					}
+	//					//Calls the recursive call for the new node
+	//					this.treeGenerator(child, delta, level + 1, reducedAtm, reducedAttractors, nodeId);
+	//				}
+	//			}			
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * This method returns the specified index for a tes from an attractor
+	//	 * @param teses
+	//	 * @param attractor
+	//	 * @return the specified index of the attractors' tes
+	//	 */
+	//	private int getTesByAttractor(ArrayList<Tes> teses, Object attractor){
+	//		int i = 0;
+	//		while(i < teses.size() && (teses.get(i).find(attractor) == -1))
+	//			i++;
+	//		return (i == teses.size() ? -1 : i);
+	//	}
+	//
 	/**
 	 * This method returns the atm without links based on the delta's value
 	 * @param delta
@@ -224,14 +382,13 @@ public class TesTree{
 	 * @param n : dimension of the matrix
 	 * @return the new atm
 	 */
-	private double[][] removeLinksByDelta(double delta, double[][] atm, int n){
-		for(int line = 0; line < n; line++){
-			for(int pillar = 0; pillar < n; pillar++){
-				if(atm[line][pillar] < delta)
+	private double[][] removeLinksByDelta(double[][] atm, double threshold){
+		for(int line = 0; line < atm.length; line++){
+			for(int pillar = 0; pillar < atm.length; pillar++){
+				if(atm[line][pillar] <= threshold)
 					atm[line][pillar] = 0;
 			}
 		}
-
 		return atm;
 	}
 
@@ -505,7 +662,7 @@ public class TesTree{
 			return count;
 		}
 	}
-	
+
 	/**
 	 * This method compares the TES tree with the specified one.
 	 * @param givenTree: The TES tree to be compare with the caller one
@@ -525,7 +682,7 @@ public class TesTree{
 	 * @return a boolean value
 	 */
 	private int tesTreeDistance(TesTreeNode node, TesTreeNode givenNode){
-		
+
 		//Both the nodes don't have any children
 		if(node.getChildren().size() == 0 && givenNode.getChildren().size() == 0)
 			return 0;
@@ -535,12 +692,12 @@ public class TesTree{
 		//Only the network-tree node has children.
 		if(givenNode.getChildren().size() == 0)
 			return getNumberOfNodes(node);
-		
+
 		//Both the nodes have some children.
 		int i = 0;
 		ArrayList<TesTreeNode> networkNodeChildren = node.getChildren();
 		ArrayList<TesTreeNode[]> permutations = permutation(givenNode.getChildrenAsArray(), 0, givenNode.getChildren().size());
-		
+
 		int distance = -1;
 		int localDistance;
 		for(TesTreeNode[] nodesPermutation : permutations){
@@ -563,32 +720,32 @@ public class TesTree{
 			}
 			distance = (distance == -1 ? localDistance : Math.min(distance, localDistance));
 		}
-		
+
 		return distance;
 	}
-	
+
 	public int tesTreeHistogramComparison(TesTree givenTree){
 		ArrayList<TesTreeNode> currentRoot = new ArrayList<TesTreeNode>();
 		ArrayList<TesTreeNode> givenRoot = new ArrayList<TesTreeNode>();
-		
+
 		currentRoot.add(this.root);
 		givenRoot.add(givenTree.root);
-		
+
 		return this.tesTreeHistogramComparison(currentRoot, givenRoot);
 	}
-	
+
 	private int tesTreeHistogramComparison(ArrayList<TesTreeNode> nodes, ArrayList<TesTreeNode> givenNodes){
-		
+
 		if(nodes.size() == 0 && givenNodes.size() == 0){
 			return 0;
 		}
 
-		
+
 		HashMap<Integer, Integer> treeDistribution = new HashMap<Integer, Integer>();
 		HashMap<Integer, Integer> givenTreeDistribution = new HashMap<Integer, Integer>();
 		ArrayList<TesTreeNode> createdTreeLevelChildren = new ArrayList<TesTreeNode>();
 		ArrayList<TesTreeNode> givenTreeLevelChildren = new ArrayList<TesTreeNode>();
-		
+
 		int size;
 		//Gets the distribution for the current level for the created tree
 		for(TesTreeNode currentNode : nodes){
@@ -611,15 +768,15 @@ public class TesTree{
 				givenTreeDistribution.put(size, 1); 
 			}
 		}
-		
+
 		//Calculates the histogram distance
 		return histogramDistance(treeDistribution, givenTreeDistribution) +
 				tesTreeHistogramComparison(createdTreeLevelChildren, givenTreeLevelChildren);
-				
-		
-		
+
+
+
 	}
-	
+
 	private int histogramDistance(HashMap<Integer, Integer> dist1, HashMap<Integer, Integer> dist2){
 		int distance = 0;
 		HashSet<Integer> values = new HashSet<Integer>();
@@ -634,10 +791,10 @@ public class TesTree{
 				distance = distance + dist2.get(value);
 			}
 		}
-		
+
 		return distance;	
 	}
-	
+
 	/*
 	public ArrayList<TesTreeNode> getTreeNodes(){
 		ArrayList<TesTreeNode> nodes = new ArrayList<TesTreeNode>();
@@ -646,21 +803,21 @@ public class TesTree{
 	}
 
 	public void getTreeNodes(TesTreeNode node, ArrayList<TesTreeNode> nodes){
-		
+
 		nodes.add(node);
-		
+
 		ArrayList<TesTreeNode> children = node.getChildren();
 		if(children.size() != 0){
 			for(TesTreeNode child : children){
 				getTreeNodes(child, nodes);
 			}
 		}
-			
-		
+
+
 	}
-	
-*/
-	
+
+	 */
+
 	/**
 	 * This method returns the number of leaf nodes in the tree
 	 * @return
@@ -668,7 +825,7 @@ public class TesTree{
 	public int getLeafsNodesNumber(){
 		return getLeafsNodesNumber(this.root);
 	}
-	
+
 	/**
 	 * Service method for the leaf nodes calculus.
 	 * @param node: Node for starting
@@ -684,17 +841,17 @@ public class TesTree{
 			return leafs;
 		}
 	}
-	
-	
+
+
 	public void print(){
 		print(this.root);
 	}
-	
+
 	private void print(TesTreeNode node){
-		System.out.print(node.getNodeId() + " parent: " + (node.getParent() == null ? "Root" :node.getParent().getNodeId()));
+		System.out.println(node.getNodeId() + " parent: " + (node.getParent() == null ? "Root" :node.getParent().getNodeId()));
 		for(TesTreeNode child : node.getChildren())
-				print(child);
+			print(child);
 	}
-	
+
 }
 

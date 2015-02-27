@@ -30,8 +30,18 @@ public class TesTreeNode {
 	 * @param nodeId: Node identifier
 	 */
 	public TesTreeNode(Tes tes, int nodeId) {
+		this(tes, nodeId, null);
+	}
+	
+	/**
+	 * Generic constructor
+	 * @param tes: The Tes
+	 * @param nodeId: Node identifier
+	 * @param parent: Tree node parent
+	 */
+	public TesTreeNode(Tes tes, int nodeId, TesTreeNode parent) {
 		this.tes = tes;
-		this.parent = null;
+		this.parent = parent;
 		this.children = new ArrayList<TesTreeNode>();
 		this.setNodeId(nodeId);
 	}
