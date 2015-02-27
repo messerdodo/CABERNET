@@ -10,6 +10,9 @@
  */
 package it.unimib.disco.bimib.Utility;
 
+import it.unimib.disco.bimib.IO.Input;
+
+import java.io.IOException;
 import java.util.*;
 
 //optimized version of http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
@@ -90,25 +93,18 @@ public class SCCTarjan {
 
 
 	// Usage example
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
-		double[][] adj_mat = new double[4][4];
-		adj_mat[0][0] = 0.93;
-		adj_mat[0][1] = 0.05;
-		adj_mat[0][2] = 0.02;
-		adj_mat[0][3] = 0.0;
-		adj_mat[1][0] = 0.0;
-		adj_mat[1][1] = 0.99;
-		adj_mat[1][2] = 0.0;
-		adj_mat[1][3] = 0.01;
-		adj_mat[2][0] = 0.08;
-		adj_mat[2][1] = 0.0;
-		adj_mat[2][2] = 0.92;
-		adj_mat[2][3] = 0.0;
-		adj_mat[3][0] = 0.0;
-		adj_mat[3][1] = 0.01;
-		adj_mat[3][2] = 0.0;
-		adj_mat[3][3] = 0.99;
+		double[][] adj_mat = Input.readAtm("/Users/messerdodo/Desktop/Networks/network_2/atm.csv");
+		
+		for(int i = 0; i < adj_mat.length; i++){
+			for(int k = 0; k < adj_mat.length; k++){
+				if(adj_mat[i][k] <= 0.58)
+					adj_mat[i][k] = 0;
+				System.out.print(adj_mat[i][k] + " ");
+			}
+			System.out.println();
+		}
 
 		ArrayList<ArrayList<Integer>> components = new SCCTarjan(adj_mat).scc();
 		System.out.println("SCC graph " + components);
@@ -122,9 +118,9 @@ public class SCCTarjan {
 		System.out.println(Arrays.toString(assignments));
 
 		//All the scc are teses at the beginning.
-		int[] temporaryTesSet = new int[components.size()];
+		boolean[] temporaryTesSet = new boolean[components.size()];
 		for(int i = 0; i < components.size(); i++)
-			temporaryTesSet[i] = 1;
+			temporaryTesSet[i] = true;
 		int j = 0;
 		System.out.println("TES at beginning" + Arrays.toString(temporaryTesSet));
 		//Removes the scc that are not tes.
@@ -134,11 +130,34 @@ public class SCCTarjan {
 				j = j + 1;
 			}
 			if(j < adj_mat.length){
-				temporaryTesSet[assignments[i]] = 0;
+				temporaryTesSet[assignments[i]] = false;
 			}
 		}
 		System.out.println("TES at the ending" + Arrays.toString(temporaryTesSet));
-		
-		
+
+		//Initialize the TES graph adjacency matrix
+		double[][] tesGraphMatrix = new double[adj_mat.length][adj_mat.length]; 
+		for(int i = 0; i < adj_mat.length; i++){
+			for(int k = 0; k < adj_mat.length; k++){
+				tesGraphMatrix[i][k] = 0.0;
+			}
+		}
+		//Creates the TES graph adjacency matrix:
+		//Only the links between attractors in a TES are copied
+		ArrayList<Integer> tes;
+		for(int t = 0; t < temporaryTesSet.length; t++){
+			if(temporaryTesSet[t] == true){
+				tes = components.get(t);
+				for(int a1 = 0; a1 < tes.size(); a1++)
+					for(int a2 = 0; a2 < tes.size(); a2++)
+						tesGraphMatrix[tes.get(a1)][tes.get(a2)] = adj_mat[tes.get(a1)][tes.get(a2)];
+			}
+		}
+		for(int i = 0; i < tesGraphMatrix.length; i++){
+			for(int k = 0; k < tesGraphMatrix.length; k++){
+				System.out.print(tesGraphMatrix[i][k] + " ");
+			}
+			System.out.println();
+		}
 	}
 }

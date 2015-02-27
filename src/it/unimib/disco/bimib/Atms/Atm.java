@@ -19,7 +19,6 @@ import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Mutations.Mutation;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Statistics.DynamicPerturbationsStatistics;
-import it.unimib.disco.bimib.Utility.SCCTarjan;
 import it.unimib.disco.bimib.Utility.UtilityRandom;
 
 
@@ -238,6 +237,23 @@ public class Atm {
 		}
 		return atmForTes;
 	}
+	
+	/**
+	 * This method returns the atm matrix without the links
+	 * less than delta.
+	 * @param delta
+	 * @return a copy of the atm matrix with some links removed.
+	 */
+	public double[][] atmMatrixWithDeltaRemoval(double delta){
+		//Scans the original atm matrix removing the links with the 
+		// associated value less than delta
+		for(int i = 0; i < atm.length; i++){
+			for(int j = 0; j < atm.length; j++){
+				atm[i][j] = (atm[i][j] < delta ? 0 : atm[i][j]);
+			}
+		}
+		return atm;
+	}
 
 	/**
 	 * This method returns a copy of the atm matrix without the links
@@ -348,58 +364,6 @@ public class Atm {
 	public DynamicPerturbationsStatistics getDynamicPerturbationsStatistics(){
 		return this.dynamicPerturbationsStatistics;
 	}
-
-	/**
-	 * This method returns the number of TESes for a given threshold
-	 * @param threshold: The transition probability threshold. It must be between 0 and 1;
-	 * @return The number of TES.
-	 */
-	public int getTesNumber(double threshold){
-		int tes = 0;
-		int[] assignments, temporaryTesSet;
-		//Param checking
-		if(threshold < 0.0){
-			threshold = 0.0;
-		}else if(threshold > 1.0){
-			threshold = 1.0;
-		}
-
-		//Computes the SCC
-		SCCTarjan sccCalculator = new SCCTarjan(this.atm);
-		ArrayList<ArrayList<Integer>> aux = sccCalculator.scc();
-
-		//Creates the assignments array. 
-		//Each position of the array contains the number of the scc of the element.
-		assignments = new int[this.atm.length];
-		for(int i  = 0; i < aux.size(); i++){
-			for(Integer att : aux.get(i))
-				assignments[att] = i;
-		}
-
-		//All the scc are teses at the beginning.
-		temporaryTesSet = new int[aux.size()];
-		for(int i = 0; i < aux.size(); i++)
-			temporaryTesSet[i] = 1;
-		int j = 0;
-
-		//Removes the scc that are not tes.
-		for(int i = 0; i < this.atm.length; i++){
-			j = 0;
-			while((j < this.atm.length) && (this.atm[i][j] == 0 || (!((this.atm[i][j] >= threshold) && (assignments[i] != assignments[j])))) ){
-				j = j + 1;
-			}
-			if(j < this.atm.length){
-				temporaryTesSet[assignments[i]] = 0;
-			}
-		}
-
-		//Computes the number of teses.
-		for(int i = 0; i < temporaryTesSet.length; i++)
-			tes = tes + temporaryTesSet[i];
-
-		return tes;
-	}
-
 	
 	public Atm(double[][] atm){
 		this.atm = atm;

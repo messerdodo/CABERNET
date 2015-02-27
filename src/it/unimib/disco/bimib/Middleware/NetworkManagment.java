@@ -221,7 +221,41 @@ public class NetworkManagment {
 	 * @throws InputTypeException
 	 */
 	public CyNetwork createTesGraph(AttractorsFinder attractorsFinder, AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-		double[][] newAtm = atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold);
+		double[][] tesChartMatrix = TesManager.getTesGraph(atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold));
+
+		int nodes = tesChartMatrix.length;
+		int k = 0;
+		//Gets the real number of attractors related with a TES
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			k = 0;
+			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
+				k++;
+			if(k == tesChartMatrix.length)
+				nodes = nodes - 1;
+		}
+		double[][] restrictedTesMatrix = new double[nodes][nodes];
+		int[] attractorAssignments = new int[nodes];
+
+		//Restricted TES matrix initialization
+		for(int i = 0; i < nodes; i++)
+			for(int j = 0; j < nodes; j++)
+				restrictedTesMatrix[i][j] = 0;
+
+		//Restricted TES matrix population
+		int ri = 0, rj;
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			rj = 0;
+			for(int j = 0; j < tesChartMatrix.length; j++){
+				if(tesChartMatrix[i][j] != 0){
+					restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
+					rj = rj + 1;
+				}
+			}
+			if(rj != 0){
+				attractorAssignments[ri] = i;
+				ri = ri + 1;
+			}
+		}
 
 		//Get the parent group
 		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
@@ -235,6 +269,8 @@ public class NetworkManagment {
 		CyTable nodeTable = tesGraph.getDefaultNodeTable();
 		if(nodeTable.getColumn("State") == null)
 			nodeTable.createColumn("State", String.class, true);
+		if(nodeTable.getColumn("Name") == null)
+			nodeTable.createColumn("Name", String.class, true);
 
 		//Adds the attributes for the edges
 		CyTable edgeTable = tesGraph.getDefaultEdgeTable();
@@ -247,17 +283,18 @@ public class NetworkManagment {
 
 		//Gets all the attractors
 		Object[] attractors = attractorsFinder.getAttractors();
-		attractorsNodes = new CyNode[attractors.length];
+		attractorsNodes = new CyNode[nodes];
 		int virtual = 0;
 		//Gets all the states in each attractor
-		for(Object attractor : attractors){
-			states = attractorsFinder.getStatesInAttractor(attractor);
+		for(int att_pos : attractorAssignments){
+			states = attractorsFinder.getStatesInAttractor(attractors[att_pos]);
 			statesInAttractor = new CyNode[states.length];
 
 			//Adds all the states in the attractor and sets its value
 			for(int state = 0; state < states.length; state++){
 				statesInAttractor[state] = tesGraph.addNode();
 				tesGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
+				tesGraph.getRow(statesInAttractor[state]).set("Name", "A" + (virtual + 1));
 			}
 
 			//Sets the edges
@@ -268,13 +305,13 @@ public class NetworkManagment {
 			attractorsNodes[virtual] = statesInAttractor[0];
 			virtual++;
 		}
-
+		//Attractor to attractor edges
 		CyEdge transitionEdge;
-		for(int i = 0; i < newAtm.length; i++){
-			for(int j = 0; j < newAtm.length; j++){
-				if(newAtm[i][j] != 0.0){
+		for(int i = 0; i < restrictedTesMatrix.length; i++){
+			for(int j = 0; j < restrictedTesMatrix.length; j++){
+				if(restrictedTesMatrix[i][j] != 0.0){
 					transitionEdge = tesGraph.addEdge(attractorsNodes[i], attractorsNodes[j], true);
-					tesGraph.getRow(transitionEdge).set("Transition probability", newAtm[i][j]);
+					tesGraph.getRow(transitionEdge).set("Transition probability", restrictedTesMatrix[i][j]);
 					tesGraph.getRow(transitionEdge).set("Interaction", "Attractors Transition");
 				}
 			}
@@ -308,30 +345,33 @@ public class NetworkManagment {
 		//Gets the real number of attractors related with a TES
 		for(int i = 0; i < tesChartMatrix.length; i++){
 			k = 0;
-			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0)
+			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
 				k++;
 			if(k == tesChartMatrix.length)
 				nodes = nodes - 1;
 		}
 		double[][] restrictedTesMatrix = new double[nodes][nodes];
-		
+
 		//Restricted TES matrix initialization
 		for(int i = 0; i < nodes; i++)
 			for(int j = 0; j < nodes; j++)
 				restrictedTesMatrix[i][j] = 0;
-		
+
 		//Restricted TES matrix population
 		int ri = 0, rj;
 		for(int i = 0; i < tesChartMatrix.length; i++){
 			rj = 0;
 			for(int j = 0; j < tesChartMatrix.length; j++){
-				if(tesChartMatrix[i][j] != 0)
+				if(tesChartMatrix[i][j] != 0){
 					restrictedTesMatrix[ri][rj] = tesChartMatrix[i][j];
 					rj = rj + 1;
+				}
 			}
-			ri = ri + 1;
+			if(rj != 0){
+				ri = ri + 1;
+			}
 		}
-		
+
 		//Get the parent group
 		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
 		//Adds a new sub network
@@ -344,13 +384,19 @@ public class NetworkManagment {
 		CyTable edgeTable = tesGraph.getDefaultEdgeTable();
 		if(edgeTable.getColumn("Transition probability") == null)
 			edgeTable.createColumn("Transition probability", Double.class, true);
-		
+		//Adds the attributes for the nodes
+		CyTable nodeTable = tesGraph.getDefaultNodeTable();
+		if(nodeTable.getColumn("Name") == null)
+			nodeTable.createColumn("Name", String.class, true);
+
 		CyNode[] attractorsNodes = new CyNode[nodes];
 
 		//Adds the collapsed attractors
-		for(int i = 0; i < nodes; i++)
+		for(int i = 0; i < nodes; i++){
 			//Sets the virtual attractor node.
 			attractorsNodes[i] = tesGraph.addNode();
+			tesGraph.getRow(attractorsNodes[i]).set("Name", "A" + (i + 1));
+		}
 
 		CyEdge transitionEdge;
 		for(int i = 0; i < restrictedTesMatrix.length; i++){
@@ -370,7 +416,7 @@ public class NetworkManagment {
 		return tesGraph;
 
 	}
-	
+
 	/**
 	 * This method returns true if a Cytoscape network is selected
 	 * @return
@@ -458,19 +504,19 @@ public class NetworkManagment {
 		}
 		visited[rootIndex] = true;
 		boolean isTree = treeVisit(rootIndex, treeMatrix, visited);
-		
+
 		if(!isTree)
 			return null;
-		
-		
+
+
 		TesTree tree = new TesTree(rootIndex);
 		createTesTree(rootIndex, treeMatrix, 0, tree);
 		tree.print();
 		return tree;
-		
-		
-		
-		
+
+
+
+
 	}
 
 	private boolean treeVisit(int rootIndex, boolean[][] treeMatrix, boolean[] visited){
@@ -492,7 +538,7 @@ public class NetworkManagment {
 
 		return result;
 	}
-	
+
 	private void createTesTree(int rootIndex, boolean[][] treeMatrix, int level, TesTree tree) throws TesTreeException{
 		for(int i = 0; i < treeMatrix.length; i++){
 			if(treeMatrix[rootIndex][i]){

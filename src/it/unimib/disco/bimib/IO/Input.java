@@ -359,7 +359,7 @@ public class Input {
 			row = row + 1;
 		}
 		//Checks the file format (n by n matrix) 
-		if(row != 0)
+		if(row != n)
 			throw new IOException("Format error in the atm file. The matrix must be " + n + "x" + n +" matrix");
 		return atm;
 	}

@@ -14,6 +14,10 @@ package it.unimib.disco.bimib.Tes;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
@@ -56,10 +60,53 @@ public class TesManager {
 	private void setCreatedTree(TesTree createdTree) {
 		this.createdTree = createdTree;
 	}
-	
+
+	/**
+	 * This function returns the thresholds sequence for the matching.
+	 * @return the ordered thresholds sequence
+	 */
 	public double[] getThresholds(){
 		return this.thresholds;
 	}
+
+	/*public int findCorrectTesTree(TesTree givenTree) throws TesTreeException {
+		givenTree.print();
+
+		int k = this.attractorsFinder.getAttractors().length;
+		int givenTreeDeepness = givenTree.getTreeDeppness();
+		TesTree createdTree = null;
+		ArrayList<double[]> combinations = null;
+
+		//Preconditions checking
+		if(givenTree.getLeafsNodesNumber() > k){
+			return -1;
+		}
+
+		//Searches every possible combination of delta in the matrix 
+		combinations = deltaCombinations(this.atm.copyAtm(), 
+				this.attractorsFinder.getAttractors(), givenTreeDeepness);		
+		//Combinations checking
+		if(combinations == null)
+			return -1;
+
+		//Creates a new TES tree for each delta-values combination
+		for(double[] testing_thresholds : combinations){
+			try{
+				createdTree = new TesTree(thresholds, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
+				//Checks if the created tree is equal to the given differentiation tree.
+				if(createdTree.tesTreeCompare(givenTree)){
+					this.thresholds = testing_thresholds;
+					createdTree.print();
+					//Tree fund: the method returns 0.
+					return 0;
+				}		
+			}catch(TesTreeException e){
+				//Nope
+			}
+		}
+		//No tree found, so the method returns -1.
+		return -1;
+	}*/
 
 	/**
 	 * This method tries to create a TES tree with the specified network. 
@@ -69,6 +116,7 @@ public class TesManager {
 	 * @throws TesTreeException: An error occurred during the tree creation
 	 */
 	public double[] findCorrectTesTree(TesTree givenTree) throws TesTreeException {
+		givenTree.print();
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 		double[] correctDelta = null;
@@ -76,6 +124,8 @@ public class TesManager {
 		if(k < givenTreeDeepness || k < givenTree.getLeafsNodesNumber()){
 			return null;
 		}
+
+
 
 		//Searches every possible combination of delta in the matrix 
 		ArrayList<double[]> combinations = deltaCombinations(this.atm.copyAtm(), this.attractorsFinder.getAttractors(), givenTreeDeepness);		
@@ -99,320 +149,372 @@ public class TesManager {
 
 		//Returns the correct delta values
 		return correctDelta;
+}
+
+/**
+ * This method tries to create a TES tree with the specified network. 
+ * @param givenTree: The required differentiation tree
+ * @return this method returns the created TES tree which is equal to the specified one. 
+ * If it's impossible to create the given tree, the method returns the null value. 
+ * @throws TesTreeException: An error occurred during the tree creation
+ */
+public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException {
+	int k = this.attractorsFinder.getAttractors().length;
+	int givenTreeDeepness = givenTree.getTreeDeppness();
+
+	//Checks if the number of attractor is enough
+	if(k < givenTreeDeepness){
+		return -1;
 	}
 
-	/**
-	 * This method tries to create a TES tree with the specified network. 
-	 * @param givenTree: The required differentiation tree
-	 * @return this method returns the created TES tree which is equal to the specified one. 
-	 * If it's impossible to create the given tree, the method returns the null value. 
-	 * @throws TesTreeException: An error occurred during the tree creation
-	 */
-	public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException {
-		int k = this.attractorsFinder.getAttractors().length;
-		int givenTreeDeepness = givenTree.getTreeDeppness();
+	//Searches every possible combination of delta in the matrix 
+	ArrayList<double[]> combinations = deltaCombinations(this.atm.copyAtm(), this.attractorsFinder.getAttractors(), givenTreeDeepness);		
 
-		//Checks if the number of attractor is enough
-		if(k < givenTreeDeepness){
+	TesTree createdTree = null;
+	int minDistance = -1, currentDistance;
+	//Creates a new TES tree for each delta values combination
+	for(double[] deltas : combinations){
+		createdTree = new TesTree(deltas, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
+		//Calculates the min distance between the created tree and the given tree
+		currentDistance = createdTree.tesTreeDistance(givenTree);
+		if(currentDistance == 0){
+			minDistance = currentDistance;
+			break;
+		}
+		//Calculates the min distance.
+		minDistance = (minDistance == -1 ? currentDistance : Math.min(currentDistance, minDistance));	
+	}
+
+	//Returns the min distance between the given tree and the created tree with the selected deltas
+	return minDistance;
+}
+
+/**
+ * This method tries to create a TES tree with the specified network. 
+ * @param givenTree: The required differentiation tree
+ * @return this method returns the created TES tree which is equal to the specified one. 
+ * If it's impossible to create the given tree, the method returns the null value. 
+ * @throws TesTreeException: An error occurred during the tree creation
+ */
+public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException {
+	int k = this.attractorsFinder.getAttractors().length;
+	int givenTreeDeepness = givenTree.getTreeDeppness();
+
+	//Checks if the number of attractor is enough
+	if(k < givenTreeDeepness){
+		return -1;
+	}
+
+	//Searches every possible combination of delta in the matrix 
+	ArrayList<double[]> combinations = deltaCombinations(givenTreeDeepness);		
+	TesTree createdTree = null;
+	int minDistance = -1, currentDistance;
+	//Creates a new TES tree for each delta values combination
+	double deltas[];
+	int i = 0;
+	while(minDistance != 0 && i < combinations.size()){
+		deltas = combinations.get(i);
+
+		try{
+			createdTree = new TesTree(deltas, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
+		}catch(TesTreeException e){
 			return -1;
 		}
-
-		//Searches every possible combination of delta in the matrix 
-		ArrayList<double[]> combinations = deltaCombinations(this.atm.copyAtm(), this.attractorsFinder.getAttractors(), givenTreeDeepness);		
-
-		TesTree createdTree = null;
-		int minDistance = -1, currentDistance;
-		//Creates a new TES tree for each delta values combination
-		for(double[] deltas : combinations){
-			createdTree = new TesTree(deltas, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
-			//Calculates the min distance between the created tree and the given tree
-			currentDistance = createdTree.tesTreeDistance(givenTree);
-			if(currentDistance == 0){
-				minDistance = currentDistance;
-				break;
-			}
+		//Calculates the min distance between the created tree and the given tree
+		currentDistance = createdTree.tesTreeHistogramComparison(givenTree);
+		if(currentDistance == 0){
+			minDistance = currentDistance;
+		}else{
 			//Calculates the min distance.
 			minDistance = (minDistance == -1 ? currentDistance : Math.min(currentDistance, minDistance));	
 		}
-
-		//Returns the min distance between the given tree and the created tree with the selected deltas
-		return minDistance;
+		i++;
 	}
 
-	/**
-	 * This method tries to create a TES tree with the specified network. 
-	 * @param givenTree: The required differentiation tree
-	 * @return this method returns the created TES tree which is equal to the specified one. 
-	 * If it's impossible to create the given tree, the method returns the null value. 
-	 * @throws TesTreeException: An error occurred during the tree creation
-	 */
-	public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException {
-		int k = this.attractorsFinder.getAttractors().length;
-		int givenTreeDeepness = givenTree.getTreeDeppness();
+	//Returns the min distance between the given tree and the created tree with the selected deltas
+	return minDistance;
+}
 
-		//Checks if the number of attractor is enough
-		if(k < givenTreeDeepness){
-			return -1;
-		}
 
-		//Searches every possible combination of delta in the matrix 
-		ArrayList<double[]> combinations = deltaCombinations(givenTreeDeepness);		
-		TesTree createdTree = null;
-		int minDistance = -1, currentDistance;
-		//Creates a new TES tree for each delta values combination
-		double deltas[];
-		int i = 0;
-		while(minDistance != 0 && i < combinations.size()){
-			deltas = combinations.get(i);
 
-			try{
-				createdTree = new TesTree(deltas, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
-			}catch(TesTreeException e){
-				return -1;
-			}
-			//Calculates the min distance between the created tree and the given tree
-			currentDistance = createdTree.tesTreeHistogramComparison(givenTree);
-			if(currentDistance == 0){
-				minDistance = currentDistance;
-			}else{
-				//Calculates the min distance.
-				minDistance = (minDistance == -1 ? currentDistance : Math.min(currentDistance, minDistance));	
-			}
-			i++;
-		}
-
-		//Returns the min distance between the given tree and the created tree with the selected deltas
-		return minDistance;
+public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException{
+	//Initializes the ArraList
+	ArrayList<Double> values = new ArrayList<Double>();
+	ArrayList<double[]> combinations = new ArrayList<double[]>();
+	for(double delta = 0.01; delta < 0.15; delta = delta + 0.01){
+		values.add(delta);
 	}
 
+	//Sorts all the value in a crescent order
+	Collections.sort(values); 
 
-
-	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException{
-		//Initializes the ArraList
-		ArrayList<Double> values = new ArrayList<Double>();
-		ArrayList<double[]> combinations = new ArrayList<double[]>();
-		for(double delta = 0.01; delta < 0.15; delta = delta + 0.01){
-			values.add(delta);
-		}
-
-		//Sorts all the value in a crescent order
-		Collections.sort(values); 
-
-		if(requiredTreeDeepness > values.size())
-			return null;
-		else{
-			//Gets the unstructured combinations 
-			ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
-			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
-				double[] singleCombination = new double[requiredTreeDeepness + 1];
-				singleCombination[0] = 0.0;
-				for(int j = 1; j < requiredTreeDeepness + 1; j++){
-					singleCombination[j] = e.get(i+j-1);
-				}
-				//Adds the combination in the array list "Combinations"
-				combinations.add(singleCombination);
+	if(requiredTreeDeepness > values.size())
+		return null;
+	else{
+		//Gets the unstructured combinations 
+		ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
+		for(int i = 0; i < e.size(); i += requiredTreeDeepness){
+			double[] singleCombination = new double[requiredTreeDeepness + 1];
+			singleCombination[0] = 0.0;
+			for(int j = 1; j < requiredTreeDeepness + 1; j++){
+				singleCombination[j] = e.get(i+j-1);
 			}
+			//Adds the combination in the array list "Combinations"
+			combinations.add(singleCombination);
 		}
-		//Returns all k-sized combinations 
-		return combinations;
+	}
+	//Returns all k-sized combinations 
+	return combinations;
+}
+
+/**
+ * This method return all the possible delta values combinations. Each combination is ascending sorted. 
+ * @param atm: The attractors threshold matrix.
+ * @param attractors: The attractors set.
+ * @param requiredTreeDeepness: The number of elements in each combination.
+ * @return an arrayList which contains an array with the delta values for each combination.
+ * @throws TesTreeException: An error occurred during the combinations calculation.
+ */
+public ArrayList<double[]> deltaCombinations(double[][] atm, Object[] attractors, int requiredTreeDeepness) throws TesTreeException{	
+	//Initializes the ArraList
+	ArrayList<Double> values = new ArrayList<Double>();
+	ArrayList<double[]> combinations = new ArrayList<double[]>();
+	//Puts into the ArrayList all the distinct values of the Atm matrix
+	for(int line = 0; line < atm.length; line++){
+		for(int pillar = 0; pillar < atm.length; pillar++){
+			if(values.contains(atm[line][pillar]) == false)
+				values.add(atm[line][pillar]);	
+		}
 	}
 
-	/**
-	 * This method return all the possible delta values combinations. Each combination is ascending sorted. 
-	 * @param atm: The attractors threshold matrix.
-	 * @param attractors: The attractors set.
-	 * @param requiredTreeDeepness: The number of elements in each combination.
-	 * @return an arrayList which contains an array with the delta values for each combination.
-	 * @throws TesTreeException: An error occurred during the combinations calculation.
-	 */
-	public ArrayList<double[]> deltaCombinations(double[][] atm, Object[] attractors, int requiredTreeDeepness) throws TesTreeException{	
-		//Initializes the ArraList
-		ArrayList<Double> values = new ArrayList<Double>();
-		ArrayList<double[]> combinations = new ArrayList<double[]>();
-		//Puts into the ArrayList all the distinct values of the Atm matrix
-		for(int line = 0; line < atm.length; line++){
-			for(int pillar = 0; pillar < atm.length; pillar++){
-				if(values.contains(atm[line][pillar]) == false)
-					values.add(atm[line][pillar]);	
+	//Sorts all the value in a crescent order
+	Collections.sort(values); 
+	//Removes the zero if it is present.
+	if(values.contains(0.0))
+		values.remove(new Double(0.0));
+
+	if(requiredTreeDeepness > values.size())
+		throw new TesTreeException("k ("+requiredTreeDeepness+") is bigger then the threshold's values ("+values.size() +")");
+	else{
+		//Gets the unstructured combinations 
+		ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
+		for(int i = 0; i < e.size(); i += requiredTreeDeepness){
+			double[] singleCombination = new double[requiredTreeDeepness + 1];
+			singleCombination[0] = 0.0;
+			for(int j = 1; j < requiredTreeDeepness + 1; j++){
+				singleCombination[j] = e.get(i+j-1);
 			}
+			//Adds the combination in the array list "Combinations"
+			combinations.add(singleCombination);
 		}
-
-		//Sorts all the value in a crescent order
-		Collections.sort(values); 
-		//Removes the zero if it is present.
-		if(values.contains(0.0))
-			values.remove(new Double(0.0));
-
-		if(requiredTreeDeepness > values.size())
-			throw new TesTreeException("k ("+requiredTreeDeepness+") is bigger then the threshold's values ("+values.size() +")");
-		else{
-			//Gets the unstructured combinations 
-			ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
-			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
-				double[] singleCombination = new double[requiredTreeDeepness + 1];
-				singleCombination[0] = 0.0;
-				for(int j = 1; j < requiredTreeDeepness + 1; j++){
-					singleCombination[j] = e.get(i+j-1);
-				}
-				//Adds the combination in the array list "Combinations"
-				combinations.add(singleCombination);
-			}
-		}
-		//Returns all k-sized combinations 
-		return combinations;
-
 	}
+	//Returns all k-sized combinations 
+	return combinations;
 
-	/**
-	 * This is a service method for the combinations generation.
-	 * @param values: The set with all the values that must be used in the combinations generation.
-	 * @param k: The number of values in each combination
-	 * @return Returns an arrayList with the unformatted combinations. 
-	 * Each set of k values should be explained as a single combination.
-	 */
-	private ArrayList<Double> combinationCreator(ArrayList<Double> values, int k) {
-		//Initializes all the ArrayList needed
-		ArrayList<Double> head = new ArrayList<Double>();
-		ArrayList<Double> temp =new ArrayList<Double>();
-		ArrayList<Double> tailcombs = new ArrayList<Double>();
-		ArrayList<Double> combs = new ArrayList<Double>();
-		int j = 0;
+}
 
-		//If k is equal to the length of the ArrayList returns its
-		if (k == values.size()) {
-			return values;
-		}
-		//If k is equal to 1 adds all the values in the ArrayList combs
-		if (k == 1) {
-			for (int i = 0; i < values.size() ; i++) {
-				combs.add(values.get(i));
-			}
-			return combs;
-		}
-		//Searches the k combinations
-		for (int i = 0; i < values.size() - k  + 1; i++) {
-			//Adds the first element of the ArrayList values into head
-			head.add(values.get(i));
+/**
+ * This is a service method for the combinations generation.
+ * @param values: The set with all the values that must be used in the combinations generation.
+ * @param k: The number of values in each combination
+ * @return Returns an arrayList with the unformatted combinations. 
+ * Each set of k values should be explained as a single combination.
+ */
+private ArrayList<Double> combinationCreator(ArrayList<Double> values, int k) {
+	//Initializes all the ArrayList needed
+	ArrayList<Double> head = new ArrayList<Double>();
+	ArrayList<Double> temp =new ArrayList<Double>();
+	ArrayList<Double> tailcombs = new ArrayList<Double>();
+	ArrayList<Double> combs = new ArrayList<Double>();
+	int j = 0;
 
-			//Adds all the remain values in a temporary ArrayList
-			for(int index = i + 1; index < values.size(); index++)
-				temp.add(values.get(index));
-
-			//If the temporary AraayList isn't empty makes the recursive call
-			if(temp.isEmpty() != true)
-				tailcombs = combinationCreator(temp, k - 1);
-
-			//Pass all the element of the ArrayList tailcombs
-			while ( j < tailcombs.size()) {
-				//Checks if the specified values of the ArrayList is different from the ith head's element
-				//and if it is bigger.
-				if(tailcombs.get(j) != head.get(0) && tailcombs.get(j) > head.get(i)){
-					//Adds the ith head's element in the ArraList combs
-					combs.add(head.get(i));
-					//Adds all the k-element in the ArraList combs
-					for(int valueK = 0 ; valueK < k - 1; valueK ++){
-						combs.add(tailcombs.get(j));
-						j++;}
-				}
-
-			}
-			//Resets the index and the temporary ArrayList
-			j = 0;
-			temp.clear();
+	//If k is equal to the length of the ArrayList returns its
+	if (k == values.size()) {
+		return values;
+	}
+	//If k is equal to 1 adds all the values in the ArrayList combs
+	if (k == 1) {
+		for (int i = 0; i < values.size() ; i++) {
+			combs.add(values.get(i));
 		}
 		return combs;
 	}
+	//Searches the k combinations
+	for (int i = 0; i < values.size() - k  + 1; i++) {
+		//Adds the first element of the ArrayList values into head
+		head.add(values.get(i));
 
-	/**
-	 * Creates the given tree
-	 * @param rootId: root node id
-	 * @throws TesTreeException 
-	 * @throws NumberFormatException 
-	 */
-	public static TesTree createTesTreeFromFile(ArrayList<String[]> tree) throws NumberFormatException, TesTreeException{
-		TesTree givenTree;
+		//Adds all the remain values in a temporary ArrayList
+		for(int index = i + 1; index < values.size(); index++)
+			temp.add(values.get(index));
 
-		if(!tree.get(0)[0].equals("0"))
-			throw new TesTreeException("Root not specified");
+		//If the temporary AraayList isn't empty makes the recursive call
+		if(temp.isEmpty() != true)
+			tailcombs = combinationCreator(temp, k - 1);
 
-		givenTree = new TesTree(Integer.parseInt(tree.get(0)[1]));
+		//Pass all the element of the ArrayList tailcombs
+		while ( j < tailcombs.size()) {
+			//Checks if the specified values of the ArrayList is different from the ith head's element
+			//and if it is bigger.
+			if(tailcombs.get(j) != head.get(0) && tailcombs.get(j) > head.get(i)){
+				//Adds the ith head's element in the ArraList combs
+				combs.add(head.get(i));
+				//Adds all the k-element in the ArraList combs
+				for(int valueK = 0 ; valueK < k - 1; valueK ++){
+					combs.add(tailcombs.get(j));
+					j++;}
+			}
 
-		for(int i = 1; i < tree.size(); i++){
-			addNodeManually(Integer.parseInt(tree.get(i)[1]),
-					Integer.parseInt(tree.get(i)[0]),
-					Integer.parseInt(tree.get(i)[2]),
-					givenTree);
 		}
+		//Resets the index and the temporary ArrayList
+		j = 0;
+		temp.clear();
+	}
+	return combs;
+}
 
-		return givenTree;
+/**
+ * Creates the given tree
+ * @param rootId: root node id
+ * @throws TesTreeException 
+ * @throws NumberFormatException 
+ */
+public static TesTree createTesTreeFromFile(ArrayList<String[]> tree) throws NumberFormatException, TesTreeException{
+	TesTree givenTree;
+
+	if(!tree.get(0)[0].equals("0"))
+		throw new TesTreeException("Root not specified");
+
+	givenTree = new TesTree(Integer.parseInt(tree.get(0)[1]));
+
+	for(int i = 1; i < tree.size(); i++){
+		addNodeManually(Integer.parseInt(tree.get(i)[1]),
+				Integer.parseInt(tree.get(i)[0]),
+				Integer.parseInt(tree.get(i)[2]),
+				givenTree);
 	}
 
-	/**
-	 * Adds a new node in the given tree
-	 * @param nodeId: The new node id
-	 * @param level: The new node level
-	 * @param parentId: The new node parent id
-	 * @throws TesTreeException: An error occurred during the research
-	 */
-	private static void addNodeManually(int nodeId, int level, int parentId, TesTree tree) throws TesTreeException{
-		tree.addNodeManually(nodeId, level, parentId);
+	return givenTree;
+}
+
+/**
+ * Adds a new node in the given tree
+ * @param nodeId: The new node id
+ * @param level: The new node level
+ * @param parentId: The new node parent id
+ * @throws TesTreeException: An error occurred during the research
+ */
+private static void addNodeManually(int nodeId, int level, int parentId, TesTree tree) throws TesTreeException{
+	tree.addNodeManually(nodeId, level, parentId);
+}
+
+/**
+ * This static function returns the TES graph adjacency matrix
+ * given the atm
+ * @param atm: the Attractors Transition Matrix
+ * @return the TES graph adjacency matrix
+ */
+public static double[][] getTesGraph(double[][] atm){
+	//Gets the Strongly Connected Components
+	SCCTarjan sccCalculator = new SCCTarjan(atm);
+	ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
+
+	//Each position of the array contains the number of the scc of the element.
+	int[] assignments = new int[atm.length];
+	for(int i  = 0; i < scc.size(); i++){
+		for(Integer att : scc.get(i))
+			assignments[att] = i;
 	}
 
-	/**
-	 * This static function returns the TES graph adjacency matrix
-	 * given the atm
-	 * @param atm: the Attractors Transition Matrix
-	 * @return the TES graph adjacency matrix
-	 */
-	public static double[][] getTesGraph(double[][] atm){
-		//Gets the Strongly Connected Components
-		SCCTarjan sccCalculator = new SCCTarjan(atm);
-		ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
+	//All the scc are teses at the beginning.
+	boolean[] temporaryTesSet = new boolean[scc.size()];
+	for(int i = 0; i < scc.size(); i++)
+		temporaryTesSet[i] = true;
 
-		//Each position of the array contains the number of the scc of the element.
-		int[] assignments = new int[atm.length];
-		for(int i  = 0; i < scc.size(); i++){
-			for(Integer att : scc.get(i))
-				assignments[att] = i;
+	int j = 0;
+	//Removes the scc that are not tes.
+	for(int i = 0; i < atm.length; i++){
+		j = 0;
+		while((j < atm.length) && (atm[i][j] == 0 || (!((atm[i][j] >= 0) 
+				&& (assignments[i] != assignments[j])))) ){
+			j = j + 1;
 		}
+		if(j < atm.length){
+			temporaryTesSet[assignments[i]] = false;
+		}
+	}
+	//Initialize the TES graph adjacency matrix
+	double[][] tesGraphMatrix = new double[atm.length][atm.length]; 
+	for(int i = 0; i < atm.length; i++){
+		for(int k = 0; k < atm.length; k++){
+			tesGraphMatrix[i][k] = 0.0;
+		}
+	}
+	//Creates the TES graph adjacency matrix:
+	//Only the links between attractors in a TES are copied
+	ArrayList<Integer> tes;
+	for(int t = 0; t < temporaryTesSet.length; t++){
+		if(temporaryTesSet[t] == true){
+			tes = scc.get(t);
+			for(int a1 = 0; a1 < tes.size(); a1++)
+				for(int a2 = 0; a2 < tes.size(); a2++)
+					tesGraphMatrix[tes.get(a1)][tes.get(a2)] = atm[tes.get(a1)][tes.get(a2)];
+		}
+	}
+	return tesGraphMatrix;
+}
 
-		//All the scc are teses at the beginning.
-		int[] temporaryTesSet = new int[scc.size()];
-		for(int i = 0; i < scc.size(); i++)
-			temporaryTesSet[i] = 1;
-
-		int j = 0;
-		//Removes the scc that are not tes.
-		for(int i = 0; i < atm.length; i++){
-			j = 0;
-			while((j < atm.length) && (atm[i][j] == 0 || (!((atm[i][j] >= 0) 
-					&& (assignments[i] != assignments[j])))) ){
-				j = j + 1;
-			}
-			if(j < atm.length){
-				temporaryTesSet[assignments[i]] = 0;
-			}
-		}
-		//Initialize the TES graph adjacency matrix
-		double[][] tesGraphMatrix = new double[atm.length][atm.length]; 
-		for(int i = 0; i < atm.length; i++){
-			for(int k = 0; k < atm.length; k++){
-				tesGraphMatrix[i][k] = 0.0;
-			}
-		}
-		//Creates the TES graph adjacency matrix:
-		//Only the links between attractors in a TES are copied
-		ArrayList<Integer> tes;
-		for(int t = 0; t < temporaryTesSet.length; t++){
-			if(temporaryTesSet[t] == 1){
-				tes = scc.get(t);
-				for(int a1 = 0; a1 < tes.size(); a1++)
-					for(int a2 = 0; a2 < tes.size(); a2++)
-						tesGraphMatrix[tes.get(a1)][tes.get(a2)] = atm[tes.get(a1)][tes.get(a2)];
-			}
-		}
-		return tesGraphMatrix;
+/**
+ * This method returns the number of TESes for a given threshold
+ * @param threshold: The transition probability threshold. It must be between 0 and 1;
+ * @return The number of TES.
+ */
+public static int getTesNumber(double[][]atm, double threshold){
+	int tes = 0;
+	int[] assignments;
+	//Param checking
+	if(threshold < 0.0){
+		threshold = 0.0;
+	}else if(threshold > 1.0){
+		threshold = 1.0;
 	}
 
+	//Computes the SCC
+	SCCTarjan sccCalculator = new SCCTarjan(atm);
+	ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
 
+	//Each position of the array contains the number of the scc of the element.
+	assignments = new int[atm.length];
+	for(int i  = 0; i < scc.size(); i++){
+		for(Integer att : scc.get(i))
+			assignments[att] = i;
+	}
+
+	//All the scc are teses at the beginning.
+	boolean[] temporaryTesSet = new boolean[scc.size()];
+	for(int i = 0; i < scc.size(); i++)
+		temporaryTesSet[i] = true;
+
+	int j = 0;
+	//Removes the scc that are not TESs.
+	for(int i = 0; i < atm.length; i++){
+		j = 0;
+		while((j < atm.length) && (atm[i][j] == 0 || (!((atm[i][j] >= 0) 
+				&& (assignments[i] != assignments[j])))) ){
+			j = j + 1;
+		}
+		if(j < atm.length){
+			temporaryTesSet[assignments[i]] = false;
+		}
+	}
+
+	//Computes the number of teses.
+	for(int i = 0; i < temporaryTesSet.length; i++){
+		if(temporaryTesSet[i]){
+			tes = tes + 1;
+		}
+	}
+
+	return tes;
+}
 }

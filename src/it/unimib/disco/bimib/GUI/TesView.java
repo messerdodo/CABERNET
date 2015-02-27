@@ -10,19 +10,28 @@ package it.unimib.disco.bimib.GUI;
 //GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
 
+import it.unimib.disco.bimib.Tes.TesManager;
+
 //System imports
 import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
 import java.awt.FlowLayout;
+
 import javax.swing.JButton;
+
 import java.awt.Component;
+
 import javax.swing.Box;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 
 //JFreeChart imports
 import org.jfree.chart.ChartFactory;
@@ -135,16 +144,22 @@ public class TesView extends JFrame {
 		return dataset;
 	}
 
+	/**
+	 * This method computes the thresholds-dependent chart.
+	 * @param thresholdStep: the threshold step. It must be between 0 and 1.
+	 */
 	private void computeTeses(double thresholdStep){
 
 		int samplings = ((int) (1 / thresholdStep)) + 1;
 		this.thresholds = new double[samplings];
 		this.teses = new int[samplings];
 		double threshold = 0.0;
+		Atm copiedAtm = new Atm(this.atm.copyAtm());
+
 		//Invokes the creation action
 		for(int i = 0; i < samplings; i++){
 			this.thresholds[i] = threshold;
-			this.teses[i] = atm.getTesNumber(threshold);
+			this.teses[i] = TesManager.getTesNumber(copiedAtm.atmMatrixWithDeltaRemoval(threshold), threshold);
 			threshold = threshold + thresholdStep;
 		}
 
