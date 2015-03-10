@@ -264,6 +264,15 @@ public class Output {
 		//Average attractors lengts
 		if(!results.containsKey(OutputConstants.ATTRACTORS_LENGTH))
 			throw new Exception(OutputConstants.ATTRACTORS_LENGTH + " key must be in the results object");
+		//Tree distance
+		if(!results.containsKey(OutputConstants.TREE_DISTANCE))
+			throw new Exception(OutputConstants.TREE_DISTANCE + " key must be in the results object");
+		//Thresholds
+		if(!results.containsKey(OutputConstants.THRESHOLDS))
+			throw new Exception(OutputConstants.THRESHOLDS + " key must be in the results object");
+		//Average attractors lengts
+		if(!results.containsKey(OutputConstants.ATTRACTORS_LENGTH))
+			throw new Exception(OutputConstants.ATTRACTORS_LENGTH + " key must be in the results object");
 		//Not found attractors
 		if(!results.containsKey(OutputConstants.NOT_FOUND_ATTRACTORS))
 			throw new Exception(OutputConstants.NOT_FOUND_ATTRACTORS + " key must be in the results object");
@@ -272,6 +281,27 @@ public class Output {
 		FileWriter writer = new FileWriter(fileName);
 		PrintWriter printer = new PrintWriter(writer);	
 
+		//Header
+		printer.print("Simulation_id,");
+		printer.flush();
+		printer.print("Clustering_coefficient,");
+		printer.flush();
+		printer.print("Average_bias,");
+		printer.flush();
+		printer.print("Average_path_length,");
+		printer.flush();
+		printer.print("Network_diameter,");
+		printer.flush();
+		printer.print("Attractors_number,");
+		printer.flush();
+		printer.print("Average_attractor_lengths,");
+		printer.flush();
+		printer.print("Tree distance,");
+		printer.flush();
+		printer.print("Thresholds\n");
+		printer.flush();
+
+		
 		//Writes the simulation id
 		printer.print(results.get(OutputConstants.SIMULATION_ID) + ",");
 		printer.flush();
@@ -300,9 +330,17 @@ public class Output {
 		printer.print(results.get(OutputConstants.ATTRACTORS_LENGTH) + ",");
 		printer.flush();	
 
+		//Writes the tree distance
+		printer.print(results.get(OutputConstants.TREE_DISTANCE) + ",");
+		printer.flush();
+
+		//Writes the thresholds array
+		printer.print(results.get(OutputConstants.THRESHOLDS).toString().replace(',', ';') + ",");
+		printer.flush();
+
 		//Writes the number of not found attractors
-		printer.print(results.get(OutputConstants.NOT_FOUND_ATTRACTORS));
-		printer.flush();	
+		//printer.print(results.get(OutputConstants.NOT_FOUND_ATTRACTORS));
+		//printer.flush();	
 
 		printer.close();
 		writer.close();
@@ -483,7 +521,7 @@ public class Output {
 		printer.close();
 		writer.close();
 	}
-	
+
 	/**
 	 * This method saves the sensitivity in a csv file. 
 	 * The first line of the file is the header.
@@ -499,7 +537,7 @@ public class Output {
 			throw new NullPointerException("The names of the genes must be not null for saving the file");
 		if(sensitivity == null)
 			throw new NullPointerException("The sensitivity must be not null for saving the file");
-		
+
 		//Defines the writer streams
 		FileWriter writer = new FileWriter(fileName);
 		PrintWriter printer = new PrintWriter(writer);
@@ -507,13 +545,13 @@ public class Output {
 		//Header
 		printer.print("NETWORK_ID");
 		printer.flush();
-		
+
 		for(String gene_name : genesNames){
 			printer.print("," + gene_name);
 			printer.flush();
 		}
 		printer.println();
-		
+
 		for(String networkId : sensitivity.keySet()){
 			printer.print(networkId);
 			printer.flush();
@@ -525,7 +563,7 @@ public class Output {
 			printer.println();
 			printer.flush();
 		}
-		
+
 		//Closes the stream
 		printer.close();
 		writer.close();
@@ -591,398 +629,4 @@ public class Output {
 		printer.close();
 		writer.close();
 	}
-
-	/**
-	 * This method returns the network statistics in the correct format for the visualization.
-	 * The object matrix has 5 rows, one for each network statistic: Average network bias value, 
-	 * Network clustering coefficient, Network diameter, Average path length and assortativity/dissortativity.
-	 * The first column represent the statistic name and the second its value.
-	 * @param simulation; A Simulation result object
-	 * @return: An object matrix.
-	 * @throws NotExistingNodeException
-	 */
-	/*public static Object[][] getNetworkStatisticsForVisualization(SimulationResult simulation) throws NotExistingNodeException{
-
-		if(simulation == null)
-			throw new NullPointerException("The simulation must be not null!");
-
-		Object[][] networkStatistics = new Object[NETWORK_STATISTICS_NUMBER][COUPLE];
-
-		//Average bias value
-		networkStatistics[0][0] = "Average network bias value";
-		networkStatistics[0][1] = String.valueOf(simulation.getAverageBiasValue());
-
-		//Clustering coefficient
-		networkStatistics[1][0] = "Network clustering coefficient";
-		networkStatistics[1][1] = String.valueOf(simulation.getClusteringCoefficient());
-
-		//Network diameter
-		networkStatistics[2][0] = "Network diameter";
-		networkStatistics[2][1] = String.valueOf(simulation.getNetworkDiameter());
-
-		//Average path length
-		networkStatistics[3][0] = "Average path length";
-		networkStatistics[3][1] = String.valueOf(simulation.getAveragePathLength());
-
-		return networkStatistics;
-
-	}*/
-
-	/**
-	 * This method allows to save all the statistics
-	 * @param fileName
-	 * @param matchingSimulations
-	 * @param unmatchingSimulations
-	 * @throws IOException
-	 * @throws NotExistingSimulationException
-	 * @throws NullPointerException
-	 * @throws NotExistingNodeException
-	 * @throws ParamDefinitionException
-	 * @throws InputTypeException
-	 */
-	/*public static void saveStatistics(String fileName, StoredResults matchingSimulations, 
-			StoredResults unmatchingSimulations) throws IOException, 
-			NotExistingSimulationException, NullPointerException, 
-			NotExistingNodeException, ParamDefinitionException, InputTypeException{
-		//Checks the param values
-		if(fileName == null)
-			throw new NullPointerException("The file name must not be null");
-
-		int match = 0, unmatch = 0;
-
-		//Defines the writer streams
-		FileWriter writer = new FileWriter(fileName);
-
-		PrintWriter printer = new PrintWriter(writer);
-
-		printer.write("######### GRNSim statistics output file #########\n");
-		printer.flush();
-
-		printer.write("Date: " + (new Date()).toString() + "\n\n");
-		printer.flush();
-
-		match = matchingSimulations == null ? 0 : matchingSimulations.getSize();
-		unmatch = unmatchingSimulations == null ? 0 : unmatchingSimulations.getSize();
-
-		printer.write("Tested gene regulatory networks: " + (match + unmatch) + "\n");
-		printer.flush();
-
-		if(matchingSimulations != null){
-			printer.write("Matching networks found: " + matchingSimulations.getSize() + "\n");
-			printer.flush();
-		}
-		if(unmatchingSimulations != null){
-			printer.write("Unmatching networks found: " + unmatchingSimulations.getSize() + "\n\n\n");
-			printer.flush();
-		}
-		printer.write("********* NETWORK STRUCTURE STATISTICS *********\n");
-		printer.flush();
-		if(matchingSimulations != null){
-			printer.write("*********       Matching networks       *********\n");
-			printer.flush();
-			for(String simName : matchingSimulations.getSimulationIds()){
-				SimulationResult sim = matchingSimulations.getStoredSimulation(simName);
-				printer.write("Matching simulation: " + simName + "\n");
-				printer.flush();
-
-				//Network diameter
-				printer.write("Network diameter: " + NetworkStructureStatistics.getNetworkDiameter(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Average path length
-				printer.write("Average path length: " + NetworkStructureStatistics.getAveragePath(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Clustering coefficient
-				printer.write("Clustering coefficient: " + NetworkStructureStatistics.getClusteringCoefficient(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Average bias value
-				printer.write("Average bias value: " + NetworkStructureStatistics.getAverageBiasValue(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				printer.write("------------------------------\n");
-				printer.flush();
-			}
-		}
-
-		if(unmatchingSimulations != null){
-			printer.write("\n*********      Unmatching networks      *********\n");
-			printer.flush();
-			for(String simName : unmatchingSimulations.getSimulationIds()){
-				SimulationResult sim = unmatchingSimulations.getStoredSimulation(simName);
-				printer.write("Unmatching simulation: " + simName + "\n");
-				printer.flush();
-
-				//Network diameter
-				printer.write("Network diameter: " + NetworkStructureStatistics.getNetworkDiameter(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Average path length
-				printer.write("Average path length: " + NetworkStructureStatistics.getAveragePath(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Clustering coefficient
-				printer.write("Clustering coefficient: " + NetworkStructureStatistics.getClusteringCoefficient(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				//Average bias value
-				printer.write("Average bias value: " + NetworkStructureStatistics.getAverageBiasValue(
-						sim.getGraphManager()) + "\n");
-				printer.flush();
-
-				printer.write("------------------------------\n");
-				printer.flush();
-			}
-		}
-		HashMap<Integer, Integer> dist;
-
-		printer.write("\n\n\n********* STANDARD DYNAMIC STATISTICS *********\n");
-		if(matchingSimulations != null){
-			printer.write("*********       Matching networks       *********\n");
-			printer.flush();
-
-			printer.write("@@@ Basin of attraction\n\n");
-			printer.flush();
-
-			printer.write("Size\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.basinOfAttraction(matchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n@@@ Attractor length\n\n");
-			printer.flush();
-
-			printer.write("Length\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.getAttractorsLength(matchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n@@@ Transient length\n\n");
-			printer.flush();
-
-			printer.write("Length\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.getTransientLength(matchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("@@@ Oscillating vs not oscillating nodes \n\n");
-			printer.flush();
-			double oscillating = StandardDynamicStatistics.getOscillatingNodesRatio(matchingSimulations.getSimulations());
-			printer.write(oscillating + "  -  " + (1 - oscillating) );
-		}
-		if(unmatchingSimulations != null){
-			printer.write("\n\n*********      Unmatching networks      *********\n");
-			printer.flush();
-			if(!unmatchingSimulations.getSimulationIds().isEmpty()){
-			printer.write("@@@ Basin of attraction\n\n");
-			printer.flush();
-
-			printer.write("Size\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.basinOfAttraction(unmatchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n@@@ Attractor length\n\n");
-			printer.flush();
-
-			printer.write("Length\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.getAttractorsLength(unmatchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n@@@ Transient length\n\n");
-			printer.flush();
-
-			printer.write("Length\t\t\t|Occurences\n");
-			printer.flush();
-			dist = StandardDynamicStatistics.getTransientLength(unmatchingSimulations.getSimulations());
-
-			for(Integer key : dist.keySet()){
-				printer.write(key + "\t\t\t|" + dist.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n@@@ Oscillating vs not oscillating nodes \n\n");
-			printer.flush();
-			double oscillatingNodes = StandardDynamicStatistics.getOscillatingNodesRatio(unmatchingSimulations.getSimulations());
-			printer.write(oscillatingNodes + "  -  " + (1 - oscillatingNodes) + "\n");
-			}
-		}
-		printer.close();
-
-	}*/
-
-
-	/**
-	 * This method allows to save all the statistics
-	 * @param fileName
-	 * @param matchingSimulations
-	 * @param unmatchingSimulations
-	 * @throws IOException
-	 * @throws NotExistingSimulationException
-	 * @throws NullPointerException
-	 * @throws NotExistingNodeException
-	 * @throws ParamDefinitionException
-	 * @throws InputTypeException
-	 */
-	/*public static void saveMutationStatistics(String fileName, HashMap<String, MutationManager> mutations, 
-			String[] genesNames) throws IOException{
-		//Checks the param values
-		if(fileName == null)
-			throw new NullPointerException("The file name must not be null");
-
-		//Defines the writer streams
-		FileWriter writer = new FileWriter(fileName);
-
-		PrintWriter printer = new PrintWriter(writer);
-
-		printer.write("######### GRNSim mutations statistics output file #########\n");
-		printer.flush();
-
-		printer.write("Date: " + (new Date()).toString() + "\n\n");
-		printer.flush();
-
-		for(String experiment : mutations.keySet()){
-			printer.write("Experiment: " + experiment + "\n\n");
-			printer.flush();
-			printer.write("Avalanches distribution: \n");
-			printer.flush();
-			printer.write("Size;Occurences\n");
-			printer.flush();
-			HashMap<Integer, Integer> avalancheDistribution = DynamicPerturbation.getAvalanche(mutations.get(experiment));
-			Object[] keys =  avalancheDistribution.keySet().toArray();
-			Arrays.sort(keys);
-
-			for(Object key : keys){
-				printer.write((Integer)key + ";" + avalancheDistribution.get(key) + "\n");
-				printer.flush();
-			}
-
-			printer.write("\n\nSensitivity distribution: \n");
-			printer.flush();
-			printer.write("Gene name;Occurences\n");
-			printer.flush();
-			int[] sensitivityDistribution = 
-    				DynamicPerturbation.getSensitivity(mutations.get(experiment));
-    		for(int i = 0; i < sensitivityDistribution.length; i++){
-    			printer.write(genesNames[i] + ";" + sensitivityDistribution[i] + "\n");
-    			printer.flush();
-    		}
-    		printer.write("\n\n\n");
-    		printer.flush();
-
-		}
-
-		printer.close();
-		writer.close();
-	}
-	 */
-
-
-
-	/**
-	 * This method saves the ATM in TSV format
-	 * @param atm: The ATM to be saved
-	 * @param fileName: The name of the file to be saved
-	 * @throws IOException: I/O error
-	 * @throws NotExistingSimulationException 
-	 * @throws NotExistingNodeException 
-	 * @throws InputTypeException 
-	 * @throws ParamDefinitionException 
-	 */
-	/*public static void createSynthesisFile(StoredResults results, String fileName) throws IOException, NotExistingSimulationException, NotExistingNodeException, ParamDefinitionException, InputTypeException{
-		//Checks the param values
-		if(fileName == null)
-			throw new NullPointerException("The file name must not be null");
-		if(results == null)
-			throw new NullPointerException("The StoredResults object must not be null");
-		//Defines the writer streams
-		FileWriter writer = new FileWriter(fileName);
-		PrintWriter printer = new PrintWriter(writer);
-
-		for(String simulationId : results.getSimulationIds()){
-			//Gets the specific simulation 
-			SimulationResult result = results.getStoredSimulation(simulationId);
-			//Writes the simulation id
-			printer.print(simulationId + ",");
-			printer.flush();
-			//Writes the clustering coefficient 
-			printer.print(result.getClusteringCoefficient() + ",");
-			printer.flush();
-			//Writes the average bias value
-			printer.print(result.getAverageBiasValue() + ",");
-			printer.flush();
-			//Writes the average path length
-			printer.print(result.getAveragePathLength() + ",");
-			printer.flush();
-			//Writes the network diameter
-			printer.print(result.getNetworkDiameter() + ",");
-			printer.flush();
-			//Writes the attractor number
-			printer.print(result.getSamplingManager().getAttractorFinder().getAttractorsNumber() + ",");
-			printer.flush();
-			//Writes the average attractors length
-			printer.print(Statistics.StandardDynamicStatistics.getAverageAttractorsLength(result) + ",");
-			printer.flush();
-			//Writes the distance from the given tree
-			printer.print(result.getDistance() + ",");
-			printer.flush();
-			//Writes the number of attractors not found
-			printer.println(result.getSamplingManager().getAttractorFinder().getAttractorsNotFound());
-			printer.flush();
-
-		}
-
-		printer.close();
-		writer.close();
-
-
-	}*/
-
-	/**
-	 * This method saves the tree distances in a file
-	 * @throws IOException 
-	 */
-	/*public static void saveDistances(ArrayList<Integer> distances) throws IOException{
-		//Defines the writer streams
-		FileWriter writer = new FileWriter("distances.csv");
-		PrintWriter printer = new PrintWriter(writer);
-
-		for(Integer distance : distances){
-			//Writes the distace
-			printer.print(distance + ",");
-			printer.flush();
-		}
-
-		printer.close();
-		writer.close();
-	}*/
 }

@@ -18,13 +18,19 @@ import it.unimib.disco.bimib.GUI.Actions.ExportAction;
 import it.unimib.disco.bimib.GUI.Actions.ExportMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.ATMExplorationAction;
 import it.unimib.disco.bimib.GUI.Actions.ExploreFunctionAction;
+import it.unimib.disco.bimib.GUI.Actions.MostFrequentlyTreeViewAction;
+import it.unimib.disco.bimib.GUI.Actions.MostFrequentlyTreeViewMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.TesNumberComputingAction;
 import it.unimib.disco.bimib.GUI.Actions.TesNumberComputingMenuAction;
 import it.unimib.disco.bimib.GUI.Actions.WizardAction;
 import it.unimib.disco.bimib.Middleware.VizMapperManager;
 
+
+
 //System imports
 import java.util.Properties;
+
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.AbstractCySwingApp;
@@ -81,6 +87,10 @@ public class CABERNETApp extends AbstractCySwingApp{
 				new Properties());
 		swingAdapter.getCySwingApplication().addAction(new TesNumberComputingMenuAction(swingAdapter, this.simulationsContainer));
 
+		//Registers the Frequently tree discovering service
+		registrar.registerService(new MostFrequentlyTreeViewAction(swingAdapter, 
+				this.simulationsContainer), CyNetworkViewContextMenuFactory.class, new Properties());
+		swingAdapter.getCySwingApplication().addAction(new MostFrequentlyTreeViewMenuAction(swingAdapter, this.simulationsContainer));
 	}
 
 

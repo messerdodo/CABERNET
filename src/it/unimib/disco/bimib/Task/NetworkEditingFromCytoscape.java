@@ -27,11 +27,15 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 
 
 
+
+
 //System imports
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+
+
 
 
 
@@ -104,8 +108,8 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		AtmManager atmManager = null;
 		TesManager tesManager = null;
 		Simulation newSim;
-		int distance;
-		double[] deltas;
+		int distance = -1;
+		double[] deltas = null;
 		boolean match;
 		int net = 0;
 		String outputPath;
@@ -141,22 +145,29 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 					try{
 						if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 							//Tries to match the network with the given differentiation tree
-							deltas = tesManager.findCorrectTesTree(this.givenTree);
+							distance = tesManager.findCorrectTesTree(this.givenTree);
+							if(distance == 0){
+								match = true;
+								deltas = tesManager.getThresholds();
+							}else{
+								match = false;
+							}
 						}else if(this.matchingType.equals(CABERNETConstants.MIN_DISTANCE)){
 							//Min distance comparison
 							distance = tesManager.findMinDistanceTesTree(this.givenTree);
 							if(distance == -1){
 								match = false;
 							}else if(distance <= threshold)
-								deltas = new double[1];
+								deltas = tesManager.getThresholds();
 						}else{
 							//Computes the histogram distance
 							distance = tesManager.findMinHistogramDistanceTesTree(this.givenTree);
-							if(distance <= threshold)
-								deltas = new double[1];	
-						}if(deltas == null){
-							//Match
-							match = false;
+							if(distance <= threshold){
+								deltas = tesManager.getThresholds();
+								match = true;
+							}else{
+								match = false;
+							}
 						}
 					}catch(Exception ex){
 						match = false;
@@ -172,6 +183,8 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 				newSim.setGraphManager(graphManager);
 				newSim.setAtmManager(atmManager);
 				newSim.setSamplingManager(samplingManager);
+				newSim.setDistance(distance);
+				newSim.setThresholds(deltas);
 				this.simulationsContainer.addSimulation(networkId, newSim);
 
 				//Creates the network view on Cytoscape (if required)

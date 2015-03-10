@@ -7,6 +7,7 @@
 
 package it.unimib.disco.bimib.CABERNET;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 import it.unimib.disco.bimib.Atms.AtmManager;
@@ -24,6 +25,8 @@ public class Simulation {
 	private GraphManager graphManager;
 	private AtmManager atmManager;
 	private SamplingManager samplingManager;
+	private double[] thresholds;
+	private int distance;
 
 	/**
 	 * Default constructor
@@ -33,6 +36,8 @@ public class Simulation {
 		this.graphManager = null;
 		this.atmManager = null;
 		this.samplingManager = null;
+		this.thresholds = null;
+		this.distance = -1;
 	}
 
 	/**
@@ -89,6 +94,39 @@ public class Simulation {
 	public String getNetworkId(){
 		return this.networkId;
 	}
+	
+	/**
+	 * This method sets the thresholds array.
+	 * @param thresholds
+	 */
+	public void setThresholds(double[] thresholds){
+		this.thresholds = thresholds;
+	}
+	
+	/**
+	 * This method returns the thresholds array
+	 * @return
+	 */
+	public double[] getThresholds(){
+		return this.thresholds;
+	}
+	
+	/**
+	 * This method sets the tree distance
+	 * @param distance
+	 */
+	public void setDistance(int distance){
+		this.distance = distance;
+	}
+	
+	/**
+	 * This method returns the stored tree distance.
+	 * @return
+	 */
+	public int getDistance(){
+		return this.distance;
+	}
+	
 
 	/**
 	 * This method returns a property object with all the network structure statistics.
@@ -111,7 +149,8 @@ public class Simulation {
 		for(Object attractor : samplingManager.getAttractorFinder().getAttractors())
 			avgLength = avgLength + samplingManager.getAttractorFinder().getAttractorLength(attractor);
 		statistics.put(OutputConstants.ATTRACTORS_LENGTH, avgLength/samplingManager.getAttractorFinder().getAttractorsNumber());
-		statistics.put(OutputConstants.TREE_DISTANCE, 0);
+		statistics.put(OutputConstants.TREE_DISTANCE, this.distance);
+		statistics.put(OutputConstants.THRESHOLDS, Arrays.toString(this.thresholds));
 		statistics.put(OutputConstants.NOT_FOUND_ATTRACTORS, 0);
 		return statistics;
 	}

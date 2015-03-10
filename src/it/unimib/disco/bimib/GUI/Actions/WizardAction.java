@@ -61,7 +61,10 @@ public class WizardAction extends AbstractCyAction{
 		boolean atm_computation, tree_matching;
 		String matching_type;
 		int threshold;
-
+		boolean consensusTreeComputation;
+		double consensusTreeDepthValue = 1.0;
+		String consensusTreeDepthMode;
+		
 		int response = wizard.showWizard();
 		if(response == 1){
 			try{
@@ -70,22 +73,31 @@ public class WizardAction extends AbstractCyAction{
 				outputs = wizard.getOutputs();
 				atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
 				tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
+				consensusTreeComputation = tasks.getProperty(CABERNETConstants.COMPUTE_CONSENSUS_TREE).equals(CABERNETConstants.YES);
+				consensusTreeDepthMode = tasks.getProperty(CABERNETConstants.TREE_DEPTH_MODE);
+				if(consensusTreeDepthMode.equals(CABERNETConstants.ABSOLUTE_DEPTH) ||
+						consensusTreeDepthMode.equals(CABERNETConstants.RELATIVE_DEPTH)){
+					consensusTreeDepthValue = Double.valueOf(tasks.getProperty(CABERNETConstants.TREE_DEPTH_VALUE));
+				}
 				//Network Creation from features
 				//Create the network randomly
 				if(tasks.getProperty(CABERNETConstants.NETWORK_CREATION).equals(CABERNETConstants.NEW)){
 					if(!tree_matching){
 						dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
-								this.appManager, this.simulationsContainer, atm_computation)));
+								this.appManager, this.simulationsContainer, atm_computation, consensusTreeComputation, 
+								consensusTreeDepthMode, consensusTreeDepthValue)));
 					}else{
 						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
 						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
-									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree())));
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
+									consensusTreeComputation, consensusTreeDepthMode, consensusTreeDepthValue)));
 						}else{
 							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
+							
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
-									matching_type, threshold)));
+									matching_type, threshold, consensusTreeComputation, consensusTreeDepthMode, consensusTreeDepthValue)));
 						}
 					}
 					//Reads the networks from the GRNML files
@@ -97,7 +109,8 @@ public class WizardAction extends AbstractCyAction{
 						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
 						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
 							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
-									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(), wizard.getInputNetworks(), false)));
+									this.simulationsContainer, atm_computation, tree_matching, 
+									wizard.getDifferentiationTree(), wizard.getInputNetworks(), false)));
 						}else{
 							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
 							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
@@ -114,7 +127,8 @@ public class WizardAction extends AbstractCyAction{
 						matching_type = tasks.getProperty(CABERNETConstants.MATCHING_TYPE);
 						if(matching_type.equals(CABERNETConstants.PERFECT_MATCH)){
 							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,
-									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(), wizard.getInputNetworks(), true)));
+									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(), 
+									wizard.getInputNetworks(), true)));
 						}else{
 							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
 							dialogTaskManager.execute(new TaskIterator(new NetworkSimulationsFromFiles(simulationFeatures, outputs, this.adapter,

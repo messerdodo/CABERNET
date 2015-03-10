@@ -251,7 +251,14 @@ public class Wizard extends JDialog {
 	private JCheckBox chkAttractorLenghts;
 	private JCheckBox chkBasins;
 	private JCheckBox chkExportToFileSystem;
-
+	private JPanel InputTreePanel;
+	private JRadioButton rdbtnAbsolute;
+	private JRadioButton rdbtnRatioOfAttractors;
+	private JRadioButton rdbtnLogn;
+	private JTextField txtDepthValue;
+	private final ButtonGroup grpDepth;
+	private JCheckBox chckbxComputeRepresentativeTree;
+	
 	//****
 	private String form;
 	private String inputMethod;
@@ -268,6 +275,7 @@ public class Wizard extends JDialog {
 	private Properties simulationFeatures;
 	private TesTree tree;
 	private NetworkManagment netManagment;
+	
 
 
 
@@ -664,12 +672,12 @@ public class Wizard extends JDialog {
 
 				cmbTopology = new JComboBox<String>();
 				cmbTopology.setModel(new DefaultComboBoxModel<String>(new String[] {
-						"1. Erd\u00f6s-Rényi random ingoing topology, Erd\u00f6s-Rényi random outogoing topology", 
+						"1. Erd\u00f6s-Rényi random ingoing topology, Erd\u00f6s-Rényi random outgoing topology", 
 						"2. Fixed number of inputs, Erd\u00f6s-Rényi random outgoing topology", 
-						"3. Barabasi-Alberts’s preferential attachment (Scale-free)", 
+						"3. Barabasi-Albert’s preferential attachment (Scale-free)", 
 						"4. Erd\u00f6s-Rényi random ingoing topology, Power-law-based outgoing topology (Scale-free)", 
 						"5. Fixed number of inputs, Power-law-based outgoint topology (Scale-free)", 
-				"6. Watts-Strogatz small-world topology"}));
+						"6. Watts-Strogatz small-world topology"}));
 				cmbTopology.setSelectedIndex(0);
 				GroupLayout gl_topologyPanel = new GroupLayout(topologyPanel);
 				gl_topologyPanel.setHorizontalGroup(
@@ -2036,11 +2044,16 @@ public class Wizard extends JDialog {
 			treeMatchingSubPanel.add(treeMatchingTaskSelectPanel);
 
 			chckbxMatchNetworksWith = new JCheckBox("Select only the networks in which the emergent differentiation tree matches with an input tree");
+			chckbxMatchNetworksWith.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					InputTreePanel.setVisible(chckbxMatchNetworksWith.isSelected());
+				}
+			});
 			chckbxMatchNetworksWith.setSelected(true);
 
-			JPanel InputTreePanel = new JPanel();
+			InputTreePanel = new JPanel();
 			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, InputTreePanel, 7, SpringLayout.SOUTH, treeMatchingTaskSelectPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, InputTreePanel, -133, SpringLayout.SOUTH, treeMatchingSubPanel);
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, InputTreePanel, -249, SpringLayout.SOUTH, treeMatchingSubPanel);
 			GroupLayout gl_treeMatchingTaskSelectPanel = new GroupLayout(treeMatchingTaskSelectPanel);
 			gl_treeMatchingTaskSelectPanel.setHorizontalGroup(
 					gl_treeMatchingTaskSelectPanel.createParallelGroup(Alignment.LEADING)
@@ -2200,6 +2213,91 @@ public class Wizard extends JDialog {
 																					.addGap(93))
 					);
 			InputTreePanel.setLayout(gl_InputTreePanel);
+			
+			JPanel panel = new JPanel();
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, panel, 6, SpringLayout.SOUTH, InputTreePanel);
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, treeMatchingSubPanel);
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, panel, 239, SpringLayout.SOUTH, InputTreePanel);
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, panel, 732, SpringLayout.WEST, treeMatchingSubPanel);
+			treeMatchingSubPanel.add(panel);
+			
+			chckbxComputeRepresentativeTree = new JCheckBox("Compute representative tree");
+			
+			JLabel lblTreeDepth = new JLabel("Tree depth:");
+			grpDepth = new ButtonGroup();
+			rdbtnAbsolute = new JRadioButton("Absolute");
+			rdbtnAbsolute.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					txtDepthValue.setVisible(true);
+				}
+			});
+			grpDepth.add(rdbtnAbsolute);
+			
+			rdbtnRatioOfAttractors = new JRadioButton("Ratio of attractors");
+			rdbtnRatioOfAttractors.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					txtDepthValue.setVisible(true);
+				}
+			});
+			grpDepth.add(rdbtnRatioOfAttractors);
+			
+			rdbtnLogn = new JRadioButton("log2(n)");
+			rdbtnLogn.setSelected(true);
+			rdbtnLogn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					txtDepthValue.setVisible(false);
+				}
+			});
+			grpDepth.add(rdbtnLogn);
+			
+			txtDepthValue = new JTextField();
+			txtDepthValue.setText("1");
+			txtDepthValue.setHorizontalAlignment(SwingConstants.CENTER);
+			txtDepthValue.setColumns(10);
+			GroupLayout gl_panel = new GroupLayout(panel);
+			gl_panel.setHorizontalGroup(
+				gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel.createSequentialGroup()
+						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(chckbxComputeRepresentativeTree))
+							.addGroup(gl_panel.createSequentialGroup()
+								.addGap(15)
+								.addComponent(lblTreeDepth))
+							.addGroup(gl_panel.createSequentialGroup()
+								.addGap(30)
+								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+									.addGroup(gl_panel.createSequentialGroup()
+										.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+											.addComponent(rdbtnAbsolute)
+											.addComponent(rdbtnRatioOfAttractors, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE))
+										.addGap(41)
+										.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE))
+									.addComponent(rdbtnLogn, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE))))
+						.addContainerGap(399, Short.MAX_VALUE))
+			);
+			gl_panel.setVerticalGroup(
+				gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel.createSequentialGroup()
+						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panel.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(chckbxComputeRepresentativeTree)
+								.addGap(18)
+								.addComponent(lblTreeDepth)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(rdbtnAbsolute)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(rdbtnRatioOfAttractors)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(rdbtnLogn))
+							.addGroup(gl_panel.createSequentialGroup()
+								.addGap(80)
+								.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addContainerGap(83, Short.MAX_VALUE))
+			);
+			panel.setLayout(gl_panel);
 
 			outputsPanel = new JPanel();
 			contentPanel.add(outputsPanel, "outputsPanel");
@@ -2536,9 +2634,8 @@ public class Wizard extends JDialog {
 							simulationFeatures = readFeatures;
 
 							//New step: outputs page
-							lblTopologyAndFunctionsList.setBackground(Color.LIGHT_GRAY);
-							lblExperimentsList.setBackground(Color.LIGHT_GRAY);
-							lblTreeMatchingList.setBackground(Color.LIGHT_GRAY);
+							lblNetworkGenerationMode.setBackground(Color.WHITE);
+							lblTreeMatchingList.setBackground(UIManager.getColor("Button.background"));
 
 							form = "tree-matching";
 							((CardLayout)contentPanel.getLayout()).show(contentPanel, "treeMatchingPanel");	
@@ -2812,6 +2909,28 @@ public class Wizard extends JDialog {
 					}
 					//Next action: Tree matching
 				}else if(form.equals("tree-matching")){
+					
+					//Consensus tree 
+					Integer depthValue = Integer.valueOf(txtDepthValue.getText());
+					if(chckbxComputeRepresentativeTree.isSelected()){
+						tasks.setProperty(CABERNETConstants.COMPUTE_CONSENSUS_TREE, CABERNETConstants.YES);
+						if(rdbtnAbsolute.isSelected()){
+							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.ABSOLUTE_DEPTH);
+							if(depthValue < 0)
+								throw new FeaturesException("The depth must be greater than 0");
+							tasks.setProperty(CABERNETConstants.TREE_DEPTH_VALUE, txtDepthValue.getText());
+						}else if(rdbtnRatioOfAttractors.isSelected()){
+							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.RELATIVE_DEPTH);
+							if(depthValue < 0 || depthValue > 1)
+								throw new FeaturesException("The depth must be between 0 and 1.");
+							tasks.setProperty(CABERNETConstants.TREE_DEPTH_VALUE, txtDepthValue.getText());
+						}else{
+							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.LOGN_DEPTH);
+						}
+					}else{
+						tasks.setProperty(CABERNETConstants.COMPUTE_CONSENSUS_TREE, CABERNETConstants.NO);
+					}
+					
 					//Reads the tree from file
 					if(chckbxMatchNetworksWith.isSelected()){
 						tasks.setProperty(CABERNETConstants.TREE_MATCHING, CABERNETConstants.YES);

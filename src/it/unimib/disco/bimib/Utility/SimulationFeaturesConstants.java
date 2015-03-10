@@ -64,10 +64,10 @@ public class SimulationFeaturesConstants {
 	public static final String ALGORITHM = "algorithm";
 	
 	/**
-	 * Barabasi-Alberts algorithm key.
+	 * Barabasi-Albert's algorithm key.
 	 * It is used only with a Scale-Free topology.
 	 */
-	public static final String BARABASI_ALBERTZ_ALGORITHM = "BarabasiAlbertz";
+	public static final String BARABASI_ALBERTZ_ALGORITHM = "BarabasiAlbert";
 	
 	/**
 	 * Power law algorithm key.

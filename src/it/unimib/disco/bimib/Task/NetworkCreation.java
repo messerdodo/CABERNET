@@ -28,11 +28,17 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 
 
 
+
+
+
 //System imports
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+
+
+
 
 
 
@@ -57,25 +63,32 @@ public class NetworkCreation extends AbstractTask{
 	private TesTree givenTree;
 	private String matchingType;
 	private int threshold;
+	private boolean representativeTreeComputation;
+	private String representativeTreeDepthMode;
+	private double representativeTreeDepthValue;
 
 	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
-			CyApplicationManager appManager, SimulationsContainer simulationsContainer, boolean atmComputation) throws NumberFormatException, 
-			NullPointerException, FileNotFoundException, TesTreeException, InputFormatException{
+			CyApplicationManager appManager, SimulationsContainer simulationsContainer, boolean atmComputation, 
+			boolean representative_tree, String representativeTreeDepthMode, double representativeTreeDepthValue) 
+					throws NumberFormatException, NullPointerException, FileNotFoundException, 
+					TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, 
-				atmComputation, false, null);
+				atmComputation, false, null, representative_tree, representativeTreeDepthMode, representativeTreeDepthValue);
 	}
 
 	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, boolean treeMatching, 
-			TesTree tree) throws NumberFormatException, NullPointerException, 
+			TesTree tree, boolean representative_tree, String representativeTreeDepthMode, 
+			double representativeTreeDepthValue) throws NumberFormatException, NullPointerException, 
 			FileNotFoundException, TesTreeException, InputFormatException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, atmComputation, 
-				treeMatching, tree, CABERNETConstants.PERFECT_MATCH, -1);
+				treeMatching, tree, CABERNETConstants.PERFECT_MATCH, -1, representative_tree, representativeTreeDepthMode, representativeTreeDepthValue);
 	}
 
 	public NetworkCreation(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			SimulationsContainer simulationsContainer, boolean atmComputation, 
-			boolean treeMatching, TesTree tree, String matchingType, int threshold) 
+			boolean treeMatching, TesTree tree, String matchingType, int threshold, boolean representativeTreeComputation,
+			String representativeTreeDepthMode, double representativeTreeDepthValue) 
 					throws NumberFormatException, NullPointerException, FileNotFoundException, 
 					TesTreeException, InputFormatException{
 		this.simulationFeatures = networkFeatures;
@@ -89,6 +102,9 @@ public class NetworkCreation extends AbstractTask{
 		this.givenTree = tree;
 		this.matchingType = matchingType;
 		this.threshold = threshold;
+		this.representativeTreeComputation = representativeTreeComputation;
+		this.representativeTreeDepthMode = representativeTreeDepthMode;
+		this.representativeTreeDepthValue = representativeTreeDepthValue;
 	}
 
 
@@ -105,16 +121,19 @@ public class NetworkCreation extends AbstractTask{
 		TesManager tesManager = null;
 		Simulation newSim;
 		CyNetwork parent;
-		int distance;
-		double[] deltas;
+		int distance = -1;
+		double[] deltas = null;
 		boolean match;
 		String outputPath;
 		int net = 0;
+		int depth = 0;
+		ArrayList<TesTree> representativeTrees;
 		while(net < requiredNetworks){
 			taskMonitor.setStatusMessage("Network " + (net + 1) + ": Network creation");
 			match = true;
 			deltas = null;
 			parent = null;
+			representativeTrees = null;
 			//Creates the network
 			graphManager = new GraphManager();
 			graphManager.createNetwork(this.simulationFeatures);
@@ -138,25 +157,49 @@ public class NetworkCreation extends AbstractTask{
 					try{
 						if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 							//Tries to match the network with the given differentiation tree
-							deltas = tesManager.findCorrectTesTree(this.givenTree);
+							distance = tesManager.findCorrectTesTree(this.givenTree);
+							if(distance == 0){
+								match = true;
+								deltas = tesManager.getThresholds();
+							}else{
+								match = false;
+							}
 						}else if(this.matchingType.equals(CABERNETConstants.MIN_DISTANCE)){
 							//Min distance comparison
 							distance = tesManager.findMinDistanceTesTree(this.givenTree);
 							if(distance == -1){
 								match = false;
 							}else if(distance <= threshold)
-								deltas = new double[1];
+								deltas = tesManager.getThresholds();
 						}else{
 							//Computes the histogram distance
 							distance = tesManager.findMinHistogramDistanceTesTree(this.givenTree);
-							if(distance <= threshold)
-								deltas = new double[1];	
-						}if(deltas == null){
-							//Match
-							match = false;
+							if(distance <= threshold){
+								deltas = tesManager.getThresholds();
+								match = true;
+							}else{
+								match = false;
+							}
 						}
 					}catch(Exception ex){
 						match = false;
+					}
+				}
+				
+				//Representative tree finding computation
+				if(this.representativeTreeComputation){
+					if(this.representativeTreeDepthMode.equals(CABERNETConstants.ABSOLUTE_DEPTH)){
+						depth = (int) this.representativeTreeDepthValue;
+					}else if(this.representativeTreeDepthMode.equals(CABERNETConstants.RELATIVE_DEPTH)){
+						depth = (int) Math.floor(this.representativeTreeDepthValue *  samplingManager.getAttractorFinder().getAttractorsNumber());
+					}else{
+						depth = (int) Math.floor(Math.log10(samplingManager.getAttractorFinder().getAttractorsNumber()) / Math.log10(2.0));
+					}
+					try{
+						tesManager = new TesManager(atmManager, samplingManager);
+						representativeTrees = tesManager.getMostFrequentTrees(depth);
+					}catch(Exception ex){
+						representativeTrees = new ArrayList<TesTree>(1);
 					}
 				}
 			}
@@ -170,6 +213,8 @@ public class NetworkCreation extends AbstractTask{
 				newSim.setGraphManager(graphManager);
 				newSim.setAtmManager(atmManager);
 				newSim.setSamplingManager(samplingManager);
+				newSim.setDistance(distance);
+				newSim.setThresholds(deltas);
 				this.simulationsContainer.addSimulation(networkId, newSim);
 
 				//Creates the network view on Cytoscape (if required)
@@ -183,6 +228,12 @@ public class NetworkCreation extends AbstractTask{
 					else
 						this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId, parent);
 					
+				//Creates the representative trees views
+				int i = 0;
+				for(TesTree representativeTree : representativeTrees){
+					this.cytoscapeBridge.createTreesGraph(representativeTree, "Tree_d" + depth + "_n" + i, parent);
+					i = i + 1;
+				}
 				
 				//Exporting
 				if(requiredOutputs.getProperty(OutputConstants.EXPORT_TO_FILE_SYSTEM, OutputConstants.NO).equals(OutputConstants.YES)){

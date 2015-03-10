@@ -40,7 +40,6 @@ public class TesTree{
 	public TesTree(double[] thresholds,double[][] atm, Object[] attractors) throws TesTreeException {
 		this.root = null;
 		this.nextNodeId = 0;
-		//this.treeGenerator(delta, atm, attractors);
 		createTree(thresholds, atm, attractors);
 	}
 
@@ -71,9 +70,12 @@ public class TesTree{
 		int si, sj;
 		ArrayList<Integer> component = null;
 		
+		//Removes all the attractors in the same scc with outgoing edges to other scc
 		for(ArrayList<Integer> comp : scc){
 			elementsInComp = comp.size();
-			for(int att_s = 0; att_s < elementsInComp; att_s++){
+			int att_s = 0;
+			//for(int att_s = 0; att_s < elementsInComp; att_s++){
+			while(att_s < elementsInComp){
 				target = 0;
 				while(target < rootAtm.length && 
 						((rootAtm[comp.get(att_s)][target] != 0 && comp.contains(target)) ||
@@ -82,6 +84,9 @@ public class TesTree{
 				}
 				if(target != rootAtm.length){
 					comp.remove(att_s);
+					elementsInComp--;
+				}else{
+					att_s = att_s + 1;
 				}
 			}
 		}
@@ -153,9 +158,12 @@ public class TesTree{
 			sccCalculator = new SCCTarjan(atm);
 			scc = sccCalculator.scc();
 			target = 0;
+			int att_s;
 			for(ArrayList<Integer> comp : scc){
 				elementsInComp = comp.size();
-				for(int att_s = 0; att_s < elementsInComp; att_s++){
+				att_s = 0;
+				//for(int att_s = 0; att_s < elementsInComp; att_s++){
+				while(att_s < elementsInComp){
 					target = 0;
 					while(target < atm.length && 
 							((atm[comp.get(att_s)][target] != 0 && comp.contains(target)) ||
@@ -164,6 +172,9 @@ public class TesTree{
 					}
 					if(target != atm.length){
 						comp.remove(att_s);
+						elementsInComp--;
+					}else{
+						att_s = att_s + 1;
 					}
 				}
 			}
@@ -644,7 +655,30 @@ public class TesTree{
 				edges.add(edge);
 				getEdges(child, edges);
 			}
-		}}
+		}
+	}
+	
+	/**
+	 * This method returns the list of nodes in the tree
+	 * @return
+	 */
+	public ArrayList<Integer> getNodes(){
+		ArrayList<Integer> visited = new ArrayList<Integer>();
+		getNodes(this.root, visited);
+		return visited;
+	}
+	
+	/**
+	 * Private method for getting the nodes in the tree 
+	 * @param node
+	 * @param visited
+	 */
+	private void getNodes(TesTreeNode node, ArrayList<Integer> visited){
+		visited.add(node.getNodeId());
+		for(TesTreeNode child : node.getChildren()){
+			getNodes(child, visited);
+		}
+	}
 
 	/**
 	 * This method returns the number of nodes in the given tree or subtree, given the root.

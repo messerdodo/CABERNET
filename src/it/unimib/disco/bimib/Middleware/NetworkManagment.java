@@ -161,7 +161,7 @@ public class NetworkManagment {
 		return attractorGraph;
 	}
 
-	//Creates the attractors graph in the Cytoscape format from a given network and put it in the network collenction.
+	//Creates the attractors graph in the Cytoscape format from a given network and put it in the network collection.
 	public CyNetwork createAttractorGraph(AttractorsFinder attractorsFinder, String rbnId, CyNetwork parent) 
 			throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 
@@ -559,6 +559,44 @@ public class NetworkManagment {
 				createTesTree(i, treeMatrix, level + 1, tree);
 			}
 		}
+	}
+
+	//Creates the differentiation tree in the Cytoscape format and put it in the network collection.
+	public CyNetwork createTreesGraph(TesTree tree, String treeName, CyNetwork parent){
+
+		//Get the parent group
+		CyRootNetwork root = ((CySubNetwork) parent).getRootNetwork();
+		//Adds a new sub network
+		CyNetwork cyTree = root.addSubNetwork();
+
+		// Set name for network
+		cyTree.getRow(cyTree).set(CyNetwork.NAME, treeName);
+
+		//Adds the attributes 
+		CyTable nodeTable = cyTree.getDefaultNodeTable();
+		if(nodeTable.getColumn("Name") == null)
+			nodeTable.createColumn("Name", String.class, true);
+
+		ArrayList<Integer> nodes = tree.getNodes();
+		ArrayList<String[]> edges = tree.getEdges();
+		CyNode[] treeNodes = new CyNode[nodes.size()];
+
+		for(int i = 0; i < nodes.size(); i++){
+			treeNodes[i] = cyTree.addNode();
+			cyTree.getRow(treeNodes[i] ).set("Name", String.valueOf(nodes.get(i)));
+		}
+
+		for(String[] edge :edges){
+			cyTree.addEdge(treeNodes[Integer.valueOf(edge[0])],
+					treeNodes[Integer.valueOf(edge[1])], true);
+		}
+
+		// Add the network to Cytoscape
+		CyNetworkManager networkManager = adapter.getCyNetworkManager();
+		networkManager.addNetwork(cyTree);
+
+		return cyTree;
+
 	}
 
 }

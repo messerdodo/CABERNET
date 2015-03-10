@@ -94,4 +94,34 @@ public class CABERNETConstants {
 	 * Matching threshold key.
 	 */
 	public static final String MATCHING_THRESHOLD = "matching-threshold";
+	
+	/**
+	 * This key is used in order to specify if the consensus tree must be performed
+	 */
+	public static final String COMPUTE_CONSENSUS_TREE = "compute-consensus-tree";
+	
+	/**
+	 * This key is used in order to specify the tree depth definition mode.
+	 */
+	public static final String TREE_DEPTH_MODE = "tree-depth-mode";
+	
+	/**
+	 * Absolute depth value
+	 */
+	public static final String ABSOLUTE_DEPTH = "absolute";
+	
+	/**
+	 * Relative depth value (ratio of attractors)
+	 */
+	public static final String RELATIVE_DEPTH = "relative";
+	
+	/**
+	 * Log2(n) value
+	 */
+	public static final String LOGN_DEPTH = "logn";
+	
+	/**
+	 * This key is used in order to specify the value fot the tree depth.
+	 */
+	public static final String TREE_DEPTH_VALUE = "tree-depth-value";
 }

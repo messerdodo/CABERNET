@@ -50,6 +50,11 @@ public class OutputConstants {
 	public static final String TREE_DISTANCE = "tree-distance";
 	
 	/**
+	 * This key is used in order to specify the thresholds array
+	 */
+	public static final String THRESHOLDS = "thresholds";
+	
+	/**
 	 * This key is used in order to specify the number of not found attractors
 	 */
 	public static final String NOT_FOUND_ATTRACTORS = "not-found attractors";

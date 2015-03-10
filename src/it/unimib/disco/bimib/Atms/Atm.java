@@ -249,7 +249,7 @@ public class Atm {
 		// associated value less than delta
 		for(int i = 0; i < atm.length; i++){
 			for(int j = 0; j < atm.length; j++){
-				atm[i][j] = (atm[i][j] < delta ? 0 : atm[i][j]);
+				atm[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
 			}
 		}
 		return atm;
@@ -267,7 +267,7 @@ public class Atm {
 		// associated value less than delta
 		for(int i = 0; i < atm.length; i++){
 			for(int j = 0; j < atm.length; j++){
-				copiedDelta[i][j] = (atm[i][j] < delta ? 0 : atm[i][j]);
+				copiedDelta[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
 			}
 		}
 		return copiedDelta;
