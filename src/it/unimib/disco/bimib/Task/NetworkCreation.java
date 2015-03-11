@@ -108,10 +108,12 @@ public class NetworkCreation extends AbstractTask{
 	}
 
 
+	//Thread execution
 	public void run(final TaskMonitor taskMonitor) throws Exception {
-		// Give the task a title.
+		
 		taskMonitor.setTitle("CABERNET");
 		taskMonitor.setProgress(0.0);
+		//Variables initialization
 		String networkId;
 		int requiredNetworks = Integer.parseInt(this.simulationFeatures.getProperty(SimulationFeaturesConstants.MATCHING_NETWORKS));
 		GraphManager graphManager = null;

@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Cytoscape-API-Compatibility: 3.0
+Cytoscape-App: it.unimib.disco.bimib.CABERNET.CABERNETApp
+Cytoscape-App-Name: CABERNET
+Cytoscape-App-Version: 1.0
+Cytoscape-App-Description: CABERNET is a Cytoscape 3.2.0 app for the generation, the simulation, the analysis and the visualization of Boolean models of gene regulatory networks, particularly focused on the investigation of their robustness.

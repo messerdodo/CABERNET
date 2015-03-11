@@ -2913,7 +2913,7 @@ public class Wizard extends JDialog {
 					//Consensus tree 
 					Integer depthValue = Integer.valueOf(txtDepthValue.getText());
 					if(chckbxComputeRepresentativeTree.isSelected()){
-						tasks.setProperty(CABERNETConstants.COMPUTE_CONSENSUS_TREE, CABERNETConstants.YES);
+						tasks.setProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.YES);
 						if(rdbtnAbsolute.isSelected()){
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.ABSOLUTE_DEPTH);
 							if(depthValue < 0)
@@ -2928,7 +2928,7 @@ public class Wizard extends JDialog {
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.LOGN_DEPTH);
 						}
 					}else{
-						tasks.setProperty(CABERNETConstants.COMPUTE_CONSENSUS_TREE, CABERNETConstants.NO);
+						tasks.setProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.NO);
 					}
 					
 					//Reads the tree from file

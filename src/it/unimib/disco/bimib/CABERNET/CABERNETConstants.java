@@ -96,9 +96,9 @@ public class CABERNETConstants {
 	public static final String MATCHING_THRESHOLD = "matching-threshold";
 	
 	/**
-	 * This key is used in order to specify if the consensus tree must be performed
+	 * This key is used in order to specify if the representative tree must be performed
 	 */
-	public static final String COMPUTE_CONSENSUS_TREE = "compute-consensus-tree";
+	public static final String COMPUTE_REPRESENTATIVE_TREE = "compute-representative-tree";
 	
 	/**
 	 * This key is used in order to specify the tree depth definition mode.
