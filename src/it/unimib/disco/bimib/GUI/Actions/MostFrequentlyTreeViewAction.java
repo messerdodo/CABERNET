@@ -38,7 +38,7 @@ public class MostFrequentlyTreeViewAction implements CyNetworkViewContextMenuFac
 	}
 	
 	public CyMenuItem createMenuItem(CyNetworkView netView) {
-		JMenuItem menuItem = new JMenuItem("Compute consensus tree (CABERNET)");
+		JMenuItem menuItem = new JMenuItem("Compute representative tree (CABERNET)");
 		menuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event)
 			{

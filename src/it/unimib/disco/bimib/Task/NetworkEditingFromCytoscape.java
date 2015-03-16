@@ -242,11 +242,13 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						this.cytoscapeBridge.createAttractorGraph(samplingManager.getAttractorFinder(), networkId, parent);
 				net = net + 1;
 
-				//Creates the representative trees views
+				//Creates the representative trees views (if required)
 				int i = 0;
-				for(TesTree representativeTree : representativeTrees){
-					this.cytoscapeBridge.createTreesGraph(representativeTree, "Tree_d" + depth + "_n" + i, parent);
-					i = i + 1;
+				if(representativeTrees != null){
+					for(TesTree representativeTree : representativeTrees){
+						this.cytoscapeBridge.createTreesGraph(representativeTree, "Tree_d" + depth + "_n" + i, parent);
+						i = i + 1;
+					}
 				}
 				
 				//Exporting

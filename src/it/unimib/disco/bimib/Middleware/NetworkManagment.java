@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 
+
+
 //Cytoscape packages
 import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
@@ -27,6 +29,8 @@ import org.cytoscape.model.subnetwork.CySubNetwork;
 
 
 
+
+
 //GRNSim packages
 import it.unimib.disco.bimib.Networks.GraphManager;
 import it.unimib.disco.bimib.Atms.AtmManager;
@@ -35,12 +39,15 @@ import it.unimib.disco.bimib.Networks.GeneRegulatoryNetwork;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
+import it.unimib.disco.bimib.Utility.NumberFormat;
 
 public class NetworkManagment {
 
 	private final boolean DIRECTED_EDGE = true;
 	private final int SOURCE = 0;
 	private final int DESTINATION = 1;
+	
+	private final int PRECISION = 2;
 
 	private final CyAppAdapter adapter;
 	private final CyApplicationManager appManager;
@@ -320,7 +327,8 @@ public class NetworkManagment {
 			for(int j = 0; j < restrictedTesMatrix.length; j++){
 				if(restrictedTesMatrix[i][j] != 0.0){
 					transitionEdge = tesGraph.addEdge(attractorsNodes[i], attractorsNodes[j], true);
-					tesGraph.getRow(transitionEdge).set("Transition probability", restrictedTesMatrix[i][j]);
+					tesGraph.getRow(transitionEdge).set("Transition probability", 
+							NumberFormat.toPrecision(restrictedTesMatrix[i][j], PRECISION));
 					tesGraph.getRow(transitionEdge).set("Interaction", "Attractors Transition");
 				}
 			}
@@ -416,7 +424,8 @@ public class NetworkManagment {
 			for(int j = 0; j < restrictedTesMatrix.length; j++){
 				if(restrictedTesMatrix[i][j] != 0.0){
 					transitionEdge = tesGraph.addEdge(attractorsNodes[i], attractorsNodes[j], true);
-					tesGraph.getRow(transitionEdge).set("Transition probability", restrictedTesMatrix[i][j]);
+					tesGraph.getRow(transitionEdge).set("Transition probability", 
+							NumberFormat.toPrecision(restrictedTesMatrix[i][j], PRECISION));
 					tesGraph.getRow(transitionEdge).set("Interaction", "Attractors Transition");
 				}
 			}
@@ -561,7 +570,14 @@ public class NetworkManagment {
 		}
 	}
 
-	//Creates the differentiation tree in the Cytoscape format and put it in the network collection.
+	/**
+	 * This method creates the differentiation tree in the Cytoscape format and 
+	 * put it in the network collection.
+	 * @param tree
+	 * @param treeName
+	 * @param parent
+	 * @return
+	 */
 	public CyNetwork createTreesGraph(TesTree tree, String treeName, CyNetwork parent){
 
 		//Get the parent group

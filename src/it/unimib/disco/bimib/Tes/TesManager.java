@@ -491,11 +491,12 @@ public class TesManager {
 		double[][] atm = this.atm.getAtm();
 		ArrayList<double[]> combinations = deltaCombinations(atm, requiredDepth);
 		TesTree createdTree;
-		int i = 0;
+		int i;
 		for(double[] currentCombination : combinations){
 			try{
 				createdTree = new TesTree(currentCombination, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
 				//Checks if the created tree is equal to one of the already found trees.
+				i = 0;
 				while(i < foundTrees.size() && !createdTree.tesTreeCompare(foundTrees.get(i))){
 					i = i + 1;
 				}		

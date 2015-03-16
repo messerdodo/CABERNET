@@ -64,7 +64,7 @@ public class WizardAction extends AbstractCyAction{
 		boolean representativeTreeComputation;
 		double representativeTreeDepthValue = 1.0;
 		String representativeTreeDepthMode;
-		
+
 		int response = wizard.showWizard();
 		if(response == 1){
 			try{
@@ -74,10 +74,15 @@ public class WizardAction extends AbstractCyAction{
 				atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
 				tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
 				representativeTreeComputation = tasks.getProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE).equals(CABERNETConstants.YES);
-				representativeTreeDepthMode = tasks.getProperty(CABERNETConstants.TREE_DEPTH_MODE);
-				if(representativeTreeDepthMode.equals(CABERNETConstants.ABSOLUTE_DEPTH) ||
-						representativeTreeDepthMode.equals(CABERNETConstants.RELATIVE_DEPTH)){
-					representativeTreeDepthValue = Double.valueOf(tasks.getProperty(CABERNETConstants.TREE_DEPTH_VALUE));
+				if(representativeTreeComputation){
+					representativeTreeDepthMode = tasks.getProperty(CABERNETConstants.TREE_DEPTH_MODE);
+					if(representativeTreeDepthMode.equals(CABERNETConstants.ABSOLUTE_DEPTH) ||
+							representativeTreeDepthMode.equals(CABERNETConstants.RELATIVE_DEPTH)){
+						representativeTreeDepthValue = Double.valueOf(tasks.getProperty(CABERNETConstants.TREE_DEPTH_VALUE));
+					}
+				}else{
+					representativeTreeDepthMode = null;
+					representativeTreeDepthValue = -1;
 				}
 				//Network Creation from features
 				//Create the network randomly
@@ -94,7 +99,7 @@ public class WizardAction extends AbstractCyAction{
 									representativeTreeComputation, representativeTreeDepthMode, representativeTreeDepthValue)));
 						}else{
 							threshold = Integer.parseInt(tasks.getProperty(CABERNETConstants.MATCHING_THRESHOLD));
-							
+
 							dialogTaskManager.execute(new TaskIterator(new NetworkCreation(simulationFeatures, outputs, this.adapter, 
 									this.simulationsContainer, atm_computation, tree_matching, wizard.getDifferentiationTree(),
 									matching_type, threshold, representativeTreeComputation, representativeTreeDepthMode, representativeTreeDepthValue)));

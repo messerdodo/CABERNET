@@ -35,7 +35,7 @@ public class TESTest {
 		
 		
 		//TES Count TEST
-		System.out.println("***TES Count TEST***");
+		/*System.out.println("***TES Count TEST***");
 		double[][] adj_mat = Input.readAtm("/Users/messerdodo/Desktop/Networks/network_2/atm.csv");
 		for(double threshold = 0.0; threshold <= 1.0; threshold+= 0.01){
 			for(int i = 0; i < adj_mat.length; i++){
@@ -64,6 +64,20 @@ public class TESTest {
 				System.out.print(tesMatrix[i][k] + " ");
 			}
 			System.out.println();
-		}
+		}*/
+		
+		ArrayList<String[]> t1 = Input.readTree("/Users/messerdodo/Desktop/tree_1.txt");
+		TesTree gt1 = TesManager.createTesTreeFromFile(t1);
+		ArrayList<String[]> t2 = Input.readTree("/Users/messerdodo/Desktop/tree_2.txt");
+		TesTree gt2 = TesManager.createTesTreeFromFile(t2);
+		
+		System.out.println("GT1 depth: " + gt1.getTreeDeppness());
+		System.out.println("GT2 depth: " + gt2.getTreeDeppness());
+		gt1.print();
+		gt2.print();
+		System.out.println("Comparison: " + (gt2.tesTreeCompare(gt1) ? "YES" : "NO") );
+		
+		
 	}
+	
 }

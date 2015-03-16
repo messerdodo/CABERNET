@@ -15,6 +15,8 @@ import it.unimib.disco.bimib.Middleware.VizMapperManager;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 
 
+import it.unimib.disco.bimib.Utility.NumberFormat;
+
 //Java Swing and AWT imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +36,7 @@ import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 
 
+
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
@@ -48,6 +51,7 @@ public class AtmView extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private final int PRECISION = 2;
 	
 	private JPanel contentPane;
 	private JTextField txtThreshold;
@@ -104,7 +108,7 @@ public class AtmView extends JFrame {
 		for(int i = 0; i < atm.length; i++){
 			row = new Double[atm.length];
 			for(int j = 0; j < atm.length; j++)
-				row[j] = atm[i][j];
+				row[j] = NumberFormat.toPrecision(atm[i][j], PRECISION);
 			this.atmModel.addRow(row);
 		}
 		this.tblATM = new JTable();

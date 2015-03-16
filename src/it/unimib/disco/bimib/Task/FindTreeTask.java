@@ -52,7 +52,7 @@ public class FindTreeTask extends AbstractTask{
 		TesManager tesManager = new TesManager(this.atmManager, this.samplingManager);
 		this.foundTrees = tesManager.getMostFrequentTrees(this.depth);
 		if(foundTrees.size() == 0)
-			throw new Exception("No consensus tree found.");
+			throw new Exception("No representative tree found.");
 		for(int i = 0; i < this.foundTrees.size(); i++){
 			cytoscapeBridge.createTreesGraph(this.foundTrees.get(i), "Tree_d" + this.depth + "_n" + i , this.parent);
 		}

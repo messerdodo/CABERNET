@@ -2314,6 +2314,7 @@ public class Wizard extends JDialog {
 			outputsSubPanel.add(cytoscapeOutputsPanel, "cytoscapeOutputsPanel");
 
 			chkNetworksOutput = new JCheckBox("Networks");
+			chkNetworksOutput.setEnabled(false);
 			chkNetworksOutput.setSelected(true);
 
 			chkAttractorsNetworkOutput = new JCheckBox("Attractors Network");
@@ -2911,16 +2912,19 @@ public class Wizard extends JDialog {
 				}else if(form.equals("tree-matching")){
 					
 					//Consensus tree 
-					Integer depthValue = Integer.valueOf(txtDepthValue.getText());
+					double depthValue;
+					int depth;
 					if(chckbxComputeRepresentativeTree.isSelected()){
 						tasks.setProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.YES);
 						if(rdbtnAbsolute.isSelected()){
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.ABSOLUTE_DEPTH);
-							if(depthValue < 0)
+							depth = Integer.valueOf(txtDepthValue.getText());
+							if(depth < 0)
 								throw new FeaturesException("The depth must be greater than 0");
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_VALUE, txtDepthValue.getText());
 						}else if(rdbtnRatioOfAttractors.isSelected()){
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.RELATIVE_DEPTH);
+							depthValue = Double.valueOf(txtDepthValue.getText());
 							if(depthValue < 0 || depthValue > 1)
 								throw new FeaturesException("The depth must be between 0 and 1.");
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_VALUE, txtDepthValue.getText());

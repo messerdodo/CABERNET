@@ -59,14 +59,17 @@ public class TreeFrame extends JFrame {
 		super.setSize(350, 160);
 		setType(Type.UTILITY);
 		setResizable(false);
-		this.txtDepthValue.setVisible(false);
+		
 		
 		this.cytoscapeBridge = new NetworkManagment(adapter, appManager);
 		
 		this.setTitle("Network: " + networkId);
 
 		JLabel lblTreeDepth = new JLabel("Tree depth:");
-
+		this.txtDepthValue = new JTextField();
+		this.txtDepthValue.setHorizontalAlignment(SwingConstants.CENTER);
+		this.txtDepthValue.setText("0.5");
+		
 		rdbtnAbsolute = new JRadioButton("Absolute");
 		rdbtnAbsolute.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -83,10 +86,6 @@ public class TreeFrame extends JFrame {
 		});
 		groupDepth.add(rdbtnRelative);
 
-		txtDepthValue = new JTextField();
-		txtDepthValue.setHorizontalAlignment(SwingConstants.CENTER);
-		txtDepthValue.setText("1");
-
 		rdbtnLogn = new JRadioButton("Log2(n)");
 		rdbtnLogn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -94,22 +93,22 @@ public class TreeFrame extends JFrame {
 			}
 		});
 		groupDepth.add(rdbtnLogn);
-		rdbtnLogn.setSelected(true);
+		rdbtnRelative.setSelected(true);
 
 		btnCompute = new JButton("Compute");
 		btnCompute.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int reqDepth = 0, value;
+				int reqDepth = 0;
+				double value;
 				int n = samplingManager.getAttractorFinder().getAttractorsNumber();
 				try{
 					if(rdbtnAbsolute.isSelected()){
 						reqDepth = Integer.valueOf(txtDepthValue.getText());
-						
 					}else if(rdbtnRelative.isSelected()){
-						value = Integer.valueOf(txtDepthValue.getText());
+						value = Double.valueOf(txtDepthValue.getText());
 						if(value <= 0 || value > 1.0)
 							throw new NumberFormatException("The value must be between 0 and 1.");
-						reqDepth = (int) Math.floor(Integer.valueOf(txtDepthValue.getText()) * n);
+						reqDepth = (int) Math.floor(value * n);
 					}else{
 						reqDepth = (int) Math.floor(Math.log10(n) / Math.log10(2));
 					}

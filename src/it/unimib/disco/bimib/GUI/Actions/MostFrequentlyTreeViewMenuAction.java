@@ -35,7 +35,7 @@ public class MostFrequentlyTreeViewMenuAction extends AbstractCyAction{
 	//Constructor
 	public MostFrequentlyTreeViewMenuAction(CySwingAppAdapter adapter, SimulationsContainer simulationsContainer) {
 
-		super("Compute consensus tree", 
+		super("Compute representative tree", 
 				adapter.getCyApplicationManager(),
 				"network",
 				adapter.getCyNetworkViewManager());
