@@ -52,12 +52,9 @@ public class MutationManager {
 			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB))
 				throw new FeaturesException(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " key must be specified.");
 
-			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB))
-				throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " key must be specified.");
 			//Gets the parameters
 			int minTimes = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB).toString());
 			int maxTimes = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB).toString());
-			int nodesToPerturb = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB).toString());
 			if(minTimes <= 0)
 				throw new FeaturesException(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value must be greater than 0.");
 			if(maxTimes <= 0)
@@ -65,6 +62,14 @@ public class MutationManager {
 			if(minTimes > maxTimes)
 				throw new FeaturesException(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB + " value must be greater or equal than " +
 						SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB + " value.");
+
+			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB))
+				throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " key must be specified.");
+
+			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB))
+				throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " key must be specified.");
+
+			int nodesToPerturb = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB).toString());
 			if(nodesToPerturb < 0 || nodesToPerturb > graphManager.getNodesNumber())
 				throw new FeaturesException(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB + " value must be between 1 and nodes.");
 			//Parses the list of the specific nodes to flip and converts it from a string of names to an array of ids.
@@ -82,6 +87,7 @@ public class MutationManager {
 				//Binary mutation without specific perturbations
 				this.mutation = new BinaryMutation(graphManager, samplingManager.getAttractorFinder(), this.mutationType, nodesToPerturb, minTimes, maxTimes);
 			}
+
 		}else if(this.mutationType.equals(SimulationFeaturesConstants.KNOCKIN_KNOCKOUT_MUTATIONS)){
 			//Param checking
 			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.KNOCKIN_NODES))
@@ -126,7 +132,7 @@ public class MutationManager {
 			if(minKnockOutDuration > maxKnockOutDuration)
 				throw new FeaturesException(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION + " value must be greater or equal than " +
 						SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION + " value.");
-			
+
 			//Parses the list of the specific nodes to perturb and converts it from a string of names to an array of ids.
 			ArrayList<Integer> specificKnockIn = null;
 			ArrayList<Integer> specificKnockOut = null;
@@ -148,7 +154,7 @@ public class MutationManager {
 						specificKnockOut.add(nodeId);
 				}
 			}
-			
+
 			if(specificKnockIn != null || specificKnockOut != null){
 				//Binary mutation with specific perturbations
 				this.mutation = new BinaryMutation(graphManager, samplingManager.getAttractorFinder(), this.mutationType, 
@@ -156,12 +162,12 @@ public class MutationManager {
 						specificKnockIn, specificKnockOut);
 			}else{
 				//Binary mutation without specific perturbations
-				
+
 				this.mutation = new BinaryMutation(graphManager, samplingManager.getAttractorFinder(), this.mutationType, 
 						knockInNodes, knockOutNodes, minKnockInDuration, maxKnockInDuration, minKnockOutDuration, maxKnockOutDuration);
 			}
 		}
-			
+
 	}
 
 	/**

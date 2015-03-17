@@ -12,6 +12,8 @@ package it.unimib.disco.bimib.Mutations;
 //System imports
 import java.util.ArrayList;
 
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -29,6 +31,7 @@ public class BinaryMutation implements Mutation {
 	private int numebrOfnodesToPerturb;
 	private int minPerturbDuration;
 	private int maxPerturbDuration;
+
 	//Used only for static mutations
 	private int knockInNodesNumber;
 	private int knockOutNodesNumber;
@@ -106,6 +109,7 @@ public class BinaryMutation implements Mutation {
 					throws FeaturesException {
 		this(graphManager, attractorFinder, mutationType, nodesToPerturb, minPerturbDuration, maxPerturbDuration, null);
 	}
+
 
 	/**
 	 * This is the constructor for the mutation during the simulation
@@ -259,7 +263,7 @@ public class BinaryMutation implements Mutation {
 					exclude.addAll(this.knockOutNodes);
 					specKnockOut = this.knockOutNodes.size();
 				}
-				
+
 				subsetDim = this.knockInNodesNumber + this.knockOutNodesNumber - specKnockIn - specKnockOut;
 				randomNodes = UtilityRandom.randomSubset(this.graphManager.getNodesNumber(), subsetDim, exclude);
 				knockInSubset = UtilityRandom.randomSubset(randomNodes, this.knockInNodesNumber - specKnockIn);
@@ -292,134 +296,157 @@ public class BinaryMutation implements Mutation {
 	}
 
 	/**
-	 * This method performs flips in the state for the given number of time steps.
-	 * @param initialState: The initial state of the network
-	 * @param perturbSubset: The subset of nodes to perturb
-	 * @param times: the duration of the flips (number of time steps)
-	 * @return the new state after the required flips events
+	 * This method allows to mutate a specific state
+	 * @param times: mutation's duration		
+	 * @param mutations: specified mutations that will be done
+	 * @param state: specified state where will be the mutation
 	 * @throws ParamDefinitionException
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	private Object doFlip(Object initialState, ArrayList<Integer> perturbSubset, int times) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-
-		String stringState = (String)initialState;
-		Boolean[] state =  new Boolean[stringState.length()];
-		Boolean[] newState;
-
-		//Converts the string state in a boolean array
-		for(int j = 0; j < state.length; j++){
-			state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
+	public Object doSingleFlip(Object state, int gene) throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
+		int times;
+		ArrayList<Integer> perturbSubset = new ArrayList<Integer>(1);
+		if(this.mutationType.equals(SimulationFeaturesConstants.FLIP_MUTATIONS)){
+			//Generates the duration of the perturb
+			times = UtilityRandom.randomUniform(this.minPerturbDuration, this.maxPerturbDuration);
+			perturbSubset.add(gene);
+			return doFlip(state, perturbSubset, times);
+		}else{
+			throw new ParamDefinitionException("The " + SimulationFeaturesConstants.MUTATION_TYPE +" value is not " + 
+					SimulationFeaturesConstants.FLIP_MUTATIONS);
 		}
+}
 
-		//Performs the flips for times time steps
-		for(int i = 0; i < times; i++){
-			//Performs the flips
-			for(Integer node : perturbSubset){
-				state[node] = state[node] ? Boolean.FALSE : Boolean.TRUE;
-			}
-			//Obtains the new state from the network
-			newState = this.graphManager.getNewState(state);
-			state = newState;
-		}
-		//Converts the Boolean array in a binary string
-		stringState = "";
-		for(int j = 0; j < state.length; j++)
-			stringState = stringState + (state[j] ? "1" : "0");
-		return stringState;
+/**
+ * This method performs flips in the state for the given number of time steps.
+ * @param initialState: The initial state of the network
+ * @param perturbSubset: The subset of nodes to perturb
+ * @param times: the duration of the flips (number of time steps)
+ * @return the new state after the required flips events
+ * @throws ParamDefinitionException
+ * @throws NotExistingNodeException
+ * @throws InputTypeException
+ */
+private Object doFlip(Object initialState, ArrayList<Integer> perturbSubset, int times) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+
+	String stringState = (String)initialState;
+	Boolean[] state =  new Boolean[stringState.length()];
+	Boolean[] newState;
+
+	//Converts the string state in a boolean array
+	for(int j = 0; j < state.length; j++){
+		state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
 	}
 
-	/**
-	 * This method performs random mutations in the state for the given number of time steps.
-	 * @param initialState: The initial state of the network
-	 * @param nodesToPerturb: The subset of nodes to perturb
-	 * @param newValues: The set of new values for the mutated nodes
-	 * @param times: the duration of the flips (number of time steps)
-	 * @return the new state after the required flips events
-	 * @throws ParamDefinitionException
-	 * @throws NotExistingNodeException
-	 * @throws InputTypeException
-	 */
-	private Object doRandomMutations(Object initialState, ArrayList<Integer> nodesToPerturb, Boolean[] newValues, int times) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-
-		String stringState = (String)initialState;
-		Boolean[] state =  new Boolean[stringState.length()];
-		Boolean[] newState;
-
-		//Converts the string state in a boolean array
-		for(int j = 0; j < state.length; j++){
-			state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
+	//Performs the flips for times time steps
+	for(int i = 0; i < times; i++){
+		//Performs the flips
+		for(Integer node : perturbSubset){
+			state[node] = state[node] ? Boolean.FALSE : Boolean.TRUE;
 		}
+		//Obtains the new state from the network
+		newState = this.graphManager.getNewState(state);
+		state = newState;
+	}
+	//Converts the Boolean array in a binary string
+	stringState = "";
+	for(int j = 0; j < state.length; j++)
+		stringState = stringState + (state[j] ? "1" : "0");
+	return stringState;
+}
 
-		//Performs the flips for times time steps
-		for(int i = 0; i < times; i++){
-			//Performs the flips
-			for(int j = 0; j < nodesToPerturb.size(); j++){
-				state[nodesToPerturb.get(j)] = newValues[j];
-			}
-			//Obtains the new state from the network
-			newState = this.graphManager.getNewState(state);
-			state = newState;
-		}
-		//Converts the Boolean array in a binary string
-		stringState = "";
-		for(int j = 0; j < state.length; j++)
-			stringState = stringState + (state[j] ? "1" : "0");
-		return stringState;
+/**
+ * This method performs random mutations in the state for the given number of time steps.
+ * @param initialState: The initial state of the network
+ * @param nodesToPerturb: The subset of nodes to perturb
+ * @param newValues: The set of new values for the mutated nodes
+ * @param times: the duration of the flips (number of time steps)
+ * @return the new state after the required flips events
+ * @throws ParamDefinitionException
+ * @throws NotExistingNodeException
+ * @throws InputTypeException
+ */
+private Object doRandomMutations(Object initialState, ArrayList<Integer> nodesToPerturb, Boolean[] newValues, int times) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+
+	String stringState = (String)initialState;
+	Boolean[] state =  new Boolean[stringState.length()];
+	Boolean[] newState;
+
+	//Converts the string state in a boolean array
+	for(int j = 0; j < state.length; j++){
+		state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
 	}
 
-	/**
-	 * This method performs knock-in and knock-out mutations as given.
-	 * @param initialState: The initial state
-	 * @param knockInNodes: Subset of nodes to be set active
-	 * @param knockOutNodes: Subset of nodes to be set deactive
-	 * @param knockInTimes: Number of time steps for the knock-in mutations
-	 * @param knockOutTimes: Number of time steps for the knock-out mutations
-	 * @return The new state after the mutations
-	 * @throws ParamDefinitionException
-	 * @throws NotExistingNodeException
-	 * @throws InputTypeException
-	 */
-	private Object doStaticMutations(Object initialState, ArrayList<Integer> knockInNodes, ArrayList<Integer> knockOutNodes, int knockInTimes, int knockOutTimes) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-
-		String stringState = (String)initialState;
-		Boolean[] state =  new Boolean[stringState.length()];
-		Boolean[] newState;
-
-		//Converts the string state in a boolean array
-		for(int j = 0; j < state.length; j++){
-			state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
+	//Performs the flips for times time steps
+	for(int i = 0; i < times; i++){
+		//Performs the flips
+		for(int j = 0; j < nodesToPerturb.size(); j++){
+			state[nodesToPerturb.get(j)] = newValues[j];
 		}
+		//Obtains the new state from the network
+		newState = this.graphManager.getNewState(state);
+		state = newState;
+	}
+	//Converts the Boolean array in a binary string
+	stringState = "";
+	for(int j = 0; j < state.length; j++)
+		stringState = stringState + (state[j] ? "1" : "0");
+	return stringState;
+}
 
-		//Performs the flips for times time steps
-		for(int t = 0; t < Math.max(knockInTimes, knockOutTimes); t++){
-			//Performs the knock-in (if possible)
-			if(t < knockInTimes){
-				for(Integer node : knockInNodes){
-					state[node] = Boolean.TRUE;
-				}
-			}
-			//Performs the knock-out (if possible)
-			if(t < knockOutTimes){
-				for(Integer node : knockOutNodes){
-					state[node] = Boolean.FALSE;
-				}
-			}
-			//Obtains the new state from the network
-			newState = this.graphManager.getNewState(state);
-			state = newState;
-		}
+/**
+ * This method performs knock-in and knock-out mutations as given.
+ * @param initialState: The initial state
+ * @param knockInNodes: Subset of nodes to be set active
+ * @param knockOutNodes: Subset of nodes to be set deactive
+ * @param knockInTimes: Number of time steps for the knock-in mutations
+ * @param knockOutTimes: Number of time steps for the knock-out mutations
+ * @return The new state after the mutations
+ * @throws ParamDefinitionException
+ * @throws NotExistingNodeException
+ * @throws InputTypeException
+ */
+private Object doStaticMutations(Object initialState, ArrayList<Integer> knockInNodes, ArrayList<Integer> knockOutNodes, int knockInTimes, int knockOutTimes) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 
-		//Converts the Boolean array in a binary string
-		stringState = "";
-		for(int j = 0; j < state.length; j++)
-			stringState = stringState + (state[j] ? "1" : "0");
-		return stringState;
+	String stringState = (String)initialState;
+	Boolean[] state =  new Boolean[stringState.length()];
+	Boolean[] newState;
+
+	//Converts the string state in a boolean array
+	for(int j = 0; j < state.length; j++){
+		state[j] = stringState.charAt(j) == '1' ? Boolean.TRUE : Boolean.FALSE;
 	}
 
-	@Override
-	public Atm getMutatedAtm() {
-		// TODO Auto-generated method stub
-		return null;
+	//Performs the flips for times time steps
+	for(int t = 0; t < Math.max(knockInTimes, knockOutTimes); t++){
+		//Performs the knock-in (if possible)
+		if(t < knockInTimes){
+			for(Integer node : knockInNodes){
+				state[node] = Boolean.TRUE;
+			}
+		}
+		//Performs the knock-out (if possible)
+		if(t < knockOutTimes){
+			for(Integer node : knockOutNodes){
+				state[node] = Boolean.FALSE;
+			}
+		}
+		//Obtains the new state from the network
+		newState = this.graphManager.getNewState(state);
+		state = newState;
 	}
+
+	//Converts the Boolean array in a binary string
+	stringState = "";
+	for(int j = 0; j < state.length; j++)
+		stringState = stringState + (state[j] ? "1" : "0");
+	return stringState;
+}
+
+@Override
+public Atm getMutatedAtm() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

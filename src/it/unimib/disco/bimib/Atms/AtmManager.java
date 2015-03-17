@@ -24,7 +24,7 @@ import it.unimib.disco.bimib.Utility.*;
 public class AtmManager {
 
 	private Atm atm;
-	
+
 	/**
 	 * AtmManager constructor with atm specified.
 	 * @param atm: a double matrix that represents the atm 
@@ -42,7 +42,7 @@ public class AtmManager {
 		//Creates the ATM
 		this.atm = new Atm(samplingManager.getAttractorFinder(), mutationManager.getMutation(), atm);
 	}
-	
+
 	/**
 	 * This is the constructor
 	 * @param simulationFeatures
@@ -64,7 +64,7 @@ public class AtmManager {
 
 		double mutationRate;
 		int perturbExperiments;
-		boolean avalanchesSensitivityDistComputation;
+		boolean avalanchesSensitivityDistComputation, completeFlip;
 
 		if(simulationFeatures == null)
 			throw new MissingFeaturesException("Features must be not null");
@@ -75,31 +75,47 @@ public class AtmManager {
 		if(!simulationFeatures.containsKey(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY))
 			throw new MissingFeaturesException(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY + " feature key must be specified.");
 
-		//Checks the mutation rate parameter existence.
-		if(!simulationFeatures.containsKey(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB))
-			throw new FeaturesException(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB + " key must be specified");
-		mutationRate = Double.parseDouble(simulationFeatures.get(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB).toString());
-
-		//Checks if the mutations rate is between 0 and 1
-		if(mutationRate < 0)
-			mutationRate = 0;
-		else if(mutationRate > 1)
-			mutationRate = 1;
-
 		avalanchesSensitivityDistComputation = simulationFeatures.getProperty(
 				SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY).equals(SimulationFeaturesConstants.YES);
-		
-		
-		//Create a new ATM object
-		this.atm = new Atm(samplingManager.getAttractorFinder(), mutationManager.getMutation(), avalanchesSensitivityDistComputation, nodes);
 
-		//Gets the perturb experiments
-		if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP)) 
-			throw new MissingFeaturesException("Features must contain the " + SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP + " key");
-		perturbExperiments = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP).toString());
-		
-		this.atm.createAtm(samplingManager.getAttractorFinder().getAttractors(), perturbExperiments, mutationRate);
-		
+
+		//Checks the mutation rate parameter existence.
+		if(simulationFeatures.containsKey(SimulationFeaturesConstants.COMPLETE_FLIP_EXP)){
+			completeFlip = simulationFeatures.getProperty(SimulationFeaturesConstants.COMPLETE_FLIP_EXP).equals(SimulationFeaturesConstants.YES);
+		}else{
+			completeFlip = false;
+		}
+
+		if(!completeFlip){
+			//Checks the mutation rate parameter existence.
+			if(!completeFlip && !simulationFeatures.containsKey(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB))
+				throw new FeaturesException(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB + " key must be specified");
+
+			mutationRate = Double.parseDouble(simulationFeatures.get(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB).toString());
+
+			//Checks if the mutations rate is between 0 and 1
+			if(mutationRate < 0)
+				mutationRate = 0;
+			else if(mutationRate > 1)
+				mutationRate = 1;
+
+			//Create a new ATM object
+			this.atm = new Atm(samplingManager.getAttractorFinder(), mutationManager.getMutation(), avalanchesSensitivityDistComputation, nodes);
+
+			//Gets the perturb experiments
+			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP)) 
+				throw new MissingFeaturesException("Features must contain the " + SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP + " key");
+			perturbExperiments = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP).toString());
+
+			this.atm.createAtm(samplingManager.getAttractorFinder().getAttractors(), perturbExperiments, mutationRate);
+		}else{
+			//Create a new ATM object
+			this.atm = new Atm(samplingManager.getAttractorFinder(), mutationManager.getMutation());
+			this.atm.createAtm(samplingManager.getAttractorFinder().getAttractors(), nodes);
+		}
+
+
+
 	}
 
 	/**

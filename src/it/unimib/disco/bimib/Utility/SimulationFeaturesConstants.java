@@ -299,6 +299,11 @@ public class SimulationFeaturesConstants {
 	public static final String FLIP_MUTATIONS = "Flip";
 	
 	/**
+	 * This key is used in order to perform a complete flip experiment.
+	 */
+	public static final String COMPLETE_FLIP_EXP = "complete-filp-exp";
+	
+	/**
 	 * This key defines a Temporary mutation
 	 */
 	public static final String TEMPORARY_MUTATIONS = "Temporary";

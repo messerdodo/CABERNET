@@ -14,6 +14,9 @@ package it.unimib.disco.bimib.Atms;
 import java.util.ArrayList;
 
 
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Mutations.Mutation;
@@ -98,13 +101,20 @@ public class Atm {
 
 	}
 
-	public void createAtm(Object[] attractors, int perturbExperiments, double perturbStatesRatio) 
-			throws MissingFeaturesException, ParamDefinitionException, NotExistingAttractorsException, 
-			NotExistingNodeException, InputTypeException, AttractorNotFoundException {
 
-		//Param check
-		if(perturbStatesRatio < 0 || perturbStatesRatio > 1)
-			throw new ParamDefinitionException("The ratio of states to perturb value must be in [0, 1] interval");
+	/**
+	 * This method executes a complete flip experiment. In this case each node of each 
+	 * state of each attractor is flipped one time.
+	 * @param attractors
+	 * @param nodes
+	 * @throws NotExistingAttractorsException
+	 * @throws ParamDefinitionException
+	 * @throws NotExistingNodeException
+	 * @throws InputTypeException
+	 * @throws AttractorNotFoundException
+	 */
+	public void createAtm(Object[] attractors, int nodes) throws NotExistingAttractorsException, 
+	ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException{
 
 		int numberOfAttractors = attractors.length;
 		Object newState, attractorNewState;
@@ -126,24 +136,18 @@ public class Atm {
 		}
 
 		//Calculates the ATM entries.
-		int index;
-
 		for(int a = 0; a < numberOfAttractors; a++){
 
 			//Gets a permutation of the states in the selected attractor
-			statesInAttractor = UtilityRandom.randomPermutation(
-					this.attractorsFinder.getStatesInAttractor(attractorVet.get(a)));
-			index = 0;
-			Object state;
-			do{
-				state = statesInAttractor[index];
-				//Perform the perturb experiment
-				for(int exp = 0; exp < perturbExperiments; exp++){
+			statesInAttractor = this.attractorsFinder.getStatesInAttractor(attractorVet.get(a));
+			for(Object state : statesInAttractor){
+				//Perform the perturb experiments
+				for(int gene = 0; gene < nodes; gene ++){
 					//Calls the mutation method 
-					newState = this.mutation.doMutation(state);
+					newState = this.mutation.doSingleFlip(state, gene);
 					//Gets the new state's attractor
 					attractorNewState = attractorsFinder.getAttractor(newState);
-
+					
 					//Computes the avalanches and the sensitivity if required.
 					if(this.dynamicPerturbsComputation){
 						dynamicPerturbationsStatistics.avalanchesAndSensitivityComputation(statesInAttractor, 
@@ -169,205 +173,285 @@ public class Atm {
 						System.out.println("No attractor found");
 					}
 				}
-				index ++;
-
-			}while(index < Math.floor(perturbStatesRatio * statesInAttractor.length));	
-		}
+			}
 
 		//Atm matrix normalization
 		this.normalize();
 		storeAtmNotMatching(this.atm);
 	}
+}
 
-	/**
-	 * This method recreates the Atm matrix when for a state there isn't its attractor
-	 * @param newAttractors : an array with all the attractors of the network
-	 * @throws NotExistingAttractorsException
-	 */
-	private void reCreateAtm(Object[] newAttractors) throws NotExistingAttractorsException{
-
-		int numbersOfNewAttractors = newAttractors.length;
-
-		//Creates the new Atm matrix
-		double[][] newAtm = new double[numbersOfNewAttractors][numbersOfNewAttractors];
-
-		//Recopies all the values from the old Atm matrix
-		for(int line = 0; line < numbersOfNewAttractors-1; line++){
-			for(int pillar = 0; pillar < numbersOfNewAttractors-1; pillar++){
-				newAtm[line][pillar] = this.atm[line][pillar];
-			}
-		}
-
-		//Adds the values for the new pillar
-		for(int pillar = 0; pillar < numbersOfNewAttractors; pillar++){
-
-			newAtm[numbersOfNewAttractors -1][pillar] = 0;
-		}
-
-		//Adds the values for the new line
-		for(int line = 0; line < numbersOfNewAttractors; line++){
-			newAtm[line][numbersOfNewAttractors -1] = 0;
-		}
-
-		//Initializes the new Atm
-		this.atm = newAtm;
-
-	}
-
-	/**
-	 * This method return the Atm matrix
-	 * @return Atm
-	 */
-	public double[][] getAtm(){
-		return this.atm;
-	}
-
-	/**
-	 * This method returns a copy of the Atm matrix
-	 * @return
-	 */
-
-	public double[][] copyAtm(){
-		double[][] atmForTes = new double[atm.length][atm.length];
-
-		for(int line = 0; line < atm.length; line++){
-			for(int pillar = 0; pillar < atm.length; pillar++){
-				atmForTes[line][pillar] = this.atm[line][pillar];
-			}
-		}
-		return atmForTes;
-	}
 	
-	/**
-	 * This method returns the atm matrix without the links
-	 * less than delta.
-	 * @param delta
-	 * @return a copy of the atm matrix with some links removed.
-	 */
-	public double[][] atmMatrixWithDeltaRemoval(double delta){
-		//Scans the original atm matrix removing the links with the 
-		// associated value less than delta
-		for(int i = 0; i < atm.length; i++){
-			for(int j = 0; j < atm.length; j++){
-				atm[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
-			}
+public void createAtm(Object[] attractors, int perturbExperiments, double perturbStatesRatio) 
+		throws MissingFeaturesException, ParamDefinitionException, NotExistingAttractorsException, 
+		NotExistingNodeException, InputTypeException, AttractorNotFoundException {
+
+	//Param check
+	if(perturbStatesRatio < 0 || perturbStatesRatio > 1)
+		throw new ParamDefinitionException("The ratio of states to perturb value must be in [0, 1] interval");
+
+	int numberOfAttractors = attractors.length;
+	Object newState, attractorNewState;
+	Object[] statesInAttractor;
+
+	//Copies the attractor's array into an ArrayList
+	ArrayList<Object> attractorVet = new ArrayList<Object>();
+	for(int index = 0; index < numberOfAttractors; index++){
+		attractorVet.add(attractors[index]);
+	}
+	//Initializes the atm.
+	this.atm = new double[numberOfAttractors][numberOfAttractors];
+
+	//Initializes the atm at zero
+	for(int line = 0; line < numberOfAttractors; line++){
+		for(int pillar = 0; pillar < numberOfAttractors; pillar++){
+			this.atm[line][pillar] = 0;
 		}
-		return atm;
 	}
 
-	/**
-	 * This method returns a copy of the atm matrix without the links
-	 * less than delta.
-	 * @param delta
-	 * @return a copy of the atm matrix with some links removed.
-	 */
-	public double[][] copyAtmMatrixWithDeltaRemoval(double delta){
-		double[][] copiedDelta = new double[atm.length][atm.length];
-		//Scans the original atm matrix removing the links with the 
-		// associated value less than delta
-		for(int i = 0; i < atm.length; i++){
-			for(int j = 0; j < atm.length; j++){
-				copiedDelta[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
-			}
-		}
-		return copiedDelta;
-	}
+	//Calculates the ATM entries.
+	int index;
 
-	/**
-	 * This method returns the atm matrix not normalized
-	 * @return the atm matrix not normalized
-	 */
-	public double[][] getAtmWithoutNormalization(){
-		double[][] atmNotNormalized = new double[this.atm.length][this.atm.length];
+	for(int a = 0; a < numberOfAttractors; a++){
 
-		for(int line = 0; line < this.atm.length; line++){
-			//Checks if the total frequency of the specified line is 0
-			if(this.totalFrequencyRows[line] == 0){
-				for(int pillar = 0; pillar < this.atm.length; pillar ++){
-					//Multiplies the atm value for the number of attractors
-					atmNotNormalized[line][pillar] = this.atm[line][pillar] * this.attractorsFinder.getAttractors().length; 
+		//Gets a permutation of the states in the selected attractor
+		statesInAttractor = UtilityRandom.randomPermutation(
+				this.attractorsFinder.getStatesInAttractor(attractorVet.get(a)));
+		index = 0;
+		Object state;
+		do{
+			state = statesInAttractor[index];
+			//Perform the perturb experiment
+			for(int exp = 0; exp < perturbExperiments; exp++){
+				//Calls the mutation method 
+				newState = this.mutation.doMutation(state);
+				//Gets the new state's attractor
+				attractorNewState = attractorsFinder.getAttractor(newState);
+
+				//Computes the avalanches and the sensitivity if required.
+				if(this.dynamicPerturbsComputation){
+					dynamicPerturbationsStatistics.avalanchesAndSensitivityComputation(statesInAttractor, 
+							this.attractorsFinder.getStatesInAttractor(attractorNewState));
 				}
-			}else{
-				for(int pillar = 0; pillar < this.atm.length; pillar ++){
-					//Multiplies the atm value for the total frequency of the specified line 
-					atmNotNormalized[line][pillar] = this.atm[line][pillar] * this.totalFrequencyRows[line]; 
+
+				if(attractorNewState != null){
+
+					//Verifies if the attractor has already been discovered.
+					if(attractorVet.contains(attractorNewState) == true){
+
+						//Gets the new state's index from the attractor's ArrayList
+						//and modifies the Atm matrix
+						this.atm[a][attractorVet.indexOf(attractorNewState)] = this.atm[a][attractorVet.indexOf(attractorNewState)] + 1.0;
+					}else{
+						//Adds the new attractors and modifies the Atm matrix
+						reCreateAtm(attractorsFinder.getAttractors());
+						attractorVet.add(attractorNewState);
+						this.atm[a][attractorVet.indexOf(attractorNewState)] = this.atm[a][attractorVet.indexOf(attractorNewState)] + 1.0;
+						numberOfAttractors = numberOfAttractors + 1;
+					}
+				}else{
+					System.out.println("No attractor found");
 				}
 			}
-		}
-		return atmNotNormalized;
+			index ++;
+
+		}while(index < Math.floor(perturbStatesRatio * statesInAttractor.length));	
 	}
 
-	/**
-	 * This method stores the not matching atms
-	 * @param atm the atm to store.
-	 */
-	public void storeAtmNotMatching(double[][] atm){
-		storedAtmNotMatching.add(atm);
-	}
+	//Atm matrix normalization
+	this.normalize();
+	storeAtmNotMatching(this.atm);
+}
 
-	/**
-	 * This method returns the stored not matching atms
-	 * @return Atms
-	 */
-	public ArrayList<double[][]> getStoredAtmNotMaching(){
-		return storedAtmNotMatching;
-	}
+/**
+ * This method recreates the Atm matrix when for a state there isn't its attractor
+ * @param newAttractors : an array with all the attractors of the network
+ * @throws NotExistingAttractorsException
+ */
+private void reCreateAtm(Object[] newAttractors) throws NotExistingAttractorsException{
 
-	/***
-	 * This method returns the ATM in the tsv format
-	 */
-	public String getCsvAtm(){
-		String csvAtm = "";
-		//Converts the ATM in a tsv format
-		for(int i = 0; i < this.atm.length; i++){
-			//New line
-			if(i != 0)
-				csvAtm += "\n";
-			for(int j = 0; j < this.atm.length - 1; j++){
-				csvAtm += this.atm[i][j] + ",";
-			}
-			csvAtm += this.atm[i][this.atm.length-1];
-		}
+	int numbersOfNewAttractors = newAttractors.length;
 
-		return csvAtm;
-	}
+	//Creates the new Atm matrix
+	double[][] newAtm = new double[numbersOfNewAttractors][numbersOfNewAttractors];
 
-	/**
-	 * This method normalizes the atm matrix.
-	 */
-	private void normalize(){
-		this.totalFrequencyRows = new int[this.atm.length];
-		int numberOfAttractors =  this.atm.length;
-
-		for(int line = 0; line < this.atm.length; line++){
-			this.totalFrequencyRows[line] = 0;
-
-			for(int pillar = 0; pillar < this.atm.length; pillar++){
-				//Calculates the frequency for the specified line
-				this.totalFrequencyRows[line] = this.totalFrequencyRows[line] + (int)this.atm[line][pillar];
-			}
-
-			for(int pillar = 0; pillar < this.atm.length; pillar++){
-				//Normalizes the Atm matrix
-				if(this.totalFrequencyRows[line] == 0)
-					this.atm[line][pillar] = 1.0/numberOfAttractors;
-				else
-					this.atm[line][pillar] = this.atm[line][pillar]/this.totalFrequencyRows[line];
-			}
+	//Recopies all the values from the old Atm matrix
+	for(int line = 0; line < numbersOfNewAttractors-1; line++){
+		for(int pillar = 0; pillar < numbersOfNewAttractors-1; pillar++){
+			newAtm[line][pillar] = this.atm[line][pillar];
 		}
 	}
 
-	/**
-	 * This method returns the DynamicPerturbationStatistics object.
-	 * @return the DynamicPerturbationStatistics object.
-	 */
-	public DynamicPerturbationsStatistics getDynamicPerturbationsStatistics(){
-		return this.dynamicPerturbationsStatistics;
+	//Adds the values for the new pillar
+	for(int pillar = 0; pillar < numbersOfNewAttractors; pillar++){
+
+		newAtm[numbersOfNewAttractors -1][pillar] = 0;
 	}
-	
-	public Atm(double[][] atm){
-		this.atm = atm;
+
+	//Adds the values for the new line
+	for(int line = 0; line < numbersOfNewAttractors; line++){
+		newAtm[line][numbersOfNewAttractors -1] = 0;
 	}
+
+	//Initializes the new Atm
+	this.atm = newAtm;
+
+}
+
+/**
+ * This method return the Atm matrix
+ * @return Atm
+ */
+public double[][] getAtm(){
+	return this.atm;
+}
+
+/**
+ * This method returns a copy of the Atm matrix
+ * @return
+ */
+
+public double[][] copyAtm(){
+	double[][] atmForTes = new double[atm.length][atm.length];
+
+	for(int line = 0; line < atm.length; line++){
+		for(int pillar = 0; pillar < atm.length; pillar++){
+			atmForTes[line][pillar] = this.atm[line][pillar];
+		}
+	}
+	return atmForTes;
+}
+
+/**
+ * This method returns the atm matrix without the links
+ * less than delta.
+ * @param delta
+ * @return a copy of the atm matrix with some links removed.
+ */
+public double[][] atmMatrixWithDeltaRemoval(double delta){
+	//Scans the original atm matrix removing the links with the 
+	// associated value less than delta
+	for(int i = 0; i < atm.length; i++){
+		for(int j = 0; j < atm.length; j++){
+			atm[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
+		}
+	}
+	return atm;
+}
+
+/**
+ * This method returns a copy of the atm matrix without the links
+ * less than delta.
+ * @param delta
+ * @return a copy of the atm matrix with some links removed.
+ */
+public double[][] copyAtmMatrixWithDeltaRemoval(double delta){
+	double[][] copiedDelta = new double[atm.length][atm.length];
+	//Scans the original atm matrix removing the links with the 
+	// associated value less than delta
+	for(int i = 0; i < atm.length; i++){
+		for(int j = 0; j < atm.length; j++){
+			copiedDelta[i][j] = (atm[i][j] <= delta ? 0 : atm[i][j]);
+		}
+	}
+	return copiedDelta;
+}
+
+/**
+ * This method returns the atm matrix not normalized
+ * @return the atm matrix not normalized
+ */
+public double[][] getAtmWithoutNormalization(){
+	double[][] atmNotNormalized = new double[this.atm.length][this.atm.length];
+
+	for(int line = 0; line < this.atm.length; line++){
+		//Checks if the total frequency of the specified line is 0
+		if(this.totalFrequencyRows[line] == 0){
+			for(int pillar = 0; pillar < this.atm.length; pillar ++){
+				//Multiplies the atm value for the number of attractors
+				atmNotNormalized[line][pillar] = this.atm[line][pillar] * this.attractorsFinder.getAttractors().length; 
+			}
+		}else{
+			for(int pillar = 0; pillar < this.atm.length; pillar ++){
+				//Multiplies the atm value for the total frequency of the specified line 
+				atmNotNormalized[line][pillar] = this.atm[line][pillar] * this.totalFrequencyRows[line]; 
+			}
+		}
+	}
+	return atmNotNormalized;
+}
+
+/**
+ * This method stores the not matching atms
+ * @param atm the atm to store.
+ */
+public void storeAtmNotMatching(double[][] atm){
+	storedAtmNotMatching.add(atm);
+}
+
+/**
+ * This method returns the stored not matching atms
+ * @return Atms
+ */
+public ArrayList<double[][]> getStoredAtmNotMaching(){
+	return storedAtmNotMatching;
+}
+
+/***
+ * This method returns the ATM in the tsv format
+ */
+public String getCsvAtm(){
+	String csvAtm = "";
+	//Converts the ATM in a tsv format
+	for(int i = 0; i < this.atm.length; i++){
+		//New line
+		if(i != 0)
+			csvAtm += "\n";
+		for(int j = 0; j < this.atm.length - 1; j++){
+			csvAtm += this.atm[i][j] + ",";
+		}
+		csvAtm += this.atm[i][this.atm.length-1];
+	}
+
+	return csvAtm;
+}
+
+/**
+ * This method normalizes the atm matrix.
+ */
+private void normalize(){
+	this.totalFrequencyRows = new int[this.atm.length];
+	int numberOfAttractors =  this.atm.length;
+
+	for(int line = 0; line < this.atm.length; line++){
+		this.totalFrequencyRows[line] = 0;
+
+		for(int pillar = 0; pillar < this.atm.length; pillar++){
+			//Calculates the frequency for the specified line
+			this.totalFrequencyRows[line] = this.totalFrequencyRows[line] + (int)this.atm[line][pillar];
+		}
+
+		for(int pillar = 0; pillar < this.atm.length; pillar++){
+			//Normalizes the Atm matrix
+			if(this.totalFrequencyRows[line] == 0)
+				this.atm[line][pillar] = 1.0/numberOfAttractors;
+			else
+				this.atm[line][pillar] = this.atm[line][pillar]/this.totalFrequencyRows[line];
+		}
+	}
+}
+
+/**
+ * This method returns the DynamicPerturbationStatistics object.
+ * @return the DynamicPerturbationStatistics object.
+ */
+public DynamicPerturbationsStatistics getDynamicPerturbationsStatistics(){
+	return this.dynamicPerturbationsStatistics;
+}
+
+public Atm(double[][] atm){
+	this.atm = atm;
+}
 
 
 }
