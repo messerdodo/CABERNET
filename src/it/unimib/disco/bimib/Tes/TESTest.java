@@ -66,18 +66,19 @@ public class TESTest {
 			System.out.println();
 		}*/
 		
-		ArrayList<String[]> t1 = Input.readTree("/Users/messerdodo/Desktop/tree_1.txt");
+		ArrayList<String[]> t1 = Input.readTree("/Users/messerdodo/Desktop/t1.txt");
 		TesTree gt1 = TesManager.createTesTreeFromFile(t1);
-		ArrayList<String[]> t2 = Input.readTree("/Users/messerdodo/Desktop/tree_2.txt");
+		ArrayList<String[]> t2 = Input.readTree("/Users/messerdodo/Desktop/t2.txt");
 		TesTree gt2 = TesManager.createTesTreeFromFile(t2);
 		
 		System.out.println("GT1 depth: " + gt1.getTreeDeppness());
 		System.out.println("GT2 depth: " + gt2.getTreeDeppness());
 		gt1.print();
 		gt2.print();
-		System.out.println("Comparison: " + (gt2.tesTreeCompare(gt1) ? "YES" : "NO") );
-		
+		System.out.println("Comparison: " + (gt2.tesTreeCompare(gt2, 8, 0.12) ? "YES" : "NO") );
+	
 		
 	}
+	
 	
 }

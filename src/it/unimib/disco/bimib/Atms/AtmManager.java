@@ -77,7 +77,7 @@ public class AtmManager {
 
 		avalanchesSensitivityDistComputation = simulationFeatures.getProperty(
 				SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY).equals(SimulationFeaturesConstants.YES);
-
+		
 
 		//Checks the mutation rate parameter existence.
 		if(simulationFeatures.containsKey(SimulationFeaturesConstants.COMPLETE_FLIP_EXP)){

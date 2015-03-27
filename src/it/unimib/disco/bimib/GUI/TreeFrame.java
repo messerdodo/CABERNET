@@ -51,6 +51,9 @@ public class TreeFrame extends JFrame {
 	private JButton btnCompute;
 
 	private NetworkManagment cytoscapeBridge;
+	private JTextField txtCutoff;
+	private JTextField txtMaxChildren;
+	private JTextField txtPermutationProbability;
 
 	public TreeFrame(final AtmManager atmManager, final SamplingManager samplingManager, 
 			String networkId, final CyNetwork currentNetwork, final CySwingAppAdapter adapter,
@@ -99,6 +102,9 @@ public class TreeFrame extends JFrame {
 		btnCompute.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int reqDepth = 0;
+				int cutoff;
+				int maxChildren;
+				double permProb;
 				double value;
 				int n = samplingManager.getAttractorFinder().getAttractorsNumber();
 				try{
@@ -118,10 +124,25 @@ public class TreeFrame extends JFrame {
 					if(reqDepth <= 0)
 						throw new NumberFormatException("The required depth must be greater than 0");
 					
+					cutoff = Integer.valueOf(txtCutoff.getText());
+					if(cutoff < -1){
+						throw new NumberFormatException("The cutoff must be greater or equal than 0 or -1.");
+					}
+					
+					maxChildren = Integer.valueOf(txtMaxChildren.getText());
+					if(maxChildren < 0){
+						throw new NumberFormatException("The maximum number of children for a complete test must be greater than 0.");
+					}
+					
+					permProb = Double.valueOf(txtPermutationProbability.getText());
+					if(permProb < 0 || permProb > 1){
+						throw new NumberFormatException("The permutation probability must be bertwwen 0 and 1.");
+					}
+					
 					// Get a Cytoscape service 'DialogTaskManager' in CyActivator class
 					DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
-					dialogTaskManager.execute(new TaskIterator(new FindTreeTask(reqDepth, atmManager, samplingManager,
-							cytoscapeBridge, currentNetwork)));
+					dialogTaskManager.execute(new TaskIterator(new FindTreeTask(reqDepth, cutoff, atmManager, samplingManager,
+							cytoscapeBridge, currentNetwork, maxChildren, permProb)));
 					System.out.println("Tesk completed");
 				}catch(Exception nfe){
 					String message = (String) (nfe.getMessage().equals("") ? nfe : nfe.getMessage());
@@ -131,51 +152,94 @@ public class TreeFrame extends JFrame {
 				}
 			}
 		});
+		
+		txtCutoff = new JTextField();
+		txtCutoff.setHorizontalAlignment(SwingConstants.CENTER);
+		txtCutoff.setText("-1");
+		txtCutoff.setColumns(10);
+		
+		JLabel lblMaximumTreesTo = new JLabel("Permutation probability value:");
+		
+		JLabel label = new JLabel("Maximum trees to test:");
+		
+		JLabel lblMaxChildrenFor = new JLabel("Maximum children for a complete test:");
+		
+		txtMaxChildren = new JTextField();
+		txtMaxChildren.setText("8");
+		txtMaxChildren.setHorizontalAlignment(SwingConstants.CENTER);
+		txtMaxChildren.setColumns(10);
+		
+		txtPermutationProbability = new JTextField();
+		txtPermutationProbability.setText("0.5");
+		txtPermutationProbability.setHorizontalAlignment(SwingConstants.CENTER);
+		txtPermutationProbability.setColumns(10);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addGap(29)
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(rdbtnAbsolute)
-							.addPreferredGap(ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
-							.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)
-							.addGap(27))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(rdbtnLogn, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(199, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(rdbtnRelative)
-							.addContainerGap())))
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblTreeDepth)
-					.addContainerGap(285, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(255, Short.MAX_VALUE)
-					.addComponent(btnCompute)
-					.addContainerGap())
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(lblMaximumTreesTo)
+									.addPreferredGap(ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+									.addComponent(txtPermutationProbability, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblTreeDepth)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addGap(6)
+											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+												.addComponent(rdbtnRelative)
+												.addComponent(rdbtnAbsolute)
+												.addComponent(rdbtnLogn, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)))
+										.addComponent(label, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE))
+									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE)
+										.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(lblMaxChildrenFor)
+									.addGap(18)
+									.addComponent(txtMaxChildren, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE)))
+							.addGap(211))
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addComponent(btnCompute)
+							.addGap(181))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblTreeDepth)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblTreeDepth)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rdbtnAbsolute)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rdbtnRelative)
+							.addGap(5)
+							.addComponent(rdbtnLogn))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(44)
+							.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(rdbtnAbsolute)
-						.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+						.addComponent(label)
+						.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rdbtnRelative)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblMaxChildrenFor)
+						.addComponent(txtMaxChildren, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rdbtnLogn)
-					.addPreferredGap(ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblMaximumTreesTo)
+						.addComponent(txtPermutationProbability, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnCompute)
-					.addContainerGap())
+					.addGap(85))
 		);
 		getContentPane().setLayout(groupLayout);
 	}
-
-
 }

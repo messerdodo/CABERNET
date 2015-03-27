@@ -389,4 +389,16 @@ public class SimulationFeaturesConstants {
 	 * This key is used in order to specify the names of the nodes to permanently knock-out
 	 */
 	public static final String PERMANENTLY_KNOCK_OUT_NODES = "permanently-knock-out-nodes";
+	
+	/**
+	 * This key is used in order to define a sort of cutoff for the nodes permutations during the 
+	 * comparison of two trees
+	 */
+	public static final String MAX_CHILDREN_FOR_COMPLETE_TEST = "max-children-for-complete-test";
+
+	/**
+	 * This key is used in order to define the probability of a permutation selection for the comparison 
+	 * of two trees when it can not be complete
+	 */
+	public static final String PARTIAL_TEST_PROBABILITY = "partial-test-probability";
 }

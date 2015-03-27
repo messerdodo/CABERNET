@@ -19,15 +19,17 @@ import java.util.HashSet;
 
 
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Utility.SCCTarjan;
+import it.unimib.disco.bimib.Utility.UtilityRandom;
 
 
 public class TesTree{
 
 	private TesTreeNode root;
-	
+
 	private int nextNodeId;
 
 	/**
@@ -69,7 +71,7 @@ public class TesTree{
 		int target = 0, elementsInComp;
 		int si, sj;
 		ArrayList<Integer> component = null;
-		
+
 		//Removes all the attractors in the same scc with outgoing edges to other scc
 		for(ArrayList<Integer> comp : scc){
 			elementsInComp = comp.size();
@@ -114,7 +116,7 @@ public class TesTree{
 			}
 			si = si + 1;
 		}
-		
+
 		//Copies the attractors that composes the TES
 		attractors = new Object[component.size()];
 		for(int i = 0; i < component.size(); i++){
@@ -216,176 +218,6 @@ public class TesTree{
 		}
 	}
 
-
-
-	//	/**
-	//	 * This method creates the Tes Tree
-	//	 * @param delta : threshold for the Tes
-	//	 * @param atm : matrix of all the threshold
-	//	 * @param attractors : array of attractors
-	//	 * @throws TesTreeException: An error occurred during the tree creation
-	//	 */
-	//	public void treeGenerator(double[] delta, double[][] atm, Object[] attractors) throws TesTreeException{
-	//		//Initializes the recursive call
-	//		int[] nodeId = new int[1];
-	//		nodeId[0] = 0;
-	//		this.treeGenerator(this.root, delta, 0, atm, attractors, nodeId);
-	//	}
-	//
-	//	/**
-	//	 * This service method returns the path matrix.
-	//	 * The path matrix is a boolean matrix in which each i-j entry 
-	//	 * is true if there is a path between nodes i and j.
-	//	 * @param matrix: The atm matrix
-	//	 * @return the path matrix
-	//	 */
-	//	private boolean[][] performPathMatrix(double[][] matrix){
-	//		int nodes = matrix.length;
-	//		boolean[][] pathMatrix = new boolean[nodes][nodes];
-	//		//Path matrix initialization
-	//		for(int i = 0; i < nodes; i++){
-	//			for(int j = 0; j < nodes; j++){
-	//				//the i-j entry is true if and only if there is a not zero probability
-	//				//to pass from attractor i to attractor j
-	//				pathMatrix[i][j] = matrix[i][j] > 0 ? true : false;
-	//			}
-	//		}
-	//		//Perform the complete path matrix
-	//		for(int i = 0; i < nodes; i++){
-	//			for(int j = 0; j < nodes; j++){
-	//				for(int k = 0; k < nodes; k++){
-	//					/* There is a path between attractors i and j if and only if 
-	//					 * they are already connected or if there is a path between attractors i and 
-	//					 * there is a path k and between attractors k and j
-	//					 */
-	//					pathMatrix[i][j] = (pathMatrix[i][j] || (pathMatrix[i][k] && pathMatrix[k][j]));
-	//				}
-	//			}
-	//		}
-	//		return pathMatrix;
-	//	}
-	//
-	//	/**
-	//	 * This service method creates the Tes Tree.
-	//	 * @param node: The starting tree node.
-	//	 * @param delta : threshold for the Tes.
-	//	 * @param level: The current tree level.
-	//	 * @param atm : matrix of all the threshold.
-	//	 * @param attractors : array of attractors.
-	//	 * @throws TesTreeException: An error occurred during the tree creation.
-	//	 */
-	//	private void treeGenerator(TesTreeNode node, double[] delta, int level, double[][] atm, Object[] attractors, int[] nodeId) throws TesTreeException{
-	//		//Checks if is at the end of the ArrayLIst of delta
-	//		if(level < delta.length ){
-	//
-	//			//Removes the links from the atm
-	//			atm = removeLinksByDelta(delta[level], atm, attractors.length);
-	//			ArrayList<Tes> myTes = new ArrayList<Tes>();
-	//
-	//			//Gets the path matrix
-	//			boolean[][] pathMatrix = this.performPathMatrix(atm);
-	//
-	//			//Creates all the Tes(es)
-	//			for(Object attractor : attractors)
-	//				myTes.add(new Tes(attractor));
-	//
-	//			for(int att1 = 0; att1 < attractors.length; att1++){
-	//				for(int att2 = att1 + 1; att2 < attractors.length; att2++){
-	//					if(pathMatrix[att1][att2] && pathMatrix[att2][att1]){
-	//						int t1 = getTesByAttractor(myTes, attractors[att1]);
-	//						int t2 = getTesByAttractor(myTes, attractors[att2]);
-	//						//If there is a links between two tes they are merge 
-	//						if((t1 != -1 && t2 != -1)&&(t1 != t2)){
-	//							myTes.get(t1).merge(myTes.get(t2));
-	//							myTes.remove(myTes.get(t2));
-	//						}
-	//					}
-	//				}
-	//			}
-	//
-	//			//Removes the SSC that are not TESs
-	//			int t1, t2;
-	//			boolean deleted;
-	//			for(int att1 = 0; att1 < attractors.length; att1++){
-	//				int att2 = 0; 
-	//				deleted = false;
-	//				t1 = getTesByAttractor(myTes, attractors[att1]);
-	//				if(t1 != -1){
-	//					while(att2 < attractors.length && !deleted){
-	//						if(atm[att1][att2] != 0){
-	//							t2 = getTesByAttractor(myTes, attractors[att2]);
-	//							if(t1 != t2){
-	//								myTes.remove(t1);
-	//								deleted = true;
-	//							}
-	//						}
-	//						att2 = att2 + 1;
-	//					}
-	//				}
-	//			}			
-	//
-	//			//Checks if the root is already initializes
-	//			if(node == null){
-	//				if(myTes.size() != 1)
-	//					throw new TesTreeException("This thresholds don't create a tree");
-	//				else{
-	//
-	//					this.root = new TesTreeNode(myTes.get(0), nodeId[0]);
-	//					nodeId[0] += 1;
-	//
-	//					this.treeGenerator(this.root, delta, level + 1, atm, attractors, nodeId);
-	//				}
-	//			}else{
-	//				//Creates a link between the parent and his children
-	//				for(int i = 0; i < myTes.size(); i++){
-	//					node.addChild(new TesTreeNode(myTes.get(i), nodeId[0]));
-	//					nodeId[0] += 1;
-	//					node.getChild(i).setParent(node);
-	//				}
-	//
-	//				//For every child creates a new atm with the specified attractor in the tes(child)
-	//				for(TesTreeNode child : node.getChildren()){
-	//					int nAttractors = child.getTes().sizeTes(), newRow = 0, newCol = 0;
-	//					double[][] reducedAtm = new double[nAttractors][nAttractors];
-	//					Object[] reducedAttractors = new Object[nAttractors];
-	//					ArrayList<Integer> attPositions = new ArrayList<Integer>();
-	//
-	//					for(int i = 0; i < attractors.length; i++){
-	//						if(child.getTes().find(attractors[i]) != -1){
-	//							attPositions.add(i);
-	//							reducedAttractors[newCol] = attractors[i];
-	//							newCol++;
-	//						}
-	//					}
-	//					//Copies all the values in the atm into the reduced atm
-	//					for(int i : attPositions){
-	//						newCol = 0;
-	//						for(int j : attPositions){
-	//							reducedAtm[newRow][newCol] = atm[i][j];
-	//							newCol ++;
-	//						}
-	//						newRow++;
-	//					}
-	//					//Calls the recursive call for the new node
-	//					this.treeGenerator(child, delta, level + 1, reducedAtm, reducedAttractors, nodeId);
-	//				}
-	//			}			
-	//		}
-	//	}
-	//
-	//	/**
-	//	 * This method returns the specified index for a tes from an attractor
-	//	 * @param teses
-	//	 * @param attractor
-	//	 * @return the specified index of the attractors' tes
-	//	 */
-	//	private int getTesByAttractor(ArrayList<Tes> teses, Object attractor){
-	//		int i = 0;
-	//		while(i < teses.size() && (teses.get(i).find(attractor) == -1))
-	//			i++;
-	//		return (i == teses.size() ? -1 : i);
-	//	}
-	//
 	/**
 	 * This method returns the atm without links based on the delta's value
 	 * @param delta
@@ -501,10 +333,15 @@ public class TesTree{
 	/**
 	 * This method compares the TES tree with the specified one.
 	 * @param givenTree: The TES tree to be compare with the caller one
+	 * @param max_children_for_complete_test: maximum number of children for a complete test 
+	 * (all the permutations are tested)
+	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return: True or false
 	 */
-	public boolean tesTreeCompare(TesTree givenTree){
-		return this.tesTreeCompare(givenTree, givenTree.getTreeDeppness() + 1);
+	public boolean tesTreeCompare(TesTree givenTree,
+			int max_children_for_complete_test, double partial_test_probability){
+		return this.tesTreeCompare(givenTree, givenTree.getTreeDeppness() + 1,
+				max_children_for_complete_test, partial_test_probability);
 	}
 
 
@@ -512,15 +349,20 @@ public class TesTree{
 	 * This method compares the TES tree with the specified one until the 'limit' level.
 	 * @param givenTree: The TES tree to be compare with the caller one
 	 * @param limit: The last trees deepness to be check 
+	 * @param max_children_for_complete_test: maximum number of children for a complete test 
+	 * (all the permutations are tested)
+	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return: True or false
 	 */
-	public boolean tesTreeCompare(TesTree givenTree, int limit){
+	public boolean tesTreeCompare(TesTree givenTree, int limit,
+			int max_children_for_complete_test, double partial_test_probability){
 
 		//Check the deepness
 		if(this.getTreeDeppness() != givenTree.getTreeDeppness())
 			return false;
 		else
-			return tesTreeCompare(this.root, givenTree.root, 0, limit);
+			return tesTreeCompare(this.root, givenTree.root, 0, limit, 
+					max_children_for_complete_test, partial_test_probability);
 
 	}
 
@@ -532,9 +374,13 @@ public class TesTree{
 	 * @param givenNode: The second tree checking starting point
 	 * @param level: The current trees level (used for the recursion)
 	 * @param limit: The maximum deepness to be checked
+	 * @param max_children_for_complete_test: maximum number of children for a complete test 
+	 * (all the permutations are tested)
+	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return a boolean value
 	 */
-	private boolean tesTreeCompare(TesTreeNode node, TesTreeNode givenNode, int level, int limit){
+	private boolean tesTreeCompare(TesTreeNode node, TesTreeNode givenNode, int level, int limit,
+			int max_children_for_complete_test, double partial_test_probability){
 		//Exit cases
 		if(level == limit)
 			return true;
@@ -551,15 +397,20 @@ public class TesTree{
 		TesTreeNode[] b = new TesTreeNode[a.size()];
 		for(int j = 0; j < a.size(); j++)
 			b[j] = a.get(j);
-
+		ArrayList<TesTreeNode[]> permutations;
+		if(b.length <= max_children_for_complete_test)
+			permutations = permutation(b, 0, childrenNumber, 1);
+		else
 		//Gets all the possible child permutations
-		ArrayList<TesTreeNode[]> permutations = permutation(b, 0, childrenNumber);
+			permutations = permutation(b, 0, childrenNumber, partial_test_probability);
+		System.out.println("Permutations " + permutations.size());
 		do{
 			TesTreeNode[] A = node.getChildrenAsArray();
 			TesTreeNode[] B = permutations.get(p);
 			i = 0;
 			//Recursive calls for each couple of nodes.
-			while(i < A.length && tesTreeCompare(A[i], B[i], level + 1, limit))
+			while(i < A.length && tesTreeCompare(A[i], B[i], level + 1, limit,
+					max_children_for_complete_test, partial_test_probability))
 				i++;
 			//The nodes are equal in each couple.
 			if(i == childrenNumber)
@@ -588,11 +439,13 @@ public class TesTree{
 	 * @param array: The original TesTreeNode array
 	 * @param start: Initial position
 	 * @param end: Final position
+	 * @param permProbability: the probability of selecting a permutation branch
 	 * @return an array list which contains a TesTreeNode permutation of the given array in each position.
 	 */
-	private static ArrayList<TesTreeNode[]> permutation(TesTreeNode[] array, int start, int end){
+	private static ArrayList<TesTreeNode[]> permutation(TesTreeNode[] array, int start, int end,
+			double premProbability){
 		ArrayList<TesTreeNode[]> permutations = new ArrayList<TesTreeNode[]>();
-		TesTree.permutation(array, 0, array.length, permutations);
+		TesTree.permutation(array, 0, array.length, permutations, premProbability);
 		return permutations;	
 	}
 
@@ -603,9 +456,11 @@ public class TesTree{
 	 * @param start: Initial position
 	 * @param end: Final position
 	 * @param permutations: The array list with all the permutations
+	 * @param permProbability: the probability of selecting a permutation branch
 	 * @return an array list which contains a TesTreeNode permutation of the given array in each position.
 	 */
-	private static void permutation(TesTreeNode[] array, int start, int end, ArrayList<TesTreeNode[]> permutations){
+	private static void permutation(TesTreeNode[] array, int start, int end, 
+			ArrayList<TesTreeNode[]> permutations, double permProbability){
 		int j;
 		//Exit case
 		if(start == end){    
@@ -613,9 +468,11 @@ public class TesTree{
 		}else{
 			//Recursive case
 			for(j = start; j < end; j++){
-				swap(array, start, j);            
-				permutation(array, start + 1, end, permutations);  
-				swap(array, start, j);             
+				if(UtilityRandom.randomBooleanChoice(permProbability)){
+					swap(array, start, j);            
+					permutation(array, start + 1, end, permutations, permProbability);  
+					swap(array, start, j); 
+				}
 			}                                        
 		}
 	}
@@ -657,7 +514,7 @@ public class TesTree{
 			}
 		}
 	}
-	
+
 	/**
 	 * This method returns the list of nodes in the tree
 	 * @return
@@ -667,7 +524,7 @@ public class TesTree{
 		getNodes(this.root, visited);
 		return visited;
 	}
-	
+
 	/**
 	 * Private method for getting the nodes in the tree 
 	 * @param node
@@ -730,7 +587,7 @@ public class TesTree{
 		//Both the nodes have some children.
 		int i = 0;
 		ArrayList<TesTreeNode> networkNodeChildren = node.getChildren();
-		ArrayList<TesTreeNode[]> permutations = permutation(givenNode.getChildrenAsArray(), 0, givenNode.getChildren().size());
+		ArrayList<TesTreeNode[]> permutations = permutation(givenNode.getChildrenAsArray(), 0, givenNode.getChildren().size(), 0.5);
 
 		int distance = -1;
 		int localDistance;

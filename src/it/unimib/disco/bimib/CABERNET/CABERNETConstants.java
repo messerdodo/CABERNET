@@ -31,6 +31,11 @@ public class CABERNETConstants {
 	public static final String ATTRACTORS_NETWORK_VIEW = "attractors-network-view";
 	
 	/**
+	 * This key is used in order to define if shows all the representative trees
+	 */
+	public static final String SHOW_ALL_TREES = "show-all-representative-trees";
+	
+	/**
 	 * This key is used in order to specify the network creation task type.
 	 * Possible values are new, open-and-edit, open, from-cytoscape
 	 */
@@ -121,7 +126,13 @@ public class CABERNETConstants {
 	public static final String LOGN_DEPTH = "logn";
 	
 	/**
-	 * This key is used in order to specify the value fot the tree depth.
+	 * This key is used in order to specify the value for the tree depth.
 	 */
 	public static final String TREE_DEPTH_VALUE = "tree-depth-value";
+	
+	/**
+	 * This key is used in order to specify a cutoff for the representative tree 
+	 * computation
+	 */
+	public static final String REPRESENTATIVE_TREE_CUTOFF = "representative-tree-cutoff";
 }

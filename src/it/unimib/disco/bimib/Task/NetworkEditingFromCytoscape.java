@@ -14,6 +14,7 @@ import it.unimib.disco.bimib.Tes.TesTree;
 import it.unimib.disco.bimib.Utility.OutputConstants;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 import it.unimib.disco.bimib.Atms.AtmManager;
+import it.unimib.disco.bimib.Exceptions.FeaturesException;
 import it.unimib.disco.bimib.Exceptions.InputFormatException;
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.IO.Output;
@@ -34,11 +35,13 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 
 
 
+
 //System imports
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+
 
 
 
@@ -74,12 +77,15 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 	private boolean representativeTreeComputation;
 	private String representativeTreeDepthMode;
 	private double representativeTreeDepthValue;
+	private int representativeTreeCutoff;
+	private int max_children_for_complete_test;
+	private double partial_test_probability;
 
 	public NetworkEditingFromCytoscape(Properties networkFeatures, Properties requiredOutputs, CySwingAppAdapter adapter, 
 			CyApplicationManager appManager, SimulationsContainer simulationsContainer, boolean atmComputation,
 			boolean representative_tree, String representativeTreeDepthMode, double representativeTreeDepthValue) 
 					throws NumberFormatException, 
-			NullPointerException, FileNotFoundException, TesTreeException, InputFormatException{
+			NullPointerException, FileNotFoundException, TesTreeException, InputFormatException, FeaturesException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, 
 				atmComputation, false, null, representative_tree, representativeTreeDepthMode, 
 				representativeTreeDepthValue);
@@ -90,7 +96,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			TesTree tree, boolean representative_tree, String representativeTreeDepthMode, 
 			double representativeTreeDepthValue)
 					throws NumberFormatException, NullPointerException, 
-			FileNotFoundException, TesTreeException, InputFormatException{
+			FileNotFoundException, TesTreeException, InputFormatException, FeaturesException{
 		this(networkFeatures, requiredOutputs, adapter, simulationsContainer, atmComputation, 
 				treeMatching, tree, CABERNETConstants.PERFECT_MATCH, -1, representative_tree, representativeTreeDepthMode, 
 				representativeTreeDepthValue);
@@ -101,7 +107,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			boolean treeMatching, TesTree tree, String matchingType, int threshold,
 			boolean representative_tree, String representativeTreeDepthMode, double representativeTreeDepthValue) 
 					throws NumberFormatException, NullPointerException, FileNotFoundException, 
-					TesTreeException, InputFormatException{
+					TesTreeException, InputFormatException, FeaturesException{
 		this.simulationFeatures = networkFeatures;
 		this.requiredOutputs = requiredOutputs;
 		this.adapter = adapter;
@@ -116,6 +122,31 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		this.representativeTreeComputation = representative_tree;
 		this.representativeTreeDepthMode = representativeTreeDepthMode;
 		this.representativeTreeDepthValue = representativeTreeDepthValue;
+		if(this.representativeTreeComputation){
+			if(!networkFeatures.containsKey(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF)){
+				throw new FeaturesException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be defined");
+			}
+			this.representativeTreeCutoff = Integer.valueOf(networkFeatures.getProperty(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF));
+			if(this.representativeTreeCutoff < -1){
+				throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be greater or equal than 0 or -1.");
+			}
+		}
+		
+		if(!networkFeatures.containsKey(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST)){
+			throw new FeaturesException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be defined");
+		}
+		this.max_children_for_complete_test = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST));
+		if(max_children_for_complete_test < 0){
+			throw new NumberFormatException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be greater than 0");
+		}
+		
+		if(!networkFeatures.containsKey(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY)){
+			throw new FeaturesException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be defined");
+		}
+		this.partial_test_probability = Double.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY));
+		if(partial_test_probability < 0 || partial_test_probability > 1){
+			throw new NumberFormatException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be between 0 and 1");
+		}
 	}
 
 
@@ -167,7 +198,8 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 				if(treeMatching){
 					taskMonitor.setStatusMessage("Network " + (net + 1) + ": Matching");
 					//Creates the TES manager in order to match the network with the tree
-					tesManager = new TesManager(atmManager, samplingManager);
+					tesManager = new TesManager(atmManager, samplingManager, 
+							this.max_children_for_complete_test, this.partial_test_probability);
 					try{
 						if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 							//Tries to match the network with the given differentiation tree
@@ -210,8 +242,14 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						depth = (int) Math.floor(Math.log10(samplingManager.getAttractorFinder().getAttractorsNumber()) / Math.log10(2.0));
 					}
 					try{
-						tesManager = new TesManager(atmManager, samplingManager);
-						representativeTrees = tesManager.getMostFrequentTrees(depth);
+						taskMonitor.setStatusMessage("Network " + (net + 1) + ": Representative trees research");
+						tesManager = new TesManager(atmManager, samplingManager,
+								this.max_children_for_complete_test, this.partial_test_probability);
+						if(this.requiredOutputs.getProperty(CABERNETConstants.SHOW_ALL_TREES).equals(CABERNETConstants.YES)){
+							representativeTrees = tesManager.getRepresentativeTrees(depth, this.representativeTreeCutoff, true);
+						}else{
+							representativeTrees = tesManager.getRepresentativeTrees(depth, this.representativeTreeCutoff, false);
+						}
 					}catch(Exception ex){
 						representativeTrees = new ArrayList<TesTree>(1);
 					}

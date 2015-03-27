@@ -33,6 +33,8 @@ public class TesManager {
 	private AttractorsFinder attractorsFinder;
 	private TesTree createdTree;
 	private double[] thresholds;
+	private int  max_children_for_complete_test;
+	private double partial_test_probability;
 
 	/**
 	 * Default constructor 
@@ -40,11 +42,15 @@ public class TesManager {
 	 * @param attractorsFinder
 	 * @throws Exception
 	 */
-	public TesManager(AtmManager atm, SamplingManager sampling)throws Exception {
+	public TesManager(AtmManager atm, SamplingManager sampling,
+			int max_children_for_complete_test, 
+			double partial_test_probability)throws Exception {
 
 		this.atm = atm.getAtm();
 		this.attractorsFinder = sampling.getAttractorFinder();	
 		this.thresholds = null;
+		this.max_children_for_complete_test = max_children_for_complete_test;
+		this.partial_test_probability = partial_test_probability;
 		this.setCreatedTree(null);
 	}
 
@@ -92,7 +98,7 @@ public class TesManager {
 			try{
 				createdTree = new TesTree(testing_thresholds, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
 				//Checks if the created tree is equal to the given differentiation tree.
-				if(createdTree.tesTreeCompare(givenTree)){
+				if(createdTree.tesTreeCompare(givenTree, max_children_for_complete_test, partial_test_probability)){
 					this.thresholds = testing_thresholds;
 					//Tree fund: the method returns 0.
 					return 0;
@@ -305,7 +311,7 @@ public class TesManager {
 			for(int index = i + 1; index < values.size(); index++)
 				temp.add(values.get(index));
 
-			//If the temporary AraayList isn't empty makes the recursive call
+			//If the temporary ArrayList isn't empty makes the recursive call
 			if(temp.isEmpty() != true)
 				tailcombs = combinationCreator(temp, k - 1);
 
@@ -477,41 +483,75 @@ public class TesManager {
 	
 	
 	/**
-	 * This method returns the most frequently found trees array.
+	 * This method returns the found trees array.
 	 * If no trees are found, it returns an empty array list.
+	 * If the param most is true it returns only the most frequently found trees
 	 * @param atm: the atm matrix
 	 * @param requiredDepth: tree depth.
 	 * @return
 	 * @throws TesTreeException
 	 */
-	public ArrayList<TesTree> getMostFrequentTrees(int requiredDepth) throws TesTreeException{
+	public ArrayList<TesTree> getRepresentativeTrees(int requiredDepth, int cutoff, boolean most) throws TesTreeException{
 		ArrayList<TesTree> foundTrees = new ArrayList<TesTree>();
 		ArrayList<Integer> treesOccurence = new ArrayList<Integer>();
 		ArrayList<TesTree> mostFrequentTree = new ArrayList<TesTree>();
 		double[][] atm = this.atm.getAtm();
+		System.out.println("Combinations");
 		ArrayList<double[]> combinations = deltaCombinations(atm, requiredDepth);
 		TesTree createdTree;
 		int i;
-		for(double[] currentCombination : combinations){
+		int times = 0;
+		double[] currentCombination = null;
+		boolean found = false;
+		//Tests 'cutoff' trees (or combinations.size() if cutoff is too big)
+		//If cutoff is -1 tests all the possible trees
+		while(times < combinations.size() &&
+				(cutoff == -1 || times < cutoff)){
+			System.out.println("Times: " + times);
 			try{
+				currentCombination = combinations.get(times);
 				createdTree = new TesTree(currentCombination, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
 				//Checks if the created tree is equal to one of the already found trees.
 				i = 0;
-				while(i < foundTrees.size() && !createdTree.tesTreeCompare(foundTrees.get(i))){
-					i = i + 1;
+				found = false;
+				System.out.println("Created tree");
+				createdTree.print();
+				while(i < foundTrees.size() && !found){
+					System.out.println("to Test");
+					foundTrees.get(i).print();
+					System.out.println("Comparison task with tree number " + i + ".");
+					boolean t = createdTree.tesTreeCompare(foundTrees.get(i), 
+							max_children_for_complete_test, partial_test_probability);
+					System.out.println("Compared result: " + t);
+					if(t){
+							found = true;
+					}else{
+						i = i + 1;
+					}
+					System.out.println("i: " + i + " size: " + foundTrees.size() + " found: " + found);
 				}		
 				if(i != foundTrees.size()){
 					treesOccurence.set(i, treesOccurence.get(i) + 1);
+					System.out.println("Found");
 				}else{
 					foundTrees.add(createdTree);
 					treesOccurence.add(1);
+					System.out.println("Not Found");
 				}
 			}catch(TesTreeException e){
 				//Nope
+				System.out.println("Ex " + e.toString());
 			}
+				times = times + 1;
+			
 		}
+		//Return all the trees if required
+		if(!most)
+			return foundTrees;
+		
 		//Selects the most frequently found trees
 		int max = 0;
+		System.out.println("Dentro al max");
 		for(int value : treesOccurence){
 			max = Math.max(max, value);
 		}
@@ -523,5 +563,5 @@ public class TesManager {
 		//Returns the most obtained trees
 		return mostFrequentTree;
 	}
-	
+
 }
