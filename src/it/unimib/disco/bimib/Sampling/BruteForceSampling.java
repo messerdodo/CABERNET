@@ -15,6 +15,15 @@ package it.unimib.disco.bimib.Sampling;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+
+
+
+
+
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -33,8 +42,10 @@ public class BruteForceSampling extends BinarySamplingMethod {
 	 * @throws ParamDefinitionException An error occurred during a internal conversion
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
+	 * @throws InterruptedException 
 	 */
-	public BruteForceSampling(GraphManager graph) throws NullPointerException, ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public BruteForceSampling(GraphManager graph) throws NullPointerException, ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException{
 		super(graph);
 		this.attractors = new String[(int)Math.pow(2, graph.getNodesNumber())];
 		this.positions = new int[(int)Math.pow(2, graph.getNodesNumber())];
@@ -50,8 +61,10 @@ public class BruteForceSampling extends BinarySamplingMethod {
 	 * @throws ParamDefinitionException An error during a conversion 
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
+	 * @throws InterruptedException 
 	 */
-	private void calculatesAttractors() throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
+	private void calculatesAttractors() throws ParamDefinitionException, NotExistingNodeException, 
+		InputTypeException, InterruptedException {
 
 		int nodes = this.graph.getNodesNumber();
 		int states = this.attractors.length;
@@ -65,6 +78,10 @@ public class BruteForceSampling extends BinarySamplingMethod {
 		//For each possible state gets its attractor
 		for(int state = 0; state < states; state++){
 
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Convert the i(th) state in a Boolean sequence
 			currentState = fromIntegerToBinaryArray(state, nodes);
 			currentAttractor = null;
@@ -72,6 +89,11 @@ public class BruteForceSampling extends BinarySamplingMethod {
 			visited = new ArrayList<String>();
 			count = 1;
 			do{
+				
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				//Saves the transient
 				this.positions[state] = count;
 				count ++;
@@ -184,8 +206,10 @@ public class BruteForceSampling extends BinarySamplingMethod {
 	 * @throws ParamDefinitionException Something gone wrong
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
+	 * @throws InterruptedException 
 	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
+	public void rewiredAttractorFinder() throws ParamDefinitionException, 
+	NotExistingNodeException, InputTypeException, InterruptedException {
 
 		this.oldAttractors = this.attractors;
 
@@ -251,8 +275,10 @@ public class BruteForceSampling extends BinarySamplingMethod {
 	 * @throws NotExistingNodeException 
 	 * @throws ParamDefinitionException 
 	 * @throws NullPointerException 
+	 * @throws InterruptedException 
 	 */
-	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException{
 		BruteForceSampling copiedSampling = new BruteForceSampling(this.graph);
 
 		String[] copiedAttractors = new String[this.attractors.length];
@@ -260,6 +286,11 @@ public class BruteForceSampling extends BinarySamplingMethod {
 
 		//Copies the arrays
 		for(int i = 0; i < this.attractors.length; i++){
+			
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			copiedAttractors[i] = this.attractors[i];
 			copiedPositions[i] = this.positions[i];
 		}

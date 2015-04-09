@@ -27,10 +27,12 @@ public interface AttractorsFinder {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 * @ParamDefinitionException: The passed status isn't correct, it doesn't follow 
 	 * the previous rules.
 	 */
-	public Object getAttractor(Object status) throws ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException;
+	public Object getAttractor(Object status) throws ParamDefinitionException, NotExistingNodeException, 
+		InputTypeException, AttractorNotFoundException, InterruptedException;
 
 
 	/**
@@ -86,8 +88,10 @@ public interface AttractorsFinder {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException;
+	public void rewiredAttractorFinder() throws ParamDefinitionException, NotExistingNodeException, 
+		InputTypeException, AttractorNotFoundException, InterruptedException;
 
 	/**
 	 * This method returns all the old attractor when is made a permanent perturbation
@@ -118,8 +122,10 @@ public interface AttractorsFinder {
 	 * @throws NotExistingNodeException 
 	 * @throws ParamDefinitionException 
 	 * @throws NullPointerException 
+	 * @throws InterruptedException 
 	 */
-	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, NotExistingNodeException, InputTypeException;
+	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException;
 
 	/**
 	 * This method returns the number of the attractors.

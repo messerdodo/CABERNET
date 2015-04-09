@@ -17,6 +17,17 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashMap;
 
+
+
+
+
+
+
+
+
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Utility.UtilityRandom;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -54,8 +65,10 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public PartialSampling(GraphManager manager, int initialConditions, int cutoff) throws ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException {
+	public PartialSampling(GraphManager manager, int initialConditions, int cutoff) throws ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, AttractorNotFoundException, InterruptedException {
 		super(manager);
 		this.attractors = new HashMap<String, String>();
 		this.positions = new HashMap<String, Integer>();
@@ -71,13 +84,20 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws ParamDefinitionException 
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
+	 * @throws InterruptedException 
 	 * @throws AttractorNotFoundException 
 	 */
-	private void calculatesAttractors(int initialConditions) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	private void calculatesAttractors(int initialConditions) throws ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException{
 		String state;
 		int nodes = this.graph.getNodesNumber();
 
 		for(int i = 0; i < initialConditions; i++){
+
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Generates a new random state
 			state = UtilityRandom.createRandomBinarySequence(nodes, ACTIVATION_PROBABILITY);
 			//Calculates the attractor for the generated state
@@ -97,8 +117,10 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	private void searchAttractorWithInitialState(String state, int cutoff) throws ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException{
+	private void searchAttractorWithInitialState(String state, int cutoff) throws ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, AttractorNotFoundException, InterruptedException{
 
 		//Generates a new random initial state
 		String currentState = state;
@@ -110,6 +132,10 @@ public class PartialSampling extends BinarySamplingMethod {
 		newState = null;
 		visited = new ArrayList<String>();
 		do{
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Stores the position for the transient
 			this.positions.put(currentState, count);
 			count ++;
@@ -155,12 +181,14 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @param status: The string value representing the network status.
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
+	 * @throws InterruptedException 
 	 * @throws AttractorNotFoundException 
 	 * @ParamDefinitionException: The passed status isn't correct, it doesn't follow 
 	 * the previous rules.
 	 */
 	@Override
-	public Object getAttractor(Object status) throws ParamDefinitionException, NotExistingNodeException, InputTypeException {
+	public Object getAttractor(Object status) throws ParamDefinitionException, NotExistingNodeException, 
+		InputTypeException, InterruptedException {
 		//Checks if the status is a string
 		if(!(status instanceof String))
 			throw new ParamDefinitionException("The staus must be a string value");
@@ -238,8 +266,10 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException {
+	public void rewiredAttractorFinder() throws ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, AttractorNotFoundException, InterruptedException {
 		Set<String> oldStates = this.attractors.keySet();
 		this.oldAttractors = this.attractors;
 
@@ -308,8 +338,10 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws NotExistingNodeException 
 	 * @throws ParamDefinitionException 
 	 * @throws NullPointerException 
+	 * @throws InterruptedException 
 	 */
-	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public AttractorsFinder copy() throws NullPointerException, ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException{
 
 		PartialSampling copiedSampling = new PartialSampling(this.graph);
 
@@ -319,6 +351,10 @@ public class PartialSampling extends BinarySamplingMethod {
 		for(String state : this.attractors.keySet()){
 			copiedAttractors.put(new String(state), new String(this.attractors.get(state)));
 			copiedPositions.put(new String(state), new Integer(this.positions.get(state)));
+			
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
 		}
 
 		//Sets the copied attributes in the copied sampling object

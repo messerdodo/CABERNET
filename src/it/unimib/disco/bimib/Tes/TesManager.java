@@ -19,6 +19,14 @@ import java.util.Collections;
 
 
 
+
+
+
+
+
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
@@ -76,7 +84,7 @@ public class TesManager {
 		return this.thresholds;
 	}
 
-	public int findCorrectTesTree(TesTree givenTree) throws TesTreeException {
+	public int findCorrectTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 		TesTree createdTree = null;
@@ -117,8 +125,9 @@ public class TesManager {
 	 * @return this method returns the created TES tree which is equal to the specified one. 
 	 * If it's impossible to create the given tree, the method returns the null value. 
 	 * @throws TesTreeException: An error occurred during the tree creation
+	 * @throws InterruptedException 
 	 */
-	public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException {
+	public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 
@@ -158,8 +167,9 @@ public class TesManager {
 	 * @return this method returns the created TES tree which is equal to the specified one. 
 	 * If it's impossible to create the given tree, the method returns the null value. 
 	 * @throws TesTreeException: An error occurred during the tree creation
+	 * @throws InterruptedException 
 	 */
-	public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException {
+	public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 
@@ -201,7 +211,7 @@ public class TesManager {
 
 
 
-	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException{
+	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException, InterruptedException{
 		//Initializes the ArraList
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<double[]> combinations = new ArrayList<double[]>();
@@ -209,6 +219,10 @@ public class TesManager {
 			values.add(delta);
 		}
 
+		//Forces the process conclusion in case of thread interruption
+		if(Thread.interrupted())
+			throw new InterruptedException();
+		
 		//Sorts all the value in a crescent order
 		Collections.sort(values); 
 
@@ -218,6 +232,11 @@ public class TesManager {
 			//Gets the unstructured combinations 
 			ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
 			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
+				
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				double[] singleCombination = new double[requiredTreeDeepness + 1];
 				singleCombination[0] = 0.0;
 				for(int j = 1; j < requiredTreeDeepness + 1; j++){
@@ -237,8 +256,9 @@ public class TesManager {
 	 * @param requiredTreeDeepness: The number of elements in each combination.
 	 * @return an arrayList which contains an array with the delta values for each combination.
 	 * @throws TesTreeException: An error occurred during the combinations calculation.
+	 * @throws InterruptedException 
 	 */
-	public static ArrayList<double[]> deltaCombinations(double[][] atm, int requiredTreeDeepness) throws TesTreeException{	
+	public static ArrayList<double[]> deltaCombinations(double[][] atm, int requiredTreeDeepness) throws TesTreeException, InterruptedException{	
 		//Initializes the ArraList
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<double[]> combinations = new ArrayList<double[]>();
@@ -250,6 +270,10 @@ public class TesManager {
 			}
 		}
 
+		//Forces the process conclusion in case of thread interruption
+		if(Thread.interrupted())
+			throw new InterruptedException();
+		
 		//Sorts all the value in a crescent order
 		Collections.sort(values); 
 		//Removes the zero if it is present.
@@ -262,6 +286,11 @@ public class TesManager {
 			//Gets the unstructured combinations 
 			ArrayList<Double> e = TesManager.combinationCreator(values, requiredTreeDeepness);
 			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
+				
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				double[] singleCombination = new double[requiredTreeDeepness + 1];
 				singleCombination[0] = 0.0;
 				for(int j = 1; j < requiredTreeDeepness + 1; j++){
@@ -282,14 +311,19 @@ public class TesManager {
 	 * @param k: The number of values in each combination
 	 * @return Returns an arrayList with the unformatted combinations. 
 	 * Each set of k values should be explained as a single combination.
+	 * @throws InterruptedException 
 	 */
-	private static ArrayList<Double> combinationCreator(ArrayList<Double> values, int k) {
+	private static ArrayList<Double> combinationCreator(ArrayList<Double> values, int k) throws InterruptedException {
 		//Initializes all the ArrayList needed
 		ArrayList<Double> head = new ArrayList<Double>();
 		ArrayList<Double> temp =new ArrayList<Double>();
 		ArrayList<Double> tailcombs = new ArrayList<Double>();
 		ArrayList<Double> combs = new ArrayList<Double>();
 		int j = 0;
+		
+		//Forces the process conclusion in case of thread interruption
+		if(Thread.interrupted())
+			throw new InterruptedException();
 
 		//If k is equal to the length of the ArrayList returns its
 		if (k == values.size()) {
@@ -304,6 +338,11 @@ public class TesManager {
 		}
 		//Searches the k combinations
 		for (int i = 0; i < values.size() - k  + 1; i++) {
+			
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Adds the first element of the ArrayList values into head
 			head.add(values.get(i));
 
@@ -317,6 +356,11 @@ public class TesManager {
 
 			//Pass all the element of the ArrayList tailcombs
 			while ( j < tailcombs.size()) {
+				
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				//Checks if the specified values of the ArrayList is different from the ith head's element
 				//and if it is bigger.
 				if(tailcombs.get(j) != head.get(0) && tailcombs.get(j) > head.get(i)){
@@ -324,8 +368,14 @@ public class TesManager {
 					combs.add(head.get(i));
 					//Adds all the k-element in the ArraList combs
 					for(int valueK = 0 ; valueK < k - 1; valueK ++){
+						
+						//Forces the process conclusion in case of thread interruption
+						if(Thread.interrupted())
+							throw new InterruptedException();
+						
 						combs.add(tailcombs.get(j));
-						j++;}
+						j++;
+					}
 				}
 
 			}
@@ -480,8 +530,8 @@ public class TesManager {
 
 		return tes;
 	}
-	
-	
+
+
 	/**
 	 * This method returns the found trees array.
 	 * If no trees are found, it returns an empty array list.
@@ -490,13 +540,14 @@ public class TesManager {
 	 * @param requiredDepth: tree depth.
 	 * @return
 	 * @throws TesTreeException
+	 * @throws InterruptedException 
 	 */
-	public ArrayList<TesTree> getRepresentativeTrees(int requiredDepth, int cutoff, boolean most) throws TesTreeException{
+	public ArrayList<TesTree> getRepresentativeTrees(int requiredDepth, int cutoff, boolean most) throws TesTreeException, InterruptedException{
 		ArrayList<TesTree> foundTrees = new ArrayList<TesTree>();
 		ArrayList<Integer> treesOccurence = new ArrayList<Integer>();
 		ArrayList<TesTree> mostFrequentTree = new ArrayList<TesTree>();
 		double[][] atm = this.atm.getAtm();
-		System.out.println("Combinations");
+
 		ArrayList<double[]> combinations = deltaCombinations(atm, requiredDepth);
 		TesTree createdTree;
 		int i;
@@ -505,53 +556,56 @@ public class TesManager {
 		boolean found = false;
 		//Tests 'cutoff' trees (or combinations.size() if cutoff is too big)
 		//If cutoff is -1 tests all the possible trees
-		while(times < combinations.size() &&
-				(cutoff == -1 || times < cutoff)){
-			System.out.println("Times: " + times);
+		while(times < combinations.size() && (cutoff == -1 || times < cutoff)){
+
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+
 			try{
 				currentCombination = combinations.get(times);
 				createdTree = new TesTree(currentCombination, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
 				//Checks if the created tree is equal to one of the already found trees.
 				i = 0;
 				found = false;
-				System.out.println("Created tree");
-				createdTree.print();
 				while(i < foundTrees.size() && !found){
-					System.out.println("to Test");
-					foundTrees.get(i).print();
-					System.out.println("Comparison task with tree number " + i + ".");
-					boolean t = createdTree.tesTreeCompare(foundTrees.get(i), 
-							max_children_for_complete_test, partial_test_probability);
-					System.out.println("Compared result: " + t);
-					if(t){
-							found = true;
+
+					//Forces the process conclusion in case of thread interruption
+					if(Thread.interrupted())
+						throw new InterruptedException();
+
+					if(createdTree.tesTreeCompare(foundTrees.get(i), 
+							max_children_for_complete_test, partial_test_probability)){
+						found = true;
+						createdTree = null;
+						System.gc();
 					}else{
 						i = i + 1;
 					}
-					System.out.println("i: " + i + " size: " + foundTrees.size() + " found: " + found);
 				}		
-				if(i != foundTrees.size()){
+				if(i < foundTrees.size()){
 					treesOccurence.set(i, treesOccurence.get(i) + 1);
-					System.out.println("Found");
 				}else{
 					foundTrees.add(createdTree);
 					treesOccurence.add(1);
-					System.out.println("Not Found");
 				}
 			}catch(TesTreeException e){
 				//Nope
-				System.out.println("Ex " + e.toString());
 			}
-				times = times + 1;
-			
+			times = times + 1;
+
 		}
+
+		//Forces the process conclusion in case of thread interruption
+		if(Thread.interrupted())
+			throw new InterruptedException();
+
 		//Return all the trees if required
 		if(!most)
 			return foundTrees;
-		
+
 		//Selects the most frequently found trees
 		int max = 0;
-		System.out.println("Dentro al max");
 		for(int value : treesOccurence){
 			max = Math.max(max, value);
 		}
@@ -560,6 +614,13 @@ public class TesManager {
 				mostFrequentTree.add(foundTrees.get(i));
 			}
 		}
+		foundTrees = null;
+		System.gc();
+		
+		//Forces the process conclusion in case of thread interruption
+		if(Thread.interrupted())
+			throw new InterruptedException();
+		
 		//Returns the most obtained trees
 		return mostFrequentTree;
 	}

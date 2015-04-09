@@ -15,6 +15,7 @@ import java.util.Properties;
 
 
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Mutations.MutationManager;
@@ -57,10 +58,12 @@ public class AtmManager {
 	 * @throws InputTypeException
 	 * @throws FeaturesException
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
 	public AtmManager(Properties simulationFeatures, SamplingManager samplingManager, MutationManager mutationManager, int nodes) 
 			throws MissingFeaturesException, NumberFormatException, 
-			ParamDefinitionException, NotExistingAttractorsException, NotExistingNodeException, InputTypeException, FeaturesException, AttractorNotFoundException {
+			ParamDefinitionException, NotExistingAttractorsException, 
+			NotExistingNodeException, InputTypeException, FeaturesException, AttractorNotFoundException, InterruptedException {
 
 		double mutationRate;
 		int perturbExperiments;

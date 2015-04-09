@@ -86,7 +86,8 @@ public class NetworkManagment {
 		nodeTable.createColumn("Outcoming edges", Integer.class, true);
 		nodeTable.createColumn("Degree", Integer.class, true);
 		nodeTable.createColumn("Normalized Degree", Double.class, true);
-
+		nodeTable.createColumn("Added", Boolean.class, true);
+		
 		double maxDegree = 1.0;
 
 		//Adds the genes
@@ -100,7 +101,10 @@ public class NetworkManagment {
 			newRBN.getRow(genes[i]).set("Incoming edges", rbn.getIncomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Outcoming edges", rbn.getOutcomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Degree", rbn.getNodeDegree(i));
+			newRBN.getRow(genes[i]).set("Added", genesNames.get(i).contains("gene_"));
 			maxDegree = Math.max(maxDegree, rbn.getNodeDegree(i));
+			
+			
 		}
 
 		//Set the normalized degree

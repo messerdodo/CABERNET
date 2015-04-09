@@ -20,6 +20,11 @@ import java.util.HashSet;
 
 
 
+
+
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Utility.SCCTarjan;
@@ -337,9 +342,11 @@ public class TesTree{
 	 * (all the permutations are tested)
 	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return: True or false
+	 * @throws InterruptedException 
 	 */
 	public boolean tesTreeCompare(TesTree givenTree,
-			int max_children_for_complete_test, double partial_test_probability){
+			int max_children_for_complete_test, double partial_test_probability) 
+					throws InterruptedException{
 		return this.tesTreeCompare(givenTree, givenTree.getTreeDeppness() + 1,
 				max_children_for_complete_test, partial_test_probability);
 	}
@@ -353,9 +360,14 @@ public class TesTree{
 	 * (all the permutations are tested)
 	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return: True or false
+	 * @throws InterruptedException 
 	 */
 	public boolean tesTreeCompare(TesTree givenTree, int limit,
-			int max_children_for_complete_test, double partial_test_probability){
+			int max_children_for_complete_test, double partial_test_probability) 
+					throws InterruptedException{
+
+		if(Thread.interrupted())
+			throw new InterruptedException();
 
 		//Check the deepness
 		if(this.getTreeDeppness() != givenTree.getTreeDeppness())
@@ -378,9 +390,10 @@ public class TesTree{
 	 * (all the permutations are tested)
 	 * @param partial_test_probability: probability of the selection of a nodes permutation.
 	 * @return a boolean value
+	 * @throws InterruptedException 
 	 */
 	private boolean tesTreeCompare(TesTreeNode node, TesTreeNode givenNode, int level, int limit,
-			int max_children_for_complete_test, double partial_test_probability){
+			int max_children_for_complete_test, double partial_test_probability) throws InterruptedException{
 		//Exit cases
 		if(level == limit)
 			return true;
@@ -388,6 +401,8 @@ public class TesTree{
 			return false;
 		else if (node.getChildren().size() == 0)
 			return true;
+		else if(Thread.interrupted())
+			return false;
 
 		//Recursive case
 		boolean isEqual = false;
@@ -398,13 +413,17 @@ public class TesTree{
 		for(int j = 0; j < a.size(); j++)
 			b[j] = a.get(j);
 		ArrayList<TesTreeNode[]> permutations;
-		if(b.length <= max_children_for_complete_test)
+		if(b.length <= max_children_for_complete_test){
 			permutations = permutation(b, 0, childrenNumber, 1);
-		else
-		//Gets all the possible child permutations
+		}else{
+			//Gets all the possible child permutations
 			permutations = permutation(b, 0, childrenNumber, partial_test_probability);
-		System.out.println("Permutations " + permutations.size());
-		do{
+		}
+		while(p < permutations.size() && !isEqual){
+
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			TesTreeNode[] A = node.getChildrenAsArray();
 			TesTreeNode[] B = permutations.get(p);
 			i = 0;
@@ -416,7 +435,10 @@ public class TesTree{
 			if(i == childrenNumber)
 				isEqual = true;
 			p++;
-		}while(!isEqual && p < factorial(childrenNumber));
+		}
+
+		if(Thread.interrupted())
+			throw new InterruptedException();
 		return isEqual;
 	}
 
@@ -441,9 +463,10 @@ public class TesTree{
 	 * @param end: Final position
 	 * @param permProbability: the probability of selecting a permutation branch
 	 * @return an array list which contains a TesTreeNode permutation of the given array in each position.
+	 * @throws InterruptedException 
 	 */
 	private static ArrayList<TesTreeNode[]> permutation(TesTreeNode[] array, int start, int end,
-			double premProbability){
+			double premProbability) throws InterruptedException{
 		ArrayList<TesTreeNode[]> permutations = new ArrayList<TesTreeNode[]>();
 		TesTree.permutation(array, 0, array.length, permutations, premProbability);
 		return permutations;	
@@ -458,9 +481,11 @@ public class TesTree{
 	 * @param permutations: The array list with all the permutations
 	 * @param permProbability: the probability of selecting a permutation branch
 	 * @return an array list which contains a TesTreeNode permutation of the given array in each position.
+	 * @throws InterruptedException 
 	 */
 	private static void permutation(TesTreeNode[] array, int start, int end, 
-			ArrayList<TesTreeNode[]> permutations, double permProbability){
+			ArrayList<TesTreeNode[]> permutations, double permProbability) 
+					throws InterruptedException{
 		int j;
 		//Exit case
 		if(start == end){    
@@ -468,6 +493,11 @@ public class TesTree{
 		}else{
 			//Recursive case
 			for(j = start; j < end; j++){
+				
+				//Interruption checking
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				if(UtilityRandom.randomBooleanChoice(permProbability)){
 					swap(array, start, j);            
 					permutation(array, start + 1, end, permutations, permProbability);  
@@ -475,16 +505,6 @@ public class TesTree{
 				}
 			}                                        
 		}
-	}
-
-	/**
-	 * This method calculates the factorial of the given number.
-	 * @param n: The number used in order to perform the factorial. 
-	 * This value must be greater or equal than 0.
-	 * @return: The factorial of the given number.
-	 */
-	private int factorial(int n){
-		return (n == 0 ? 1 : n * factorial(n-1));
 	}
 
 	/**
@@ -558,8 +578,9 @@ public class TesTree{
 	 * This method compares the TES tree with the specified one.
 	 * @param givenTree: The TES tree to be compare with the caller one
 	 * @return: True or false
+	 * @throws InterruptedException 
 	 */
-	public int tesTreeDistance(TesTree givenTree){
+	public int tesTreeDistance(TesTree givenTree) throws InterruptedException{
 		return tesTreeDistance(this.root, givenTree.root);
 	}
 
@@ -571,9 +592,14 @@ public class TesTree{
 	 * @param level: The current trees level (used for the recursion)
 	 * @param limit: The maximum deepness to be checked
 	 * @return a boolean value
+	 * @throws InterruptedException 
 	 */
-	private int tesTreeDistance(TesTreeNode node, TesTreeNode givenNode){
+	private int tesTreeDistance(TesTreeNode node, TesTreeNode givenNode) throws InterruptedException{
 
+		//Interrupted thread exception
+		if(Thread.interrupted())
+			throw new InterruptedException();
+		
 		//Both the nodes don't have any children
 		if(node.getChildren().size() == 0 && givenNode.getChildren().size() == 0)
 			return 0;
@@ -587,18 +613,29 @@ public class TesTree{
 		//Both the nodes have some children.
 		int i = 0;
 		ArrayList<TesTreeNode> networkNodeChildren = node.getChildren();
-		ArrayList<TesTreeNode[]> permutations = permutation(givenNode.getChildrenAsArray(), 0, givenNode.getChildren().size(), 0.5);
+		ArrayList<TesTreeNode[]> permutations = permutation(givenNode.getChildrenAsArray(),
+				0, givenNode.getChildren().size(), 0.5);
 
 		int distance = -1;
 		int localDistance;
 		for(TesTreeNode[] nodesPermutation : permutations){
 
+			//Interrupted thread exception
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Counter initialization
 			i = 0;
 			localDistance = 0;
-			while(i < networkNodeChildren.size() && i < nodesPermutation.length){
+			while(i < networkNodeChildren.size() && 
+					i < nodesPermutation.length){
 				localDistance = localDistance + tesTreeDistance(networkNodeChildren.get(i), nodesPermutation[i]);
 				i++;
+				
+				//Interrupted thread exception
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 			}
 			if(i < networkNodeChildren.size()){
 				for(; i < networkNodeChildren.size(); i++){
@@ -615,7 +652,7 @@ public class TesTree{
 		return distance;
 	}
 
-	public int tesTreeHistogramComparison(TesTree givenTree){
+	public int tesTreeHistogramComparison(TesTree givenTree) throws InterruptedException{
 		ArrayList<TesTreeNode> currentRoot = new ArrayList<TesTreeNode>();
 		ArrayList<TesTreeNode> givenRoot = new ArrayList<TesTreeNode>();
 
@@ -625,7 +662,8 @@ public class TesTree{
 		return this.tesTreeHistogramComparison(currentRoot, givenRoot);
 	}
 
-	private int tesTreeHistogramComparison(ArrayList<TesTreeNode> nodes, ArrayList<TesTreeNode> givenNodes){
+	private int tesTreeHistogramComparison(ArrayList<TesTreeNode> nodes, ArrayList<TesTreeNode> givenNodes) 
+			throws InterruptedException{
 
 		if(nodes.size() == 0 && givenNodes.size() == 0){
 			return 0;
@@ -640,6 +678,11 @@ public class TesTree{
 		int size;
 		//Gets the distribution for the current level for the created tree
 		for(TesTreeNode currentNode : nodes){
+			
+			//Interrupted thread exception
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			size = currentNode.getChildren().size();
 			createdTreeLevelChildren.addAll(currentNode.getChildren());
 			if(treeDistribution.containsKey(size)){
@@ -668,12 +711,18 @@ public class TesTree{
 
 	}
 
-	private int histogramDistance(HashMap<Integer, Integer> dist1, HashMap<Integer, Integer> dist2){
+	private int histogramDistance(HashMap<Integer, Integer> dist1, HashMap<Integer, Integer> dist2) 
+			throws InterruptedException{
 		int distance = 0;
 		HashSet<Integer> values = new HashSet<Integer>();
 		values.addAll(dist1.keySet());
 		values.addAll(dist2.keySet());
 		for(Integer value : values){
+			
+			//Interrupted thread exception
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			if(dist1.containsKey(value) && dist2.containsKey(value)){
 				distance = distance + Math.abs(dist1.get(value) - dist2.get(value));
 			}else if(dist1.containsKey(value)){
@@ -685,29 +734,6 @@ public class TesTree{
 
 		return distance;	
 	}
-
-	/*
-	public ArrayList<TesTreeNode> getTreeNodes(){
-		ArrayList<TesTreeNode> nodes = new ArrayList<TesTreeNode>();
-		getTreeNodes(this.root, nodes);
-		return nodes;
-	}
-
-	public void getTreeNodes(TesTreeNode node, ArrayList<TesTreeNode> nodes){
-
-		nodes.add(node);
-
-		ArrayList<TesTreeNode> children = node.getChildren();
-		if(children.size() != 0){
-			for(TesTreeNode child : children){
-				getTreeNodes(child, nodes);
-			}
-		}
-
-
-	}
-
-	 */
 
 	/**
 	 * This method returns the number of leaf nodes in the tree

@@ -23,8 +23,10 @@ public interface Mutation {
 	public Atm getMutatedAtm();
 	
 	
-	public Object doMutation(Object state) throws ParamDefinitionException, NotExistingNodeException, InputTypeException;
+	public Object doMutation(Object state) throws ParamDefinitionException, NotExistingNodeException, 
+		InputTypeException, InterruptedException;
 
-	public Object doSingleFlip(Object state, int gene) throws ParamDefinitionException, NotExistingNodeException, InputTypeException;
+	public Object doSingleFlip(Object state, int gene) throws ParamDefinitionException, 
+		NotExistingNodeException, InputTypeException, InterruptedException;
 
 }

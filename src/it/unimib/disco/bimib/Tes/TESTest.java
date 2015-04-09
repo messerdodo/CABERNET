@@ -10,7 +10,7 @@ import it.unimib.disco.bimib.IO.Input;
 public class TESTest {
 
 	public static void main(String[] args) throws IOException, NullPointerException, 
-	InputFormatException, NumberFormatException, TesTreeException {
+	InputFormatException, NumberFormatException, TesTreeException, InterruptedException {
 		
 		System.out.println("***TEST Tree Generation***");
 		ArrayList<String[]> readTree = Input.readTree("/Users/messerdodo/Desktop/testTree.txt");

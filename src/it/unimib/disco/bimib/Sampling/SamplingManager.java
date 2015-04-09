@@ -13,6 +13,7 @@ package it.unimib.disco.bimib.Sampling;
 //System imports
 import java.util.Properties;
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Utility.*;
 import it.unimib.disco.bimib.Exceptions.*;
@@ -33,8 +34,10 @@ public class SamplingManager {
 	 * @throws InputTypeException 
 	 * @throws NotExistingNodeException 
 	 * @throws AttractorNotFoundException 
+	 * @throws InterruptedException 
 	 */
-	public SamplingManager(Properties simulationFeatures, GraphManager graph) throws NullPointerException, ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException {
+	public SamplingManager(Properties simulationFeatures, GraphManager graph) throws NullPointerException, 
+		ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException, InterruptedException {
 
 		int initialConditions, cutoff;
 

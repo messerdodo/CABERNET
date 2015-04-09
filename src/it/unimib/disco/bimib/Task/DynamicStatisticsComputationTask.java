@@ -23,10 +23,12 @@ import it.unimib.disco.bimib.Networks.GraphManager;
 
 
 
+
 //System imports
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+
 
 
 
@@ -80,10 +82,6 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 
 		this.simulations = simulations;
 		this.perturbationFeatures = perturbationFeatures;
-//		this.adapter = adapter;
-//		this.appManager = this.adapter.getCyApplicationManager();
-//		this.currentNetwork = currentNetwork;
-//		this.vizMapperManager = vizMapperManager;
 		this.permanentKnockIn = permanentKnockIn;
 		this.permanentKnockOut = permanentKnockOut;
 		this.permRandom = false;
@@ -105,6 +103,11 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 		taskMonitor.setTitle("CABERNET - Dynamic perturbations analysis");
 		taskMonitor.setProgress(0.0);
 		for(String simId : this.simulations.getSimulationsId()){
+			
+			//Forced exit in case of thread interruption.
+			if(Thread.interrupted())
+				break;
+			
 			currentSimulation = this.simulations.getSimulation(simId);
 			mutatedGraphManager = currentSimulation.getGraphManager().copy();
 			samplingManager = currentSimulation.getSamplingManager();
@@ -130,7 +133,7 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 						mutatedGraphManager.perpetuallyChangeFunctionValue(geneName, false);
 				}
 			}
-
+			
 			//Defines the mutation manager
 			MutationManager mutationManager = new MutationManager(mutatedGraphManager, samplingManager, this.perturbationFeatures);
 			//Defines the mutation manager and computes the dynamic perturbation statistics
@@ -149,10 +152,6 @@ public class DynamicStatisticsComputationTask extends AbstractTask{
 		
 		taskMonitor.setProgress(1.0);
 
-		//Shows the results
-		//		AtmView atmView = new AtmView(atmManager, this.samplingManager, this.adapter, 
-		//				this.appManager, this.networkId, vizMapperManager, currentNetwork);
-		//		atmView.setVisible(true);
 
 		
 

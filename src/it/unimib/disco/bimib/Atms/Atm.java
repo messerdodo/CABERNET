@@ -17,6 +17,9 @@ import java.util.ArrayList;
 
 
 
+
+
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Mutations.Mutation;
@@ -112,9 +115,11 @@ public class Atm {
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 * @throws AttractorNotFoundException
+	 * @throws InterruptedException 
 	 */
 	public void createAtm(Object[] attractors, int nodes) throws NotExistingAttractorsException, 
-	ParamDefinitionException, NotExistingNodeException, InputTypeException, AttractorNotFoundException{
+		ParamDefinitionException, NotExistingNodeException, InputTypeException, 
+		AttractorNotFoundException, InterruptedException{
 
 		int numberOfAttractors = attractors.length;
 		Object newState, attractorNewState;
@@ -136,13 +141,26 @@ public class Atm {
 		}
 
 		//Calculates the ATM entries.
-		for(int a = 0; a < numberOfAttractors; a++){
+		int a = 0;
+		while(a < numberOfAttractors){
 
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Gets a permutation of the states in the selected attractor
 			statesInAttractor = this.attractorsFinder.getStatesInAttractor(attractorVet.get(a));
 			for(Object state : statesInAttractor){
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 				//Perform the perturb experiments
 				for(int gene = 0; gene < nodes; gene ++){
+					//Forces the process conclusion in case of thread interruption
+					if(Thread.interrupted())
+						throw new InterruptedException();
+					
 					//Calls the mutation method 
 					newState = this.mutation.doSingleFlip(state, gene);
 					//Gets the new state's attractor
@@ -174,6 +192,7 @@ public class Atm {
 					}
 				}
 			}
+			a = a + 1;
 		}
 		//Atm matrix normalization
 		this.normalize();
@@ -183,7 +202,8 @@ public class Atm {
 
 	public void createAtm(Object[] attractors, int perturbExperiments, double perturbStatesRatio) 
 			throws MissingFeaturesException, ParamDefinitionException, NotExistingAttractorsException, 
-			NotExistingNodeException, InputTypeException, AttractorNotFoundException {
+			NotExistingNodeException, InputTypeException, 
+			AttractorNotFoundException, InterruptedException {
 
 		//Param check
 		if(perturbStatesRatio < 0 || perturbStatesRatio > 1)
@@ -210,18 +230,28 @@ public class Atm {
 
 		//Calculates the ATM entries.
 		int index;
+		int a  = 0;
+		while(a < numberOfAttractors){
 
-		for(int a = 0; a < numberOfAttractors; a++){
-
+			//Forces the process conclusion in case of thread interruption
+			if(Thread.interrupted())
+				throw new InterruptedException();
+			
 			//Gets a permutation of the states in the selected attractor
 			statesInAttractor = UtilityRandom.randomPermutation(
 					this.attractorsFinder.getStatesInAttractor(attractorVet.get(a)));
 			index = 0;
 			Object state;
 			do{
+			
 				state = statesInAttractor[index];
 				//Perform the perturb experiment
 				for(int exp = 0; exp < perturbExperiments; exp++){
+					
+					//Forces the process conclusion in case of thread interruption
+					if(Thread.interrupted())
+						throw new InterruptedException();
+					
 					//Calls the mutation method 
 					newState = this.mutation.doMutation(state);
 					//Gets the new state's attractor
@@ -254,7 +284,12 @@ public class Atm {
 				}
 				index ++;
 
+				//Forces the process conclusion in case of thread interruption
+				if(Thread.interrupted())
+					throw new InterruptedException();
+				
 			}while(index < Math.floor(perturbStatesRatio * statesInAttractor.length));	
+			a = a + 1;
 		}
 
 		//Atm matrix normalization

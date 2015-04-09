@@ -14,12 +14,22 @@ import java.util.ArrayList;
 
 
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+
+import javax.swing.JOptionPane;
+
 //CABERNET imports
 import it.unimib.disco.bimib.Atms.AtmManager;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 import it.unimib.disco.bimib.Tes.TesManager;
 import it.unimib.disco.bimib.Tes.TesTree;
+
+
+
 
 //Cytoscape imports
 import org.cytoscape.work.AbstractTask;
@@ -37,7 +47,7 @@ public class FindTreeTask extends AbstractTask{
 	private CyNetwork parent;
 	private int max_children_for_complete_test;
 	private double partial_test_probability;
-	
+
 	public FindTreeTask(int depth, int cutoff, AtmManager atmManager, 
 			SamplingManager samplingManager,
 			NetworkManagment cytoscapeBridge, CyNetwork parent,
@@ -51,17 +61,37 @@ public class FindTreeTask extends AbstractTask{
 		this.max_children_for_complete_test = max_children_for_complete_test;
 		this.partial_test_probability = partial_test_probability;
 	}
-	
+
 	@Override
 	public void run(final TaskMonitor taskMonitor) throws Exception {
 		taskMonitor.setStatusMessage("Processing");
-		TesManager tesManager = new TesManager(this.atmManager, this.samplingManager,
-				this.max_children_for_complete_test, this.partial_test_probability);
-		this.foundTrees = tesManager.getRepresentativeTrees(this.depth, this.cutoff, true);
+	
+		try{
+		foundTrees = TimeLimitedCodeBlock.runWithTimeout(new Callable<ArrayList<TesTree>>(){
+
+			@Override
+			public ArrayList<TesTree> call()
+					throws Exception {
+
+				TesManager tesManager = new TesManager(atmManager, samplingManager, max_children_for_complete_test,
+						partial_test_probability);
+
+				return tesManager.getRepresentativeTrees(depth, cutoff, true);
+			}
+		},  5, TimeUnit.MINUTES);
+
+
+
 		if(foundTrees.size() == 0)
 			throw new Exception("No representative tree found.");
 		for(int i = 0; i < this.foundTrees.size(); i++){
 			cytoscapeBridge.createTreesGraph(this.foundTrees.get(i), "Tree_d" + this.depth + "_n" + i , this.parent);
+		}
+		
+		}catch(TimeoutException to){
+			JOptionPane.showMessageDialog(null, "Time Out!", "Error", JOptionPane.ERROR_MESSAGE, null);
+		}catch(Exception ex){
+			JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 		}
 	}
 }

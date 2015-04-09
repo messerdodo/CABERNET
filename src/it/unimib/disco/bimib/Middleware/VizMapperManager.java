@@ -10,6 +10,7 @@ package it.unimib.disco.bimib.Middleware;
 //System imports
 import java.awt.Color;
 import java.util.HashMap;
+
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
 import org.cytoscape.service.util.CyServiceRegistrar;
@@ -101,9 +102,17 @@ public class VizMapperManager {
 		nodesColorMapping.putMapValue("Canalizing", Color.YELLOW);
 		vs.addVisualMappingFunction(nodesColorMapping);  
 		
+		
+		//Node shape: Added nodes are divided from the originals
+		DiscreteMapping nodesShapeMapping = (DiscreteMapping) vmfFactoryD.createVisualMappingFunction("Added", Boolean.class, BasicVisualLexicon.NODE_SHAPE);
+		nodesShapeMapping.putMapValue(Boolean.TRUE, NodeShapeVisualProperty.ELLIPSE);
+		nodesShapeMapping.putMapValue(Boolean.FALSE, NodeShapeVisualProperty.RECTANGLE);
+		vs.addVisualMappingFunction(nodesShapeMapping);  
+		
+	
 		PassthroughMapping geneNameMapping = (PassthroughMapping) vmfFactoryP.createVisualMappingFunction("name", String.class, BasicVisualLexicon.NODE_LABEL);
 		vs.addVisualMappingFunction(geneNameMapping);      
-
+		
 		//Edges visual properties
 		vs.setDefaultValue(BasicVisualLexicon.EDGE_TARGET_ARROW_SHAPE, ArrowShapeVisualProperty.DELTA);
 		vs.setDefaultValue(BasicVisualLexicon.EDGE_PAINT, Color.GREEN);
