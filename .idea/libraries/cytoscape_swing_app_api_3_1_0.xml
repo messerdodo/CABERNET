@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="cytoscape-swing-app-api-3.1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/Cytoscape/cytoscape-swing-app-api-3.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/Cytoscape/swing-app-api-3.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

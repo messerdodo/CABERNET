@@ -12,6 +12,7 @@ package it.unimib.disco.bimib.Networks;
 
 //System imports
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -85,13 +86,13 @@ public class GraphManager {
 				if(!simulationFeatures.containsKey(SimulationFeaturesConstants.NI))
 					throw new ParamDefinitionException("Initial nodes parameter missed");
 				ni = Integer.valueOf(simulationFeatures.get(SimulationFeaturesConstants.NI).toString());
-				
+
 				if(!simulationFeatures.containsKey(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY))
 					throw new ParamDefinitionException("Average connectivity parameter missed");
 				averageConnectivity = Integer.valueOf(simulationFeatures.get(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY).toString());
 				if(averageConnectivity < 1 || averageConnectivity >= nodes)
 					throw new ParamDefinitionException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be between 1 and nodes - 1");
-				
+
 				if(!simulationFeatures.containsKey(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY))
 					throw new ParamDefinitionException("Ingoing/Outgoing probability parameter missed");
 				inOutProb = Double.valueOf(simulationFeatures.get(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY).toString());
@@ -177,7 +178,7 @@ public class GraphManager {
 				if(biasValue < 0 || biasValue > 1)
 					throw new ParamDefinitionException(SimulationFeaturesConstants.BIAS_VALUE + " value must be between 0 and 1");
 			}
-			
+
 			//And type functions
 			if(simulationFeatures.containsKey(SimulationFeaturesConstants.AND_FUNCTION_TYPE)){
 				andRate = Double.valueOf(simulationFeatures.get(SimulationFeaturesConstants.AND_FUNCTION_TYPE).toString());
@@ -200,8 +201,8 @@ public class GraphManager {
 			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS))
 				throw new MissingFeaturesException(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS + " key must be specified");
 			completelyDefined = simulationFeatures.getProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS).equals(SimulationFeaturesConstants.YES) ? true : false;
-			
-			
+
+
 			//Checks if the rates are correct. The sum must be 1
 			if(randomRate + biasRate + andRate + orRate + canalizedRate != 1)
 				throw new ParamDefinitionException("The sum of the rates must be 1");
@@ -211,7 +212,7 @@ public class GraphManager {
 			for(int i = 0; i < nodes; i++)
 				functionsNumber[i] = i;
 			functionsNumber = (Integer[]) UtilityRandom.randomPermutation(functionsNumber);
-			
+
 			//Creates the random functions
 			for(int i = 0; i < Math.floor(randomRate * nodes); i++){
 				functions[functionsNumber[createdFunctions]] = new RandomFunction(
@@ -339,7 +340,7 @@ public class GraphManager {
 		this.geneRegulatoryNetwork.addFunctions(functions);
 
 	}
-	
+
 	/**
 	 * This method creates the graph with nodes and edges passed.
 	 * @param nodesName: The array of the nodes names
@@ -354,7 +355,7 @@ public class GraphManager {
 			throw new ParamDefinitionException("The nodes name array must be not null");
 		if(edges == null)
 			throw new ParamDefinitionException("The edge set must be not null");
-	
+
 		//Creates the correct topology graph object
 		if(graphTopology.equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY))
 			this.geneRegulatoryNetwork = new RandomGraph(nodesName, edges);
@@ -381,59 +382,29 @@ public class GraphManager {
 		int undefinedFunctionsNumber = 0, totalNodes = 0;
 		double randomRate = 0, biasRate = 0, biasValue = 0, andRate = 0, orRate = 0, canalizedRate = 0;
 		ArrayList<Integer> undefinedFunctions = new ArrayList<Integer>();
-		
-		//Adds the undefined nodes (if specified)
-		if(features.containsKey(SimulationFeaturesConstants.NODES)){
-			totalNodes = Integer.parseInt(features.get(SimulationFeaturesConstants.NODES).toString());
-			//Checks the nodes number
-			if(totalNodes < this.geneRegulatoryNetwork.getNodesNumber())
-				throw new FeaturesException("The number of the nodes in the network must be less than the nodes feature value");
-			//Adds the new nodes
-			this.geneRegulatoryNetwork.addNodes(totalNodes - this.geneRegulatoryNetwork.getNodesNumber());
-		}
-		
-		int fixedInputNumber = -1;
-		if(features.containsKey(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER)){
-			fixedInputNumber = Integer.parseInt(features.getProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER));
-		}
-		
-		int targetNode;
-		ArrayList<String> noSource = null;
-		ArrayList<String> noTarget = null;
-		
+		ArrayList<String> noSource = new ArrayList<String>();
+		ArrayList<String> noTarget = new ArrayList<String>();
+
 		if(features.containsKey(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES))
 			noSource = (ArrayList<String>) features.get(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES);
-		
+
 		if(features.containsKey(SimulationFeaturesConstants.EXCLUDES_TARGET_GENES))
 			noTarget = (ArrayList<String>) features.get(SimulationFeaturesConstants.EXCLUDES_TARGET_GENES);
-		
 
-		//Adds the mandatory edges
-		for(int i = 0; i < this.getNodesNumber(); i++){
-			//Checks if the i-th node has at least one connection
-			if(this.geneRegulatoryNetwork.getNodeDegree(i) == 0 && (noSource == null || !noSource.contains(geneRegulatoryNetwork.getNodesNames().get(i)))){
-				//Adds a random connection that respects the noTarget rule.
-				do{
-					targetNode = UtilityRandom.randomUniform(0, this.getNodesNumber());
-				}while(targetNode == i || (noTarget != null && noTarget.contains(geneRegulatoryNetwork.getNodesNames().get(targetNode))) || 
-						((this.geneRegulatoryNetwork.getNodeIncomingDegree(targetNode) >= fixedInputNumber)  && (fixedInputNumber != -1)));
-				this.geneRegulatoryNetwork.addEdge(i, targetNode);
+		String topology = features.getProperty(SimulationFeaturesConstants.TOPOLOGY);
+		if(topology.equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
+			randomTopologyAugmentation(features, noSource, noTarget);
+		}else if(topology.equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
+			String algorithm = features.getProperty(SimulationFeaturesConstants.ALGORITHM);
+			if(algorithm.equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
+				barabasiAugmentation(features, noSource, noTarget);
+			}else if(algorithm.equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
+				powerLawAugmentation(features, noSource, noTarget);
 			}
 		}
-		
-		//Edges already added
-		int insertedEdges = this.geneRegulatoryNetwork.getEdges().size();
-		int requiredEdges = Integer.parseInt(features.get(SimulationFeaturesConstants.EDGES).toString());
-		
-		//Adds random edges
-		if(insertedEdges < requiredEdges){
-			if(fixedInputNumber == -1){
-				this.geneRegulatoryNetwork.addRandomEdges(requiredEdges - insertedEdges, noSource, noTarget);
-			}else{
-				this.geneRegulatoryNetwork.addRandomEdges(requiredEdges - insertedEdges, noSource, noTarget, fixedInputNumber);
-			}
-		}
-		
+
+
+
 		//Adds random functions
 		//---Boolean functions
 		if(features.get(SimulationFeaturesConstants.FUNCTION_TYPE).equals(SimulationFeaturesConstants.BOOLEAN_FUNCTION)){
@@ -455,7 +426,7 @@ public class GraphManager {
 				if(biasValue < 0 || biasValue > 1)
 					throw new ParamDefinitionException(SimulationFeaturesConstants.BIAS_VALUE + " value must be between 0 and 1");
 			}
-			
+
 			//And type functions
 			if(features.containsKey(SimulationFeaturesConstants.AND_FUNCTION_TYPE)){
 				andRate = Double.valueOf(features.get(SimulationFeaturesConstants.AND_FUNCTION_TYPE).toString());
@@ -490,7 +461,7 @@ public class GraphManager {
 			}
 			//Functions permutation
 			undefinedFunctions = UtilityRandom.randomPermutation(undefinedFunctions);
-			
+
 			int createdFunctions = 0;
 			boolean completelyDefined = features.getProperty(SimulationFeaturesConstants.COMPLETELY_DEFINED_FUNCTIONS).equals(SimulationFeaturesConstants.YES);
 
@@ -525,7 +496,7 @@ public class GraphManager {
 				createdFunctions++;
 			}
 
-			//Creates the canalized functions
+			//Creates the canalizing functions
 			for(int i = 0; i < Math.floor(canalizedRate * undefinedFunctionsNumber); i++){
 				this.geneRegulatoryNetwork.addFunction(undefinedFunctions.get(createdFunctions),   
 						new CanalizedFunction(
@@ -578,8 +549,179 @@ public class GraphManager {
 			}
 
 		}
+	}
+
+	private void randomTopologyAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget)
+			throws FeaturesException, NotExistingNodeException, ParamDefinitionException {
+		int totalNodes;
+		//Adds the undefined nodes (if specified)
+		if(features.containsKey(SimulationFeaturesConstants.NODES)){
+			totalNodes = Integer.parseInt(features.get(SimulationFeaturesConstants.NODES).toString());
+			//Checks the nodes number
+			if(totalNodes < this.geneRegulatoryNetwork.getNodesNumber())
+				throw new FeaturesException("The number of the nodes in the network must be less than the nodes feature value");
+			//Adds the new nodes
+			this.geneRegulatoryNetwork.addNodes(totalNodes - this.geneRegulatoryNetwork.getNodesNumber());
+		}
+
+		int fixedInputNumber = -1;
+		if(features.containsKey(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER)){
+			fixedInputNumber = Integer.parseInt(features.getProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER));
+		}
+
+		int targetNode;
+
+		if(features.containsKey(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES))
+			noSource = (ArrayList<String>) features.get(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES);
+
+		if(features.containsKey(SimulationFeaturesConstants.EXCLUDES_TARGET_GENES))
+			noTarget = (ArrayList<String>) features.get(SimulationFeaturesConstants.EXCLUDES_TARGET_GENES);
 
 
+		//Adds the mandatory edges
+		for(int i = 0; i < this.getNodesNumber(); i++){
+			//Checks if the i-th node has at least one connection
+			if(this.geneRegulatoryNetwork.getNodeDegree(i) == 0 && (noSource == null || !noSource.contains(geneRegulatoryNetwork.getNodesNames().get(i)))){
+				//Adds a random connection that respects the noTarget rule.
+				do{
+					targetNode = UtilityRandom.randomUniform(0, this.getNodesNumber());
+				}while(targetNode == i || (noTarget != null && noTarget.contains(geneRegulatoryNetwork.getNodesNames().get(targetNode))) || 
+						((this.geneRegulatoryNetwork.getNodeIncomingDegree(targetNode) >= fixedInputNumber)  && (fixedInputNumber != -1)));
+				this.geneRegulatoryNetwork.addEdge(i, targetNode);
+			}
+		}
+
+		//Edges already added
+		int insertedEdges = this.geneRegulatoryNetwork.getEdges().size();
+		int requiredEdges = Integer.parseInt(features.get(SimulationFeaturesConstants.EDGES).toString());
+
+		//Adds random edges
+		if(insertedEdges < requiredEdges){
+			if(fixedInputNumber == -1){
+				this.geneRegulatoryNetwork.addRandomEdges(requiredEdges - insertedEdges, noSource, noTarget);
+			}else{
+				this.geneRegulatoryNetwork.addRandomEdges(requiredEdges - insertedEdges, noSource, noTarget, fixedInputNumber);
+			}
+		}
+	}
+
+	private void barabasiAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget) throws NotExistingNodeException {
+
+		int ni = this.geneRegulatoryNetwork.getNodesNumber();
+		int nt = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.NODES));
+		int k = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY));
+		double inOutProb = Double.valueOf(features.getProperty(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY, "0.5"));
+		double probabilities[];
+		//Adds the missing nodes
+		this.geneRegulatoryNetwork.addNodes(nt - ni);
+		// TODO Auto-generated method stub
+		//Generates nt-ni new nodes 
+		for(int nodeA = ni; nodeA < nt; nodeA++){
+
+			ArrayList<String> nodeNames = this.geneRegulatoryNetwork.getNodesNames();
+			int nodeB;
+			//The connection probability array
+			probabilities = new double[nodeA];
+			//Calculates all the pi probabilities (from node 0 to node nodeA-1)
+			int totalDegree = this.geneRegulatoryNetwork.getTotalDegree();
+			for(int i = 0; i < nodeA; i++){
+				probabilities[i] = (double)this.geneRegulatoryNetwork.getNodeDegree(i)/(double)totalDegree;
+			}
+			boolean connected = false;
+			//For each edges is generated a probability from the connectivity 
+			for(int edge = 0; edge < k; edge++){
+				connected = false;
+				while(!connected){
+					do{
+						nodeB = UtilityRandom.randomIntegerDiscreteDistribuitedChoice(probabilities);
+					}while(this.geneRegulatoryNetwork.areNodesConnected(nodeA, nodeB) || (nodeA == nodeB));
+					//Creates a new edge between the two nodes
+					//Select the edge direction
+
+					if(UtilityRandom.randomBooleanChoice(inOutProb)){
+						if(!noTarget.contains(nodeNames.get(nodeB))){
+							this.geneRegulatoryNetwork.addEdge(nodeA, nodeB); //Ingoing
+							connected = true;
+						}
+					}else{
+						if(!noSource.contains(nodeNames.get(nodeB))){
+							this.geneRegulatoryNetwork.addEdge(nodeB, nodeA); //Outgoing
+							connected = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void powerLawAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget) throws NotExistingNodeException, ParamDefinitionException {
+		//Checks if the variable n or gamma is acceptable
+
+		int n = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.NODES, String.valueOf(this.geneRegulatoryNetwork.getNodesNumber())));
+		double gamma = Double.valueOf(features.getProperty(SimulationFeaturesConstants.GAMMA));
+		boolean ingoingPowerlaw = features.getProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, SimulationFeaturesConstants.YES).equals(SimulationFeaturesConstants.YES);
+
+		if(n <= 0 || gamma <= 0){
+			throw new ParamDefinitionException("the value for variable n or gamma is incorrect");
+		}
+
+		//Adds the missing nodes
+		int nodesToAdd = n - this.geneRegulatoryNetwork.getNodesNumber();
+		this.geneRegulatoryNetwork.addNodes(nodesToAdd);
+
+		//Initializes the connectivity and the variable total that is 
+		//the summation from 1 to n-1 of the node's degree
+		int k = 0;//, total = 0;
+		double[] pk;
+		ArrayList<String> nodeNames = this.geneRegulatoryNetwork.getNodesNames();
+
+		double y = 0;
+		for(int degree = 1; degree < n; degree++){
+			y = y + Math.pow(degree, -gamma);
+		}
+
+		//Calculate all the pk probabilities
+		int maxDegree = ingoingPowerlaw ? (n - noTarget.size()) : (n - noSource.size());
+		pk = new double[n];
+		for(int degree = 1; degree < n; degree++){
+			pk[degree] = Math.pow(degree, -gamma)/y;
+		}
+
+		boolean completedNode;
+		for(int nodeA = 0; nodeA < n; nodeA++){
+			completedNode = false;
+			int initk = 0;
+			//Calculates the value for the connectivity  
+			while(!completedNode){
+				k = UtilityRandom.randomIntegerDiscreteDistribuitedChoice(pk);
+				if(ingoingPowerlaw){
+					completedNode = this.geneRegulatoryNetwork.getNodeIncomingDegree(nodeA) <= k;
+					initk = this.geneRegulatoryNetwork.getNodeIncomingDegree(nodeA);
+				}else{
+					completedNode = this.geneRegulatoryNetwork.getNodeOutcomingDegree(nodeA) <= k;
+					initk = this.geneRegulatoryNetwork.getNodeOutcomingDegree(nodeA);
+				}
+			}
+
+			//Calculates a new node with the RandomUniformChioce
+			for(int i = initk + 1; i <= k; i++){
+				int nodeB;
+				boolean isNodeOk;
+				String nodeBName;
+				do{
+					isNodeOk = false;
+					nodeB = UtilityRandom.randomUniformChoice(this.geneRegulatoryNetwork.getNodes());
+					nodeBName = nodeNames.get(nodeB);
+					isNodeOk = ingoingPowerlaw ? !noSource.contains(nodeBName) : !noTarget.contains(nodeBName);
+				}while(this.geneRegulatoryNetwork.areNodesConnected(nodeA, nodeB) || (nodeA == nodeB) && (isNodeOk));
+				//Creates a new edge between the two nodes
+				if(ingoingPowerlaw){
+					this.geneRegulatoryNetwork.addEdge(nodeB, nodeA);
+				}else{
+					this.geneRegulatoryNetwork.addEdge(nodeA, nodeB);
+				}
+			}
+		}
 	}
 
 	/**
@@ -598,7 +740,7 @@ public class GraphManager {
 
 		//For each node performs the new state
 		for(int node = 0; node < this.geneRegulatoryNetwork.getNodesNumber(); node++){
-			
+
 			//Evaluates the node associated function and gets the new node state
 			newState[node] = (Boolean) this.geneRegulatoryNetwork.evalFunction(node, (Boolean[])currentState);
 		}
@@ -634,7 +776,7 @@ public class GraphManager {
 		this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationActivation(knockIn);
 
 	}
-	
+
 	/**
 	 * This method modify an existing function perpetually.
 	 * @param nodeName: the node name

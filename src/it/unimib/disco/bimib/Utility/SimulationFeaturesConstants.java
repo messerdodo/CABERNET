@@ -401,4 +401,6 @@ public class SimulationFeaturesConstants {
 	 * of two trees when it can not be complete
 	 */
 	public static final String PARTIAL_TEST_PROBABILITY = "partial-test-probability";
+
+	public static final String INGOING_SCALE_FREE = "ingoing-scale-free";
 }
