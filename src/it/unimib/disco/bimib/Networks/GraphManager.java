@@ -609,7 +609,7 @@ public class GraphManager {
 
 		int ni = this.geneRegulatoryNetwork.getNodesNumber();
 		int nt = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.NODES));
-		int k = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY));
+		double k = Double.valueOf(features.getProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY));
 		double inOutProb = Double.valueOf(features.getProperty(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY, "0.5"));
 		double probabilities[];
 		//Adds the missing nodes
