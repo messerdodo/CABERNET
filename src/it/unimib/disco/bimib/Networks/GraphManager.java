@@ -735,14 +735,16 @@ public class GraphManager {
 		int initNodes = this.geneRegulatoryNetwork.getNodesNumber();
 		int t, nodeB = 0;
 		boolean okNode;
+		int remainK = 0;
 		//Adds the new nodes
 		this.geneRegulatoryNetwork.addNodes(n - initNodes);
 		ArrayList<String> nodeNames = this.geneRegulatoryNetwork.getNodesNames();
 		// For each node creates edge with the nearest neighbour's node
 		for(int nodeA = 0; nodeA < n; nodeA++ ){
 			if(!noSource.contains(nodeNames.get(nodeA))){
+				remainK = (int)(k - geneRegulatoryNetwork.getNodeOutcomingDegree(nodeA));
 				//Search a neighbour's node in the first half
-				for(int h = 1; h <= Math.floor(k/2); h++){
+				for(int h = 1; h <= Math.floor(remainK/2); h++){
 					//Looking for a new node
 					t = 1;
 					okNode = false;
@@ -759,7 +761,8 @@ public class GraphManager {
 					//Creates a new edge between nodeA and NobeB
 					this.geneRegulatoryNetwork.addEdge(nodeA, nodeB);
 				}
-				for(int h = 1; h <= Math.floor(k/2); h++){
+				remainK = (int)(k - geneRegulatoryNetwork.getNodeOutcomingDegree(nodeA));
+				for(int h = 1; h <= Math.floor(remainK/2); h++){
 					//Looking for a new node in the second half
 					t = 1;
 					okNode = false;
