@@ -379,7 +379,7 @@ public class GraphManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public void modify(Properties features) throws ParamDefinitionException, NotExistingNodeException, FeaturesException{
-		int undefinedFunctionsNumber = 0, totalNodes = 0;
+		int undefinedFunctionsNumber = 0;
 		double randomRate = 0, biasRate = 0, biasValue = 0, andRate = 0, orRate = 0, canalizedRate = 0;
 		ArrayList<Integer> undefinedFunctions = new ArrayList<Integer>();
 		ArrayList<String> noSource = new ArrayList<String>();
@@ -401,6 +401,8 @@ public class GraphManager {
 			}else if(algorithm.equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
 				powerLawAugmentation(features, noSource, noTarget);
 			}
+		}else if(topology.equals(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY)){
+			smallworldAugmentation(features, noSource, noTarget);
 		}
 
 
@@ -551,6 +553,7 @@ public class GraphManager {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void randomTopologyAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget)
 			throws FeaturesException, NotExistingNodeException, ParamDefinitionException {
 		int totalNodes;
@@ -614,7 +617,7 @@ public class GraphManager {
 		double probabilities[];
 		//Adds the missing nodes
 		this.geneRegulatoryNetwork.addNodes(nt - ni);
-		// TODO Auto-generated method stub
+		
 		//Generates nt-ni new nodes 
 		for(int nodeA = ni; nodeA < nt; nodeA++){
 
@@ -682,8 +685,9 @@ public class GraphManager {
 
 		//Calculate all the pk probabilities
 		int maxDegree = ingoingPowerlaw ? (n - noTarget.size()) : (n - noSource.size());
-		pk = new double[n];
-		for(int degree = 1; degree < n; degree++){
+		pk = new double[maxDegree];
+		pk[0] = 0.0;
+		for(int degree = 1; degree < maxDegree; degree++){
 			pk[degree] = Math.pow(degree, -gamma)/y;
 		}
 
@@ -724,108 +728,176 @@ public class GraphManager {
 		}
 	}
 
-	/**
-	 * This method returns the following network state of a given state.
-	 * For each node it evaluates the 
-	 * @param currentState: The Boolean array which represents the current network state
-	 * @return The following boolean network state
-	 * @throws ParamDefinitionException 
-	 * @throws NotExistingNodeException 
-	 * @throws InputTypeException 
-	 */
-	public Boolean[] getNewState(Object[] currentState) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	private void smallworldAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget) throws NotExistingNodeException {
+		double beta = Double.valueOf(features.getProperty(SimulationFeaturesConstants.BETA, "0.5"));
+		double k = Double.valueOf(features.getProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY));
+		int n = Integer.valueOf(features.getProperty(SimulationFeaturesConstants.NODES, String.valueOf(this.geneRegulatoryNetwork.getNodesNumber())));
+		int initNodes = this.geneRegulatoryNetwork.getNodesNumber();
+		int t, nodeB = 0;
+		boolean okNode;
+		//Adds the new nodes
+		this.geneRegulatoryNetwork.addNodes(n - initNodes);
+		ArrayList<String> nodeNames = this.geneRegulatoryNetwork.getNodesNames();
+		// For each node creates edge with the nearest neighbour's node
+		for(int nodeA = 0; nodeA < n; nodeA++ ){
+			if(!noSource.contains(nodeNames.get(nodeA))){
+				//Search a neighbour's node in the first half
+				for(int h = 1; h <= Math.floor(k/2); h++){
+					//Looking for a new node
+					t = 1;
+					okNode = false;
+					while(!okNode){
+						if((nodeA - t) < 0){
+							nodeB = (nodeA - t) + n;
+						}else{
+							nodeB = (nodeA - t);
+						}
+						okNode = !noTarget.contains(nodeNames.get(nodeB));
+						t = t + 1;
+					}
 
-		//Gets the nodes
-		Boolean newState[] = new Boolean[this.geneRegulatoryNetwork.getNodesNumber()];
+					//Creates a new edge between nodeA and NobeB
+					this.geneRegulatoryNetwork.addEdge(nodeA, nodeB);
+				}
+				for(int h = 1; h <= Math.floor(k/2); h++){
+					//Looking for a new node in the second half
+					t = 1;
+					okNode = false;
+					while(!okNode){
+						if((nodeA + t) >= n){
+							nodeB = (nodeA + t) - n;
+						}else{
+							nodeB = (nodeA + t);
+						}
+						okNode = !noTarget.contains(nodeNames.get(nodeB));
+						t = t + 1;
+					}
+					//Creates a new edge between nodeA and NobeB
+					this.geneRegulatoryNetwork.addEdge(nodeA, nodeB);
+				}
 
-		//For each node performs the new state
-		for(int node = 0; node < this.geneRegulatoryNetwork.getNodesNumber(); node++){
-
-			//Evaluates the node associated function and gets the new node state
-			newState[node] = (Boolean) this.geneRegulatoryNetwork.evalFunction(node, (Boolean[])currentState);
+			}
 		}
 
-		return newState;
+	//Randomly rewires each edge of the network with probability beta
+	int nodeK;
+	List<int[]> edges = this.geneRegulatoryNetwork.getEdges();
+	for(int[] edge : edges){
+		if(UtilityRandom.randomBooleanChoice(beta) == true){
+			do{ 
+				nodeK = UtilityRandom.randomUniformChoice(this.geneRegulatoryNetwork.getNodes());
+			}while(edge[0] == nodeK || edge[1] == nodeK || this.geneRegulatoryNetwork.areNodesConnected(edge[0], nodeK) 
+					|| noTarget.contains(nodeNames.get(nodeK)));
+			//If the new node respects all the condition is creates a new edge 
+			//between the node specified and the new node and the old edge is removed
+			this.geneRegulatoryNetwork.removeEdge(edge[0],edge[1]);
+			this.geneRegulatoryNetwork.addEdge(edge[0], nodeK);
+		}	
+	}
+}
+
+/**
+ * This method returns the following network state of a given state.
+ * For each node it evaluates the 
+ * @param currentState: The Boolean array which represents the current network state
+ * @return The following boolean network state
+ * @throws ParamDefinitionException 
+ * @throws NotExistingNodeException 
+ * @throws InputTypeException 
+ */
+public Boolean[] getNewState(Object[] currentState) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+
+	//Gets the nodes
+	Boolean newState[] = new Boolean[this.geneRegulatoryNetwork.getNodesNumber()];
+
+	//For each node performs the new state
+	for(int node = 0; node < this.geneRegulatoryNetwork.getNodesNumber(); node++){
+
+		//Evaluates the node associated function and gets the new node state
+		newState[node] = (Boolean) this.geneRegulatoryNetwork.evalFunction(node, (Boolean[])currentState);
 	}
 
-	/**
-	 * This method returns the number of the nodes in the graph
-	 * @return the number of the node in the graph
-	 */
-	public int getNodesNumber(){
-		return this.geneRegulatoryNetwork.getNodesNumber();
-	}
+	return newState;
+}
 
-	/**
-	 * This method returns the associated network
-	 * @return the associated network
-	 */
-	public GeneRegulatoryNetwork getGraph(){
-		return this.geneRegulatoryNetwork;
-	}
+/**
+ * This method returns the number of the nodes in the graph
+ * @return the number of the node in the graph
+ */
+public int getNodesNumber(){
+	return this.geneRegulatoryNetwork.getNodesNumber();
+}
 
-	/**
-	 * This method modify an existing function perpetually.
-	 * @throws ParamDefinitionException 
-	 * @throws NotExistingNodeException 
-	 */
-	public void perpetuallyChangeFunctionValue(int nodeNumber, boolean knockIn) throws ParamDefinitionException, NotExistingNodeException{
-		if(nodeNumber < 0 || nodeNumber > this.getNodesNumber())
-			throw new ParamDefinitionException("The node number value must be between 0 and " + this.getNodesNumber());
+/**
+ * This method returns the associated network
+ * @return the associated network
+ */
+public GeneRegulatoryNetwork getGraph(){
+	return this.geneRegulatoryNetwork;
+}
 
-		this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationActivation(knockIn);
+/**
+ * This method modify an existing function perpetually.
+ * @throws ParamDefinitionException 
+ * @throws NotExistingNodeException 
+ */
+public void perpetuallyChangeFunctionValue(int nodeNumber, boolean knockIn) throws ParamDefinitionException, NotExistingNodeException{
+	if(nodeNumber < 0 || nodeNumber > this.getNodesNumber())
+		throw new ParamDefinitionException("The node number value must be between 0 and " + this.getNodesNumber());
 
-	}
+	this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationActivation(knockIn);
 
-	/**
-	 * This method modify an existing function perpetually.
-	 * @param nodeName: the node name
-	 * @param knockIn: the fixed function value
-	 * @throws ParamDefinitionException 
-	 * @throws NotExistingNodeException 
-	 */
-	public void perpetuallyChangeFunctionValue(String nodeName, boolean knockIn) throws ParamDefinitionException, NotExistingNodeException{
-		if(nodeName == null)
-			throw new ParamDefinitionException("The node name must be not null!");
-		int nodeNumber = this.geneRegulatoryNetwork.getNodeNumber(nodeName);
-		this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationActivation(knockIn);
+}
 
-	}
+/**
+ * This method modify an existing function perpetually.
+ * @param nodeName: the node name
+ * @param knockIn: the fixed function value
+ * @throws ParamDefinitionException 
+ * @throws NotExistingNodeException 
+ */
+public void perpetuallyChangeFunctionValue(String nodeName, boolean knockIn) throws ParamDefinitionException, NotExistingNodeException{
+	if(nodeName == null)
+		throw new ParamDefinitionException("The node name must be not null!");
+	int nodeNumber = this.geneRegulatoryNetwork.getNodeNumber(nodeName);
+	this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationActivation(knockIn);
 
-	/**
-	 * This method restores a perpetually mutated function.
-	 * @throws ParamDefinitionException 
-	 * @throws NotExistingNodeException 
-	 */
-	public void restoreFunction(int nodeNumber) throws ParamDefinitionException, NotExistingNodeException{
-		if(nodeNumber < 0 || nodeNumber > this.getNodesNumber())
-			throw new ParamDefinitionException("The node number value must be between 0 and " + this.getNodesNumber());
+}
 
-		this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationDeactivation();
+/**
+ * This method restores a perpetually mutated function.
+ * @throws ParamDefinitionException 
+ * @throws NotExistingNodeException 
+ */
+public void restoreFunction(int nodeNumber) throws ParamDefinitionException, NotExistingNodeException{
+	if(nodeNumber < 0 || nodeNumber > this.getNodesNumber())
+		throw new ParamDefinitionException("The node number value must be between 0 and " + this.getNodesNumber());
 
-	}
+	this.geneRegulatoryNetwork.getFunction(nodeNumber).perpetuallyMutationDeactivation();
+
+}
 
 
-	/**
-	 * This method copies an existing graph manager
-	 * @return the copied graph manager
-	 * @throws ParamDefinitionException 
-	 */
-	public GraphManager copy() throws ParamDefinitionException{
+/**
+ * This method copies an existing graph manager
+ * @return the copied graph manager
+ * @throws ParamDefinitionException 
+ */
+public GraphManager copy() throws ParamDefinitionException{
 
-		GraphManager newGraphManager = new GraphManager();
-		newGraphManager.geneRegulatoryNetwork = this.geneRegulatoryNetwork.copy();
+	GraphManager newGraphManager = new GraphManager();
+	newGraphManager.geneRegulatoryNetwork = this.geneRegulatoryNetwork.copy();
 
-		return newGraphManager;
-	}
+	return newGraphManager;
+}
 
-	/**
-	 * This method returns the node number, given its name. 
-	 * The node number will be -1 if the node doen't exist.
-	 * @param nodeName: The name og the node
-	 * @return The number of the node in the graph.
-	 */
-	public int getNodeNumber(String nodeName){
-		return this.geneRegulatoryNetwork.getNodeNumber(nodeName);
-	}
+/**
+ * This method returns the node number, given its name. 
+ * The node number will be -1 if the node doen't exist.
+ * @param nodeName: The name og the node
+ * @return The number of the node in the graph.
+ */
+public int getNodeNumber(String nodeName){
+	return this.geneRegulatoryNetwork.getNodeNumber(nodeName);
+}
 }

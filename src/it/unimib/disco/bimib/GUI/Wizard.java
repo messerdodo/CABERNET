@@ -295,6 +295,9 @@ public class Wizard extends JDialog {
 	private JCheckBox chkIngoingPowerLaw;
 	private JLabel lblAverageConnectivity_2;
 	private JTextField txtAvgConPLAug;
+	private JLabel lblAverageConnectivity_3;
+	private JTextField txtKSWAug;
+	private JTextField txtBetaAug;
 
 
 
@@ -1629,7 +1632,7 @@ public class Wizard extends JDialog {
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, pnlAugmentedParams, 484, SpringLayout.EAST, lblReplaceTheUndefined);
 			pnlInnerNetworkEditing.add(pnlAugmentedParams);
 			pnlAugmentedParams.setLayout(new CardLayout(0, 0));
-			
+
 			JPanel pnlRandomAugmentation = new JPanel();
 			pnlAugmentedParams.add(pnlRandomAugmentation, "pnlRandomAugmentation");
 
@@ -1638,22 +1641,25 @@ public class Wizard extends JDialog {
 			FlowLayout flowLayout_1 = (FlowLayout) pnlScalefreeAugmentation.getLayout();
 			flowLayout_1.setAlignment(FlowLayout.LEFT);
 			pnlAugmentedParams.add(pnlScalefreeAugmentation, "pnlScalefreeAugmentation");
-		
+
 			this.cmbAugmentedTopology = new JComboBox<>();
 			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.RANDOM_TOPOLOGY);
 			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-			
+			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
+
 			cmbAugmentedTopology.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
 						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlRandomAugmentation");	
-					}else{
+					}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
 						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlScalefreeAugmentation");	
+					}else{
+						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlSmallWorldAugmentation");
 					}
 				}
 			});
-			
+
 			lblTotalEdges = new JLabel("Total number of edges:");
 			pnlRandomAugmentation.add(lblTotalEdges);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalEdges, 0, SpringLayout.NORTH, lblTotalNodes);
@@ -1686,8 +1692,8 @@ public class Wizard extends JDialog {
 			pnlRandomAugmentation.add(lblNewLabel_5);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblNewLabel_5, 51, SpringLayout.NORTH, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblNewLabel_5, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
-			
-			
+
+
 			lblAlgorithm = new JLabel("Algorithm: ");
 			cmbSFAugmentedAlgorithm = new JComboBox<>();
 			cmbSFAugmentedAlgorithm.addItem(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
@@ -1727,10 +1733,10 @@ public class Wizard extends JDialog {
 			txtAugPLGamma.setText("1.0");
 			pnlAugmentedPowerLaw.add(txtAugPLGamma);
 			txtAugPLGamma.setColumns(4);
-			
+
 			lblAverageConnectivity_2 = new JLabel("Average connectivity: ");
 			pnlAugmentedPowerLaw.add(lblAverageConnectivity_2);
-			
+
 			txtAvgConPLAug = new JTextField();
 			txtAvgConPLAug.setHorizontalAlignment(SwingConstants.CENTER);
 			txtAvgConPLAug.setText("1.0");
@@ -1762,6 +1768,29 @@ public class Wizard extends JDialog {
 			pnlAugmentedBarabasi.add(lblInoutGoingProbability);
 			pnlAugmentedBarabasi.add(txtInOutProbAug);
 
+			JPanel pnlSmallWorldAugmentation = new JPanel();
+			FlowLayout flowLayout_2 = (FlowLayout) pnlSmallWorldAugmentation.getLayout();
+			flowLayout_2.setAlignment(FlowLayout.LEFT);
+			pnlAugmentedParams.add(pnlSmallWorldAugmentation, "pnlSmallWorldAugmentation");
+
+			lblAverageConnectivity_3 = new JLabel("Average connectivity: ");
+			lblAverageConnectivity_3.setHorizontalAlignment(SwingConstants.LEFT);
+			pnlSmallWorldAugmentation.add(lblAverageConnectivity_3);
+
+			txtKSWAug = new JTextField();
+			txtKSWAug.setHorizontalAlignment(SwingConstants.CENTER);
+			txtKSWAug.setText("1");
+			pnlSmallWorldAugmentation.add(txtKSWAug);
+			txtKSWAug.setColumns(6);
+
+			JLabel lblEdgeSwitchingProbability = new JLabel("Edge switching probability: ");
+			pnlSmallWorldAugmentation.add(lblEdgeSwitchingProbability);
+
+			txtBetaAug = new JTextField();
+			txtBetaAug.setHorizontalAlignment(SwingConstants.CENTER);
+			txtBetaAug.setText("0.5");
+			pnlSmallWorldAugmentation.add(txtBetaAug);
+			txtBetaAug.setColumns(6);
 
 
 
@@ -1769,7 +1798,7 @@ public class Wizard extends JDialog {
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTopology, 0, SpringLayout.NORTH, lblTotalNodes);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTopology, 31, SpringLayout.EAST, txtEditingNodesNumber);
 			pnlInnerNetworkEditing.add(lblTopology);
-			
+
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, cmbAugmentedTopology, 4, SpringLayout.NORTH, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, cmbAugmentedTopology, 21, SpringLayout.EAST, lblTopology);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, cmbAugmentedTopology, 364, SpringLayout.EAST, lblTopology);
@@ -2931,7 +2960,7 @@ public class Wizard extends JDialog {
 						}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
 							simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
 							if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
-								
+
 								int avgCon = Integer.valueOf(txtAugmentedAvgConnectivity.getText());
 								double inOutProb = Double.valueOf(txtInOutProbAug.getText());
 								if(avgCon <= 0){
@@ -2943,7 +2972,7 @@ public class Wizard extends JDialog {
 								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
 								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAugmentedAvgConnectivity.getText());
 								simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, txtInOutProbAug.getText());
-								
+
 							}else if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
 								if(Double.valueOf(txtAugPLGamma.getText()) <= 0){
 									throw new FeaturesException(SimulationFeaturesConstants.GAMMA + " value must be greater than 0");
@@ -2956,8 +2985,24 @@ public class Wizard extends JDialog {
 								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConPLAug.getText());
 								simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, chkIngoingPowerLaw.isSelected() ? SimulationFeaturesConstants.YES : SimulationFeaturesConstants.NO);
 							}
+						}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY)){
+							simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
+							double avgCon;
+							double beta;
+							try{
+								avgCon = Double.valueOf(txtKSWAug.getText());
+							}catch(NumberFormatException ex){
+								avgCon = 1.0;
+							}
+							simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, String.valueOf(avgCon));
+							try{
+								beta = Double.valueOf(txtBetaAug.getText());
+							}catch(NumberFormatException ex){
+								beta = 1.0;
+							}
+							simulationFeatures.setProperty(SimulationFeaturesConstants.BETA, String.valueOf(beta));
 						}
-					
+
 						simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbEditingFunctionType.getSelectedItem().toString());
 
 						canalizing = Double.parseDouble(txtEditingCanalizingType.getText());
@@ -3166,7 +3211,8 @@ public class Wizard extends JDialog {
 						tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.NO);
 						//Next step: Output elements chosen
 						form = "output-form";
-						lblOutputsList.setBackground(Color.LIGHT_GRAY);
+						lblOutputsList.setBackground(UIManager.getColor("Button.background"));
+						lblExperimentsList.setBackground(Color.WHITE);
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 					}
 					//Next action: Tree matching

@@ -205,10 +205,12 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		GraphManager cytoscapeNetwork = cytoscapeBridge.getNetworkFromCytoscape();
 		int depth = 0;
 		ArrayList<TesTree> representativeTrees;
-
+		long time = 0;
 		try{
 			while(net < requiredNetworks){
-
+				time = System.currentTimeMillis();
+				
+				
 				//Variables initialization
 				match = true;
 				deltas = null;
@@ -496,6 +498,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 				}
 				Output.saveAttractorsLengths(requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "") + "/basins_of_attraction.csv", 
 						basinsOfAttraction);
+			System.out.println("Time: " + (System.currentTimeMillis() - time));
 			}
 			//Process ending
 			taskMonitor.setProgress(1.0);

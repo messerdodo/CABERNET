@@ -146,17 +146,16 @@ public class NetworkCreation extends AbstractTask{
 		this.mutationManager = null;
 		this.atmManager = null;
 		this.tesManager = null; 
-
 		if(this.representativeTreeComputation){
 			if(!networkFeatures.containsKey(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF)){
 				throw new FeaturesException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be defined");
 			}
 			this.representativeTreeCutoff = Integer.valueOf(networkFeatures.getProperty(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF));
+			System.err.println("PIPPO 3");
 			if(this.representativeTreeCutoff < -1){
 				throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be greater or equal than 0 or -1.");
 			}
 		}
-
 		if(this.representativeTreeComputation || this.treeMatching){
 			if(!networkFeatures.containsKey(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST)){
 				throw new FeaturesException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be defined");
@@ -165,11 +164,9 @@ public class NetworkCreation extends AbstractTask{
 			if(max_children_for_complete_test < 0){
 				throw new NumberFormatException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be greater than 0");
 			}
-
 			if(!networkFeatures.containsKey(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY)){
 				throw new FeaturesException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be defined");
 			}
-
 			this.partial_test_probability = Double.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY));
 			if(partial_test_probability < 0 || partial_test_probability > 1){
 				throw new NumberFormatException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be between 0 and 1");
@@ -195,9 +192,12 @@ public class NetworkCreation extends AbstractTask{
 		int depth = 0;
 		ArrayList<TesTree> representativeTrees;
 
+		long time = 0;
+		
 		try{
 
 			while(net < requiredNetworks){
+				time = System.currentTimeMillis();
 				//Variables initialization
 				match = true;
 				deltas = null;
@@ -230,7 +230,6 @@ public class NetworkCreation extends AbstractTask{
 				//Forces the process conclusion in case of thread interruption
 				if(Thread.interrupted())
 					throw new InterruptedException();
-
 				//*************************************************************
 				//Creates the ATM manager and the ATM matrix (if required)
 				if(this.atmComputation){
@@ -390,6 +389,7 @@ public class NetworkCreation extends AbstractTask{
 					if(Thread.interrupted())
 						throw new InterruptedException();
 
+					System.out.println("Network generation time: " + (System.currentTimeMillis() - time));
 					//*************************************************************
 					//Exports to file system (if required)
 					if(requiredOutputs.getProperty(OutputConstants.EXPORT_TO_FILE_SYSTEM, OutputConstants.NO).equals(OutputConstants.YES)){
