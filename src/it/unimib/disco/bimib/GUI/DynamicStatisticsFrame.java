@@ -22,11 +22,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -78,14 +76,10 @@ public class DynamicStatisticsFrame extends JFrame {
 	private JPanel pnlFlips;
 	private JComboBox<String> cmbPerturbationType;
 	private JCheckBox chckbxUseSpecifiedGenes;
-	private JTextField txtRatioOfStatesToPerturb;
-	private JTextField txtNumberOfExperiments;
 	private JTextField txtMinFlipTimes;
 	private JTextField txtMaxFlipTimes;
 	private JTextField txtNumberFlipNodes;
 	private JTextArea txtSpecificFlipGenes;
-	private JTextArea txtPermanentKnockIn;
-	private JTextArea txtPermanentKnockOut;
 	private JPanel pnlKnockInKnockOut;
 	private JTextField txtMinKnockInTimes;
 	private JTextField txtMaxKnockInTimes;
@@ -96,10 +90,8 @@ public class DynamicStatisticsFrame extends JFrame {
 	private JCheckBox chckbxEnableSpecificGenesKnockInKnockOut;
 	private JTextArea txtKnockInSpecifics;
 	private JTextArea txtKnockOutSpecifics;
-	private JCheckBox chkPermanentSpecific;
-	private JTextField txtPermRandomKnockIn;
-	private JTextField txtPermRandomKnockOut;
 	private JCheckBox chkAllNetworks;
+	private JTextField txtPerturbExp;
 
 	//Cytoscape app objects
 	private CySwingAppAdapter adapter;
@@ -108,6 +100,7 @@ public class DynamicStatisticsFrame extends JFrame {
 	//CABERNET Objects
 	private SimulationsContainer simulations;
 	private VizMapperManager vizMapperManager;
+
 
 
 	public DynamicStatisticsFrame(CySwingAppAdapter adapter, SimulationsContainer simulations, CyNetwork currentNetwork, 
@@ -148,70 +141,14 @@ public class DynamicStatisticsFrame extends JFrame {
 		btnOk.addActionListener(new OkButtonPressed(this));
 		bottomPanel.add(btnOk);
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.add(tabbedPane, BorderLayout.CENTER);
-
 		JPanel pnlTemporaryMutations = new JPanel();
-		tabbedPane.addTab("Temporary mutations", null, pnlTemporaryMutations, null);
+		contentPane.add(pnlTemporaryMutations, BorderLayout.CENTER);
 		pnlTemporaryMutations.setLayout(new BorderLayout(0, 0));
 
-		JPanel experimentsPanel = new JPanel();
-		pnlTemporaryMutations.add(experimentsPanel, BorderLayout.SOUTH);
-
-		JLabel lblNewLabel_1 = new JLabel("Number of randomly selected single/multiple node perturbations for each attractor state");
-
-		txtNumberOfExperiments = new JTextField();
-		txtNumberOfExperiments.setHorizontalAlignment(SwingConstants.CENTER);
-		txtNumberOfExperiments.setText("1");
-		txtNumberOfExperiments.setColumns(10);
-
-		JLabel lblNewLabel = new JLabel("Ratio of randomly selected attractor states in which performing the perturbations ");
-
-		txtRatioOfStatesToPerturb = new JTextField();
-		txtRatioOfStatesToPerturb.setHorizontalAlignment(SwingConstants.CENTER);
-		txtRatioOfStatesToPerturb.setText("0.5");
-		txtRatioOfStatesToPerturb.setColumns(10);
-
-		chkAllNetworks = new JCheckBox("Repeat for all the networks");
-		GroupLayout gl_experimentsPanel = new GroupLayout(experimentsPanel);
-		gl_experimentsPanel.setHorizontalGroup(
-				gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_experimentsPanel.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
-								.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-										.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE))
-										.addGap(36))
-										.addGroup(gl_experimentsPanel.createSequentialGroup()
-												.addComponent(chkAllNetworks)
-												.addContainerGap())
-				);
-		gl_experimentsPanel.setVerticalGroup(
-				gl_experimentsPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_experimentsPanel.createSequentialGroup()
-						.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(txtNumberOfExperiments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_experimentsPanel.createParallelGroup(Alignment.BASELINE)
-										.addComponent(txtRatioOfStatesToPerturb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(chkAllNetworks)
-										.addContainerGap())
-				);
-		experimentsPanel.setLayout(gl_experimentsPanel);
-
-		JPanel pnlMutationType = new JPanel();
-		pnlTemporaryMutations.add(pnlMutationType, BorderLayout.NORTH);
-		pnlMutationType.setLayout(new GridLayout(0, 2, 0, 0));
+		JPanel pnlCommonInfo = new JPanel();
+		pnlTemporaryMutations.add(pnlCommonInfo, BorderLayout.NORTH);
 
 		JLabel lblPerturbationsType = new JLabel("Perturbations type:");
-		pnlMutationType.add(lblPerturbationsType);
 
 		cmbPerturbationType = new JComboBox<String>();
 		cmbPerturbationType.addItemListener(new ItemListener() {
@@ -224,8 +161,48 @@ public class DynamicStatisticsFrame extends JFrame {
 				}
 			}
 		});
+
+		chkAllNetworks = new JCheckBox("Repeat for all the networks");
 		cmbPerturbationType.setModel(new DefaultComboBoxModel<String>(new String[] {"Node Flip: 1—> 0, 0—> 1", "Node KnockIn-KnockOut"}));
-		pnlMutationType.add(cmbPerturbationType);
+
+		JLabel lblNumberOfPerturb = new JLabel("Number of perturb experiments:");
+
+		txtPerturbExp = new JTextField();
+		txtPerturbExp.setHorizontalAlignment(SwingConstants.CENTER);
+		txtPerturbExp.setText("1");
+		txtPerturbExp.setColumns(10);
+		GroupLayout gl_pnlCommonInfo = new GroupLayout(pnlCommonInfo);
+		gl_pnlCommonInfo.setHorizontalGroup(
+				gl_pnlCommonInfo.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlCommonInfo.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(gl_pnlCommonInfo.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, gl_pnlCommonInfo.createSequentialGroup()
+										.addComponent(lblPerturbationsType, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED, 166, Short.MAX_VALUE)
+										.addComponent(cmbPerturbationType, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_pnlCommonInfo.createSequentialGroup()
+												.addComponent(lblNumberOfPerturb)
+												.addGap(18)
+												.addComponent(txtPerturbExp, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE))
+												.addComponent(chkAllNetworks, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE))
+												.addContainerGap())
+				);
+		gl_pnlCommonInfo.setVerticalGroup(
+				gl_pnlCommonInfo.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlCommonInfo.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(gl_pnlCommonInfo.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblNumberOfPerturb)
+								.addComponent(txtPerturbExp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(chkAllNetworks, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(gl_pnlCommonInfo.createParallelGroup(Alignment.BASELINE)
+										.addComponent(cmbPerturbationType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblPerturbationsType, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)))
+				);
+		pnlCommonInfo.setLayout(gl_pnlCommonInfo);
 
 		pnlPerturbation = new JPanel();
 		pnlTemporaryMutations.add(pnlPerturbation, BorderLayout.CENTER);
@@ -454,75 +431,8 @@ public class DynamicStatisticsFrame extends JFrame {
 			}
 		});
 		pnlKnockInKnockOut.add(chckbxEnableSpecificGenesKnockInKnockOut);
-
-
-		JPanel pnlPerpetualMutations = new JPanel();
-		tabbedPane.addTab("Permanent mutations", null, pnlPerpetualMutations, null);
-		SpringLayout sl_pnlPerpetualMutations = new SpringLayout();
-		pnlPerpetualMutations.setLayout(sl_pnlPerpetualMutations);
-
-		JLabel lblSetTheNames = new JLabel("<html>Specify the name of the nodes to either permanently knockin or knockout\nUse the comma as delimiter </html>");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, lblSetTheNames, 10, SpringLayout.WEST, pnlPerpetualMutations);
-		pnlPerpetualMutations.add(lblSetTheNames);
-
-		txtPermanentKnockIn = new JTextArea();
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, txtPermanentKnockIn, 10, SpringLayout.WEST, pnlPerpetualMutations);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.SOUTH, txtPermanentKnockIn, -72, SpringLayout.SOUTH, pnlPerpetualMutations);
-		pnlPerpetualMutations.add(txtPermanentKnockIn);
-
-		txtPermanentKnockOut = new JTextArea();
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.EAST, txtPermanentKnockIn, -165, SpringLayout.WEST, txtPermanentKnockOut);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.SOUTH, txtPermanentKnockOut, 0, SpringLayout.SOUTH, txtPermanentKnockIn);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, txtPermanentKnockOut, 0, SpringLayout.NORTH, txtPermanentKnockIn);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.EAST, txtPermanentKnockOut, 21, SpringLayout.EAST, lblSetTheNames);
-		pnlPerpetualMutations.add(txtPermanentKnockOut);
-
-		JLabel lblKnockin = new JLabel("Knock-In:");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, txtPermanentKnockIn, 6, SpringLayout.SOUTH, lblKnockin);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, lblKnockin, 18, SpringLayout.SOUTH, lblSetTheNames);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, lblKnockin, 0, SpringLayout.WEST, lblSetTheNames);
-		pnlPerpetualMutations.add(lblKnockin);
-
-		JLabel lblKnockout = new JLabel("Knock-Out:");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, txtPermanentKnockOut, 0, SpringLayout.WEST, lblKnockout);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, lblKnockout, 352, SpringLayout.EAST, lblKnockin);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, lblKnockout, 0, SpringLayout.NORTH, lblKnockin);
-		pnlPerpetualMutations.add(lblKnockout);
-
-		JLabel lblNumberOfNodes_1 = new JLabel("Number of nodes to knock-in:");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, lblNumberOfNodes_1, 10, SpringLayout.NORTH, pnlPerpetualMutations);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, lblNumberOfNodes_1, 10, SpringLayout.WEST, pnlPerpetualMutations);
-		pnlPerpetualMutations.add(lblNumberOfNodes_1);
-
-		JLabel lblNumberOfNodes_2 = new JLabel("Number of nodes to knock-out:");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, lblNumberOfNodes_2, 10, SpringLayout.WEST, pnlPerpetualMutations);
-		pnlPerpetualMutations.add(lblNumberOfNodes_2);
-
-		txtPermRandomKnockIn = new JTextField();
-		txtPermRandomKnockIn.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPermRandomKnockIn.setText("0");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, lblNumberOfNodes_2, 17, SpringLayout.SOUTH, txtPermRandomKnockIn);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, txtPermRandomKnockIn, -6, SpringLayout.NORTH, lblNumberOfNodes_1);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, txtPermRandomKnockIn, 6, SpringLayout.EAST, lblNumberOfNodes_1);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.EAST, txtPermRandomKnockIn, 272, SpringLayout.WEST, pnlPerpetualMutations);
-		pnlPerpetualMutations.add(txtPermRandomKnockIn);
-		txtPermRandomKnockIn.setColumns(10);
-
-		txtPermRandomKnockOut = new JTextField();
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, lblSetTheNames, 30, SpringLayout.SOUTH, txtPermRandomKnockOut);
-		txtPermRandomKnockOut.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPermRandomKnockOut.setText("0");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, txtPermRandomKnockOut, -6, SpringLayout.NORTH, lblNumberOfNodes_2);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, txtPermRandomKnockOut, 6, SpringLayout.EAST, lblNumberOfNodes_2);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.EAST, txtPermRandomKnockOut, -399, SpringLayout.EAST, pnlPerpetualMutations);
-		txtPermRandomKnockOut.setColumns(10);
-		pnlPerpetualMutations.add(txtPermRandomKnockOut);
-
-		chkPermanentSpecific = new JCheckBox("Use specific genes");
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.NORTH, chkPermanentSpecific, 26, SpringLayout.NORTH, pnlPerpetualMutations);
-		sl_pnlPerpetualMutations.putConstraint(SpringLayout.WEST, chkPermanentSpecific, 72, SpringLayout.EAST, txtPermRandomKnockOut);
-		pnlPerpetualMutations.add(chkPermanentSpecific);
 	}
+
 
 	public class OkButtonPressed implements ActionListener {
 
@@ -535,69 +445,80 @@ public class DynamicStatisticsFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-			ArrayList<String> permanentKnockIn = null, permanentKnockOut = null, specificFlipGenes;
-			Properties perturbationFeatures;
-			int randomKI = 0, randomKO = 0;
-			boolean closeView = false;
+			Properties perturbationFeatures = new Properties();
+			ArrayList<String> specificFlipGenes;
+			int randomKI, randomKO, randomFlip;
+			perturbationFeatures.setProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY, 
+					SimulationFeaturesConstants.YES);
+
 			try{
-				if(chkPermanentSpecific.isSelected()){
+				if(Integer.valueOf(txtPerturbExp.getText()) <= 0)
+					throw new NumberFormatException("The number of perturbation experiments must be greater than 0.");
+				perturbationFeatures.put(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP, txtPerturbExp.getText());
 
-
-					//Sets the permanent knock-in genes
-					if(!txtPermanentKnockIn.getText().equals("")){
-						permanentKnockIn = new ArrayList<String>();
-						for(String gene : txtPermanentKnockIn.getText().split(",")){
-							permanentKnockIn.add(gene);
-						}
-					}
-
-					//Sets the permanent knock-out genes
-					if(!txtPermanentKnockOut.getText().equals("")){
-						permanentKnockOut = new ArrayList<String>();
-						for(String gene : txtPermanentKnockOut.getText().split(",")){
-							permanentKnockOut.add(gene);
-						}
-					}
-				}else{
-					randomKI = Integer.valueOf(txtPermRandomKnockIn.getText());
-					if(randomKI < 0 || randomKI > currentNetwork.getNodeCount())
-						throw new FeaturesException("The number of the nodes to knock-in permanently must be between 0 and " + currentNetwork.getNodeCount());
-					randomKO = Integer.valueOf(txtPermRandomKnockOut.getText());
-					if(randomKO < 0 || randomKO > currentNetwork.getNodeCount())
-						throw new FeaturesException("The number of the nodes to knock-out permanently must be between 0 and " + currentNetwork.getNodeCount());
-					if(randomKI + randomKO > currentNetwork.getNodeCount())
-						throw new FeaturesException("The sum of the nodes to knock-in and knock-out must be between 0 and " + currentNetwork.getNodeCount());
-				}
-
-				//Set the perturbation features
-				perturbationFeatures = new Properties();
-				perturbationFeatures.setProperty(SimulationFeaturesConstants.COMPUTE_AVALANCHES_AND_SENSITIVITY, SimulationFeaturesConstants.YES);
-				//Flip mutations
 				if(cmbPerturbationType.getSelectedIndex() == 0){
+					//Flip mutations
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MUTATION_TYPE, SimulationFeaturesConstants.FLIP_MUTATIONS);
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB, txtNumberFlipNodes.getText());
+
+					if(Integer.valueOf(txtMinFlipTimes.getText()) <= 0){
+						throw new NumberFormatException("The minimim flip times must be greater than 0.");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MIN_DURATION_OF_PERTURB, txtMinFlipTimes.getText());
+					if(Integer.valueOf(txtMaxFlipTimes.getText()) <= 0){
+						throw new NumberFormatException("The maximum flip times must be greater than 0.");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MAX_DURATION_OF_PERTURB, txtMaxFlipTimes.getText());
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB, txtRatioOfStatesToPerturb.getText());
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP, txtNumberOfExperiments.getText());
 
 					if(chckbxUseSpecifiedGenes.isSelected()){
+						if(txtSpecificFlipGenes.getText().length() == 0){
+							throw new FeaturesException("At least one gene name must be specified.");
+						}
 						specificFlipGenes = new ArrayList<String>();
 						for(String gene : txtSpecificFlipGenes.getText().split(","))
 							specificFlipGenes.add(gene);
 						perturbationFeatures.put(SimulationFeaturesConstants.SPECIFIC_PERTURB_NODES, specificFlipGenes);
-					}
+					}else{
+						randomFlip = Integer.valueOf(txtNumberFlipNodes.getText());
+						if(randomFlip <= 0 && randomFlip > currentNetwork.getNodeCount()){
+							throw new NumberFormatException("The number of nodes to flip must be greater than 0 and less or equal then the nodes in the network.");
+						}
+						perturbationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_NODES_TO_PERTURB, txtNumberFlipNodes.getText());
 
+
+					}
 				}else{
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.MUTATION_TYPE, SimulationFeaturesConstants.KNOCKIN_KNOCKOUT_MUTATIONS);
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.KNOCKIN_NODES, txtKnockInNodes.getText());
+					//Knock-in/Knock-out mutations
+					perturbationFeatures.setProperty(SimulationFeaturesConstants.MUTATION_TYPE, 
+							SimulationFeaturesConstants.KNOCKIN_KNOCKOUT_MUTATIONS);
+
+					//Sets, if required, the specific nodes names for the knock-in and the knock-out
+
+					if(Integer.valueOf(txtMinKnockInTimes.getText()) <= 0){
+						throw new FeaturesException("The minimum knock-in times must be greater than 0");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MIN_KNOCKIN_DURATION, txtMinKnockInTimes.getText());
+
+					if(Integer.valueOf(txtMaxKnockInTimes.getText()) <= 0 && Integer.valueOf(txtMaxKnockInTimes.getText()) != -1){
+						throw new FeaturesException("The maximum knock-in times must be greater than 0 or -1 for no limits.");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MAX_KNOCKIN_DURATION, txtMaxKnockInTimes.getText());
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.KNOCKOUT_NODES, txtKnockOutNodes.getText());
+
+					if(Integer.valueOf(txtMinKnockOutTimes.getText()) <= 0){
+						throw new FeaturesException("The minimum knock-out times must be greater than 0");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MIN_KNOCKOUT_DURATION, txtMinKnockOutTimes.getText());
+					if(Integer.valueOf(txtMaxKnockOutTimes.getText()) <= 0 && Integer.valueOf(txtMaxKnockOutTimes.getText()) != -1){
+						throw new FeaturesException("The maximum knock-out times must be greater than 0 or -1 for no limits.");
+					}
 					perturbationFeatures.setProperty(SimulationFeaturesConstants.MAX_KNOCKOUT_DURATION, txtMaxKnockOutTimes.getText());
-					//Set, if required, the specific nodes names for the knock-in and the knock-out
+
+
 					if(chckbxEnableSpecificGenesKnockInKnockOut.isSelected()){
+						if(txtKnockInSpecifics.getText().length() == 0 &&
+								txtKnockOutSpecifics.getText().length() == 0){
+							throw new FeaturesException("At least one gene name must be specified.");
+						}
+
 						//Knock-in
 						ArrayList<String> specificKnockInNodes = new ArrayList<String>();
 						for(String gene : txtKnockInSpecifics.getText().split(",")){
@@ -610,13 +531,22 @@ public class DynamicStatisticsFrame extends JFrame {
 							specificKnockOutNodes.add(gene);
 						}
 						perturbationFeatures.put(SimulationFeaturesConstants.SPECIFIC_KNOCK_OUT_NODES,specificKnockOutNodes);
-					}
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB, txtRatioOfStatesToPerturb.getText());
-					perturbationFeatures.setProperty(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP, txtNumberOfExperiments.getText());
 
+					}else{
+
+						randomKI = Integer.valueOf(txtKnockInNodes.getText());
+						randomKO = Integer.valueOf(txtKnockOutNodes.getText());
+						if(randomKI < 0)
+							throw new FeaturesException("The number of nodes to knock-in must be greater than 0");
+						if(randomKO <= 0)
+							throw new FeaturesException("The number of nodes to knock-out must be greater than 0");
+						if(randomKI + randomKO > currentNetwork.getNodeCount())
+							throw new FeaturesException("The sum of knock-in and knock-out nodes must be less or equal than the nodes in the network.");
+						perturbationFeatures.setProperty(SimulationFeaturesConstants.KNOCKIN_NODES, txtKnockInNodes.getText());
+						perturbationFeatures.setProperty(SimulationFeaturesConstants.KNOCKOUT_NODES, txtKnockOutNodes.getText());
+					}
 				}
 
-				closeView = true;
 				DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
 				SimulationsContainer sims;
 				String selectedNetwork = currentNetwork.getRow(currentNetwork).get(CyNetwork.NAME, String.class);
@@ -626,25 +556,16 @@ public class DynamicStatisticsFrame extends JFrame {
 				}else{
 					sims = simulations;
 				}
-				if(chkPermanentSpecific.isSelected()){
-					dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(sims, permanentKnockIn,
-							permanentKnockOut, perturbationFeatures, adapter, vizMapperManager, currentNetwork)));
-				}else{
-					dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(sims, randomKI,
-							randomKO, perturbationFeatures, adapter, vizMapperManager, currentNetwork)));
-				}
+
+				dialogTaskManager.execute(new TaskIterator(new DynamicStatisticsComputationTask(sims, perturbationFeatures, 
+						adapter, vizMapperManager, currentNetwork)));
+				this.parent.setVisible(false);
+
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-
-			}finally{
-				//Closes the view only if the exception is related to the computation
-				if(closeView){
-					parent.setVisible(false);
-				}
-			}	
-
+				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? 
+						ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
+			}
 		}
-
 	}
 
 	/**

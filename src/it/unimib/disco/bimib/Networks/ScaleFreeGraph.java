@@ -181,7 +181,7 @@ public class ScaleFreeGraph extends IncidenceMatrixGraph{
 			throw new ParamDefinitionException("the value for variable n or gamma is incorrect");
 		}
 
-		//Gets the Power Law distribution
+		//Gets the Power Law distribuction
 		double[] distribuction = this.powerLawDistribution(n-1, gamma);
 
 		int maximumEdges = n * fixedInput;

@@ -216,6 +216,44 @@ public class UtilityRandom {
 	 * The subset dimension is specified
 	 * @param elements: the original set
 	 * @param size: the subset size
+	 * @return integer subset.
+	 * @throws ParamDefinitionException 
+	 */
+	public static ArrayList<Integer> randomSubset(int start, int end, int size) throws ParamDefinitionException{
+
+		//Param checking
+		if(start < 0)
+			throw new ParamDefinitionException("The starting value must be greater or equal than 0");
+		if(start > end)
+			throw new ParamDefinitionException("The ending value must be greater or equal than the starting one");
+		if(size > Math.abs(end - start + 1))
+			throw new ParamDefinitionException("The subset size must be smaller than" + (end - start + 1) + " end: " + end + " start " + start);
+		if(size < 0)
+			return null;
+
+		int choose;
+		ArrayList<Integer> set = new ArrayList<Integer>(Math.abs(end - start + 1));
+		for(int i = start; i <= end; i++)
+			set.add(i);
+		ArrayList<Integer> subset = new ArrayList<Integer>();
+		//Creates the random subset
+		for(int i = 0; i < size; i++){
+			do{
+				choose = UtilityRandom.randomUniformChoice(set);
+			}while(subset.contains(choose));
+			subset.add(choose);	
+			set.remove((Object)choose);
+		}
+		//Sorts the subset
+		Collections.sort(subset);
+		return subset;
+	}
+	
+	/**
+	 * This method returns a integer subset on the integer set {0, ... ,elementsNumber - 1}
+	 * The subset dimension is specified
+	 * @param elements: the original set
+	 * @param size: the subset size
 	 * @param exclude: list of elements to exclude from the choice.
 	 * @return integer subset.
 	 * @throws ParamDefinitionException 
@@ -275,6 +313,27 @@ public class UtilityRandom {
 			throw new NullPointerException("The array must be not null");
 		
 		Integer swap;
+		int index;
+		//Performs a permutation of the array
+		for(int i = 0; i < array.size() - 1; i++){
+			index = randomUniform(i + 1, array.size() - 1);
+			swap = array.get(i);
+			array.set(i, array.get(index));
+			array.set(index, swap);
+		}
+		return array;
+	}
+	
+	/**
+	 * This method returns a permutation of the passed array.
+	 * @param array: An object array list
+	 * @return  permutation of the passed array.
+	 */
+	public static ArrayList<double[]> randomDoublePermutation(ArrayList<double[]> array){
+		if(array == null)
+			throw new NullPointerException("The array must be not null");
+		
+		double[] swap;
 		int index;
 		//Performs a permutation of the array
 		for(int i = 0; i < array.size() - 1; i++){

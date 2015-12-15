@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Utility.UtilityRandom;
@@ -166,7 +167,13 @@ public class CanalizedFunction extends BooleanFunction {
 	 * @return bias
 	 */
 	public double getBias(){
-		return this.bias;
+		int positive = 0;
+		for(Boolean value : this.functionTable.values()){
+			if(value){
+				positive = positive + 1;
+			}
+		}
+		return ((double)positive)/this.functionTable.values().size();
 	}
 
 	/**

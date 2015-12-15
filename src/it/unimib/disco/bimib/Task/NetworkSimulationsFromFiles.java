@@ -30,6 +30,9 @@ import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
 
 
 
+
+
+
 //System imports
 import java.io.FileNotFoundException;
 import java.sql.Timestamp;
@@ -40,6 +43,9 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+
+
 
 
 
@@ -69,8 +75,11 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 	private String representativeTreeDepthMode;
 	private double representativeTreeDepthValue;
 	private int representativeTreeCutoff;
-	private int max_children_for_complete_test;
-	private double partial_test_probability;
+	private int comparison_cutoff;
+	private String comparison_type;
+	private int trees_research_cutoff;
+	private String trees_research_type;
+	private int maxNetToTest;
 
 
 	private GraphManager graphManager;
@@ -137,31 +146,50 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 				throw new FeaturesException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be defined");
 			}
 			this.representativeTreeCutoff = Integer.valueOf(networkFeatures.getProperty(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF));
-			if(this.representativeTreeCutoff < -1){
-				throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be greater or equal than 0 or -1.");
+			if(this.representativeTreeCutoff <= 0){
+				throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + " value must be greater than 0.");
 			}
+		}
+
+		if(this.treeMatching){
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF))
+				throw new FeaturesException(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF + " value must be defined.");
+			this.trees_research_cutoff = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF));
+			if(this.trees_research_cutoff <= 0)
+				throw new NumberFormatException("The " + SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF + " value must be greater than 0");
+
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_RESEARCH_TYPE))
+				throw new FeaturesException(SimulationFeaturesConstants.TREES_RESEARCH_TYPE + " value must be defined.");
+			this.trees_research_type = networkFeatures.getProperty(SimulationFeaturesConstants.TREES_RESEARCH_TYPE);
+			if(!trees_research_type.equals(SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH) &&
+					!trees_research_type.equals(SimulationFeaturesConstants.SAMPLED_TREES_RESEARCH)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_RESEARCH_TYPE + " value must be " + 
+						SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH + " or " +
+						SimulationFeaturesConstants.SAMPLED_TREES_RESEARCH);
+			}
+			if(!networkFeatures.containsKey(CABERNETConstants.MAX_NET_TO_TEST))
+				throw new FeaturesException(CABERNETConstants.MAX_NET_TO_TEST + " value must be defined.");
+			this.maxNetToTest = Math.max(1, Integer.valueOf(networkFeatures.getProperty(CABERNETConstants.MAX_NET_TO_TEST)));
+		}else{
+			this.maxNetToTest = -1;
 		}
 
 		if(this.representativeTreeComputation || this.treeMatching){
-			if(!networkFeatures.containsKey(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST)){
-				throw new FeaturesException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be defined");
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_COMPARISON)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_COMPARISON + " value must be defined");
 			}
-			this.max_children_for_complete_test = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST));
-			if(max_children_for_complete_test < 0){
-				throw new NumberFormatException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be greater than 0");
-			}
-
-			if(!networkFeatures.containsKey(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY)){
-				throw new FeaturesException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be defined");
+			this.comparison_type = networkFeatures.getProperty(SimulationFeaturesConstants.TREES_COMPARISON);
+			if(!this.comparison_type.equals(SimulationFeaturesConstants.COMPLETE_COMPARISON) &&
+					!this.comparison_type.equals(SimulationFeaturesConstants.SAMPLED_COMPARISON)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_COMPARISON + " value must be " +
+						SimulationFeaturesConstants.COMPLETE_COMPARISON + " or " + SimulationFeaturesConstants.SAMPLED_COMPARISON);
 			}
 
-			this.partial_test_probability = Double.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY));
-			if(partial_test_probability < 0 || partial_test_probability > 1){
-				throw new NumberFormatException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be between 0 and 1");
+			this.comparison_cutoff = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.TREE_COMPARISON_CUTOFF));
+			if(comparison_cutoff <= 0){
+				throw new NumberFormatException("The " + SimulationFeaturesConstants.TREE_COMPARISON_CUTOFF + " value must be greater than 0");
 			}
 		}
-
-
 	}
 
 
@@ -184,23 +212,25 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 		int depth = 0;
 		ArrayList<TesTree> representativeTrees;
 		Date date_time;
-		
+		int testedNetworks;
+
 		try{
 			for(String networkFile : this.filesPath){
 
 				originalNetwork = Input.readGRNMLFile(networkFile);
 				net = 0;
 				file_number = file_number + 1;
-
+				testedNetworks = 0;
 				//*************************************************************
 				//Repeats the entire task for all the networks.
-				while(net < requiredNetworks){
-
+				while(net < requiredNetworks && (this.maxNetToTest == -1 || testedNetworks < this.maxNetToTest)){
+					
 					//Variables initialization
 					match = true;
 					deltas = null;
 					parent = null;
 					representativeTrees = null;
+					testedNetworks = testedNetworks + 1;
 
 					//*************************************************************
 					//Task monitor message setting
@@ -216,10 +246,10 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 					if(editing){
 						graphManager.modify(this.simulationFeatures);
 					}
-					
+
 					date_time = new java.util.Date();
 					System.out.println("Graph generation task ending time: " + new Timestamp(date_time.getTime()));
-					
+
 					networkId = "network_" + (net + 1);
 					//Forces the process conclusion in case of thread interruption
 					if(Thread.interrupted())
@@ -231,10 +261,10 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 					taskMonitor.setStatusMessage("Network " + (net + 1) + ": Attractors sampling");
 					//Network sampling 
 					date_time = new java.util.Date();
-					System.out.println("Attracors sampling task starting time: " + new Timestamp(date_time.getTime()));
+					System.out.println("Attractors sampling task starting time: " + new Timestamp(date_time.getTime()));
 					samplingManager = new SamplingManager(simulationFeatures, graphManager);
 					date_time = new java.util.Date();
-					System.out.println("Attracors sampling task ending time: " + new Timestamp(date_time.getTime()));
+					System.out.println("Attractors sampling task ending time: " + new Timestamp(date_time.getTime()));
 					//Forces the process conclusion in case of thread interruption
 					if(Thread.interrupted())
 						throw new InterruptedException();
@@ -247,10 +277,10 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 						//Defines the mutation manager
 						mutationManager = new MutationManager(graphManager, samplingManager, simulationFeatures);
 						date_time = new java.util.Date();
-						System.out.println("ATM computatation task starting time: " + new Timestamp(date_time.getTime()));
+						System.out.println("ATM computation task starting time: " + new Timestamp(date_time.getTime()));
 						atmManager = new AtmManager(simulationFeatures, samplingManager, mutationManager, graphManager.getNodesNumber());
 						date_time = new java.util.Date();
-						System.out.println("ATM computatation task ending time: " + new Timestamp(date_time.getTime()));
+						System.out.println("ATM computation task ending time: " + new Timestamp(date_time.getTime()));
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -262,39 +292,71 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 							taskMonitor.setStatusMessage("Network " + (net + 1) + ": Matching");
 							//Creates the TES manager in order to match the network with the tree
 							tesManager = new TesManager(atmManager, samplingManager, 
-									this.max_children_for_complete_test, this.partial_test_probability);
+									comparison_type, comparison_cutoff);
 
 							try{
 								date_time = new java.util.Date();
-								System.out.println("Tree mathcing task starting time: " + new Timestamp(date_time.getTime()));
+								System.out.println("Tree matching task starting time: " + new Timestamp(date_time.getTime()));
 								//Trees comparison: three comparison types are allowed
 								if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 
 									//Tries to match the network with the given differentiation tree
-									distance = tesManager.findCorrectTesTree(this.givenTree);
-									if(distance == 0){
-										match = true;
-										deltas = tesManager.getThresholds();
-									}else{
+									try{
+										distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+											@Override
+											public Integer call() throws Exception {
+												return tesManager.findCorrectTesTree(givenTree, trees_research_type);
+											}
+										}, trees_research_cutoff, TimeUnit.MINUTES);
+
+										if(distance == 0){
+											match = true;
+											deltas = tesManager.getThresholds();
+										}else{
+											match = false;
+										}
+									}catch(InterruptedException int_exp){
 										match = false;
+										deltas = null;
 									}
 
 								}else if(this.matchingType.equals(CABERNETConstants.MIN_DISTANCE)){
-									//Min distance comparison
-									distance = tesManager.findMinDistanceTesTree(this.givenTree);
-									if(distance == -1){
+
+									try{
+										//Min distance comparison
+										distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+											@Override
+											public Integer call() throws Exception {
+												return tesManager.findMinDistanceTesTree(givenTree, trees_research_type);
+											}
+										}, trees_research_cutoff, TimeUnit.MINUTES);
+										if(distance == -1){
+											match = false;
+										}else if(distance <= threshold){
+											deltas = tesManager.getThresholds();
+										}
+									}catch(InterruptedException int_exp){
 										match = false;
-									}else if(distance <= threshold){
-										deltas = tesManager.getThresholds();
+										deltas = null;
 									}
 								}else{
-									//Computes the histogram distance
-									distance = tesManager.findMinHistogramDistanceTesTree(this.givenTree);
-									if(distance <= threshold){
-										deltas = tesManager.getThresholds();
-										match = true;
-									}else{
+									try{
+										//Computes the histogram distance
+										distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+											@Override
+											public Integer call() throws Exception {
+												return tesManager.findMinHistogramDistanceTesTree(givenTree, trees_research_type);
+											}
+										}, trees_research_cutoff, TimeUnit.MINUTES);
+										if(distance <= threshold){
+											deltas = tesManager.getThresholds();
+											match = true;
+										}else{
+											match = false;
+										}
+									}catch(InterruptedException int_exp){
 										match = false;
+										deltas = null;
 									}
 								}
 								//Forces the process conclusion in case of thread interruption
@@ -309,7 +371,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 									throw ex;
 							}finally{
 								date_time = new java.util.Date();
-								System.out.println("Tree mathcing task ending time: " + new Timestamp(date_time.getTime()));
+								System.out.println("Tree matching task ending time: " + new Timestamp(date_time.getTime()));
 							}
 						}
 
@@ -337,16 +399,16 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 										}
 										//Creates the TES manager
 										TesManager tesManager = new TesManager(atmManager, samplingManager, 
-												max_children_for_complete_test,partial_test_probability);
+												comparison_type, comparison_cutoff);
 
 										if(requiredOutputs.getProperty(CABERNETConstants.SHOW_ALL_TREES).equals(CABERNETConstants.YES)){
-											return tesManager.getRepresentativeTrees(depth, representativeTreeCutoff, true);
+											return tesManager.getRepresentativeTrees(depth, true);
 
 										}else{
-											return tesManager.getRepresentativeTrees(depth, representativeTreeCutoff, false);
+											return tesManager.getRepresentativeTrees(depth, false);
 										}
 									}
-								},  5, TimeUnit.MINUTES);
+								},  representativeTreeCutoff, TimeUnit.MINUTES);
 							}catch(TimeoutException ex){
 								representativeTrees = new ArrayList<TesTree>();
 								System.out.println("Time Out!");
@@ -369,11 +431,11 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 						//Network saving in the internal structure
 						//Task monitor message setting
 						taskMonitor.setProgress((net + 1)/((double)(requiredNetworks * filesPath.size())));
-						taskMonitor.setStatusMessage("Network " + (net + 1) + ": Exporting");
-						
+						taskMonitor.setStatusMessage("File " + file_number + " Network " + (net + 1) + ": Exporting");
+
 						date_time = new java.util.Date();
 						System.out.println("Saving objects task starting time: " + new Timestamp(date_time.getTime()));
-						
+
 						//Adds the simulation in the container
 						newSim = new Simulation(networkId);
 						newSim.setGraphManager(graphManager);
@@ -385,7 +447,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 
 						date_time = new java.util.Date();
 						System.out.println("Saving objects task ending time: " + new Timestamp(date_time.getTime()));
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -395,7 +457,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 
 						date_time = new java.util.Date();
 						System.out.println("Creating view task starting time: " + new Timestamp(date_time.getTime()));
-						
+
 						//Creates the network view on Cytoscape (if required)
 						if(this.requiredOutputs.getProperty(CABERNETConstants.NETWORK_VIEW).equals(CABERNETConstants.YES)){
 							parent = this.cytoscapeBridge.createNetwork(graphManager, networkId);
@@ -418,7 +480,7 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 								i = i + 1;
 							}
 						}
-						
+
 						date_time = new java.util.Date();
 						System.out.println("Creating view task ending time: " + new Timestamp(date_time.getTime()));
 
@@ -428,13 +490,13 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 
 						//*************************************************************
 						//Exports to file system (if required)
-						
+
 						date_time = new java.util.Date();
 						System.out.println("Exporting task starting time: " + new Timestamp(date_time.getTime()));
-						
+
 						if(requiredOutputs.getProperty(OutputConstants.EXPORT_TO_FILE_SYSTEM, OutputConstants.NO).equals(OutputConstants.YES)){
 							outputPath = requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "");
-							outputPath = outputPath + "/" + networkId;
+							outputPath = outputPath + "/" + "File" + file_number + "_" + networkId;
 							//Creates the network folder
 							Output.createFolder(outputPath);
 							//GRNML File
@@ -486,10 +548,10 @@ public class NetworkSimulationsFromFiles extends AbstractTask{
 							if(requiredOutputs.getProperty(OutputConstants.SYNTHESIS_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
 								Output.createSynthesisFile(newSim.getNetworkStatistics(), outputPath + "/synthesis.csv");
 							}
-							
+
 							date_time = new java.util.Date();
 							System.out.println("Exporting task ending time: " + new Timestamp(date_time.getTime()));
-							
+
 							//Forces the process conclusion in case of thread interruption
 							if(Thread.interrupted())
 								throw new InterruptedException();

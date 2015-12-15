@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 
 
+
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Networks.GraphManager;
@@ -32,7 +33,6 @@ public class BruteForceSampling extends BinarySamplingMethod {
 
 	private String[] attractors;
 	private int [] positions;
-	private String[] oldAttractors;
 
 
 	/**
@@ -199,73 +199,17 @@ public class BruteForceSampling extends BinarySamplingMethod {
 		return basinDistribuction;
 
 	}
-
+	
 	/**
-	 * This method rewireds the attractor finder element.
-	 * It is used when the perpetual mutations are introduced
-	 * @throws ParamDefinitionException Something gone wrong
-	 * @throws InputTypeException 
-	 * @throws NotExistingNodeException 
-	 * @throws InterruptedException 
-	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, 
-	NotExistingNodeException, InputTypeException, InterruptedException {
-
-		this.oldAttractors = this.attractors;
-
-		this.attractors = new String [this.attractors.length];
-		this.positions = new int [this.positions.length];
-
-		//Calculates the new attractors
-		this.calculatesAttractors();
-
-	}
-
-	/**
-	 * This method saves the old state of the sampling object.
+	 * This method clears the object.
 	 * @throws ParamDefinitionException
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public void clearAndStore() throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
-
-		this.storedInformation = new HashMap<Object, Object[]>();
-
-		Object[] attractorsSet = this.getAttractors();
-
-		for(Object attractor : attractorsSet){
-			this.storedInformation.put(attractor, 
-					this.getStatesInAttractor(attractor));	
-		}
+	public void clear() throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 
 		this.attractors = new String[this.attractors.length];
 		this.positions = new int[this.positions.length];
-	}
-
-	/**
-	 * This method returns the stored attractors.
-	 * The returned HashMap has the attractor id as key an an object array, representing the
-	 * states in the attractor, as value.
-	 * @return The stored attractors
-	 */
-	public HashMap<Object, Object[]> getStoredAttractors(){
-		return this.storedInformation;
-	}
-
-
-	/**
-	 * This method returns all the old attractor when is made a permanent perturbation
-	 * @return all the old attractors
-	 */
-	public Object[] getOldAttractors(){
-		//Returns all the attractors
-		ArrayList<String> oldAttractorlist = new ArrayList<String>();
-
-		for(int i = 0; i < this.oldAttractors.length; i++)
-			if(!oldAttractorlist.contains(this.oldAttractors[i]))
-				oldAttractorlist.add(this.oldAttractors[i]);
-		return oldAttractorlist.toArray();
-
 	}
 
 	/**
@@ -327,5 +271,6 @@ public class BruteForceSampling extends BinarySamplingMethod {
 			statesPositions.put(Integer.toBinaryString(i), this.positions[i]);
 		return statesPositions;
 	}
+
 
 }

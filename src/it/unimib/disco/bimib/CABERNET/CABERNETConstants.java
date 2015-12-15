@@ -135,4 +135,10 @@ public class CABERNETConstants {
 	 * computation
 	 */
 	public static final String REPRESENTATIVE_TREE_CUTOFF = "representative-tree-cutoff";
+	
+	/**
+	 * This key is used in order to specify the maximum number of network
+	 * to test
+	 */
+	public static final String MAX_NET_TO_TEST = "max_net_to_test";
 }

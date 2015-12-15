@@ -9,7 +9,9 @@ package it.unimib.disco.bimib.Middleware;
 
 //System imports
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.HashMap;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -94,15 +96,25 @@ public class VizMapperManager {
 		
 		vs.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, Color.BLUE);  
 		
-		DiscreteMapping<String, Color> nodesColorMapping = (DiscreteMapping) vmfFactoryD.createVisualMappingFunction("Function", String.class, BasicVisualLexicon.NODE_FILL_COLOR);
-		nodesColorMapping.putMapValue("AND", Color.BLUE);
-		nodesColorMapping.putMapValue("OR", Color.RED);
-		nodesColorMapping.putMapValue("Random", Color.GREEN);
-		nodesColorMapping.putMapValue("Random with bias", Color.MAGENTA);
-		nodesColorMapping.putMapValue("Canalizing", Color.YELLOW);
-		vs.addVisualMappingFunction(nodesColorMapping);  
 		
 		
+		// Set node color map to attribute "Degree"
+		  ContinuousMapping colorMapping = (ContinuousMapping) vmfFactoryC.createVisualMappingFunction("Bias", Double.class, BasicVisualLexicon.NODE_FILL_COLOR);
+
+		  // Define the points
+		  Double lowBias = 0.0;
+		  BoundaryRangeValues<Paint> brv1 = new BoundaryRangeValues<Paint>(Color.decode("0XCCFFFF"), Color.decode("0XCCFFFF"), Color.decode("0XCCFFFF"));
+
+		  Double highBias = 1.0;
+		  BoundaryRangeValues<Paint> brv2 = new BoundaryRangeValues<Paint>(Color.decode("0X000063"), Color.decode("0X000063"), Color.decode("0x000063"));
+		                
+		  // Set the points
+		  colorMapping.addPoint(lowBias, brv1);
+		  colorMapping.addPoint(highBias, brv2);
+
+		  // add the mapping to visual style            
+		  vs.addVisualMappingFunction(colorMapping); 
+
 		//Node shape: Added nodes are divided from the originals
 		DiscreteMapping nodesShapeMapping = (DiscreteMapping) vmfFactoryD.createVisualMappingFunction("Added", Boolean.class, BasicVisualLexicon.NODE_SHAPE);
 		nodesShapeMapping.putMapValue(Boolean.TRUE, NodeShapeVisualProperty.ELLIPSE);
@@ -207,6 +219,8 @@ public class VizMapperManager {
 		edgeSizeMapping.addPoint(val2, edgeWidthVal2);
 		vs.addVisualMappingFunction(edgeSizeMapping);
 
+		PassthroughMapping geneNameMapping = (PassthroughMapping) vmfFactoryP.createVisualMappingFunction("name", String.class, BasicVisualLexicon.NODE_LABEL);
+		vs.addVisualMappingFunction(geneNameMapping);
 
 		// Add the new style to the VisualMappingManager
 		vmmServiceRef.addVisualStyle(vs);
@@ -265,6 +279,9 @@ public class VizMapperManager {
 		edgeSizeMapping.addPoint(val1, edgeWidthVal1);
 		edgeSizeMapping.addPoint(val2, edgeWidthVal2);
 		vs.addVisualMappingFunction(edgeSizeMapping);
+		
+		PassthroughMapping geneNameMapping = (PassthroughMapping) vmfFactoryP.createVisualMappingFunction("name", String.class, BasicVisualLexicon.NODE_LABEL);
+		vs.addVisualMappingFunction(geneNameMapping);
 
 
 		// Add the new style to the VisualMappingManager

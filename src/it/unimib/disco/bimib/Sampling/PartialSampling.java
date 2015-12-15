@@ -14,19 +14,7 @@ package it.unimib.disco.bimib.Sampling;
 
 //System imports
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashMap;
-
-
-
-
-
-
-
-
-
-
-
 
 //GRNSim imports
 import it.unimib.disco.bimib.Utility.UtilityRandom;
@@ -41,9 +29,6 @@ public class PartialSampling extends BinarySamplingMethod {
 	private HashMap<String, String> attractors;
 	//This hash map contains the positions of a state in the attractor transient
 	private HashMap<String, Integer> positions;
-	//This has map contains the old attractor when a permanent perturbation is made
-	private HashMap<String, String> oldAttractors;
-	
 	private int cutoff;
 
 	/**
@@ -259,29 +244,6 @@ public class PartialSampling extends BinarySamplingMethod {
 
 	}
 
-	/**
-	 * This method rewires the attractor finder element.
-	 * It is used when the perpetual mutations are introduced
-	 * @throws ParamDefinitionException 
-	 * @throws InputTypeException 
-	 * @throws NotExistingNodeException 
-	 * @throws AttractorNotFoundException 
-	 * @throws InterruptedException 
-	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, 
-		NotExistingNodeException, InputTypeException, AttractorNotFoundException, InterruptedException {
-		Set<String> oldStates = this.attractors.keySet();
-		this.oldAttractors = this.attractors;
-
-		this.attractors = new HashMap<String, String>();
-		this.positions = new HashMap<String, Integer>();
-
-		//Calculates the new attractor for the specified state
-		for(String state : oldStates){
-			this.searchAttractorWithInitialState(state, this.cutoff);
-		}
-
-	}
 
 	/**
 	 * This method saves the old state of the sampling object.
@@ -289,46 +251,12 @@ public class PartialSampling extends BinarySamplingMethod {
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public void clearAndStore() throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public void clear() throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 		this.storedInformation = new HashMap<Object, Object[]>();
-
-
-		Object[] attractorsSet = this.getAttractors();
-
-		for(Object attractor : attractorsSet){
-			this.storedInformation.put(attractor, 
-					this.getStatesInAttractor(attractor));
-		}
 
 		this.attractors = new HashMap<String, String>();
 		this.positions = new HashMap<String, Integer>();
 
-	}
-
-	/**
-	 * This method returns the stored attractors.
-	 * The returned HashMap has the attractor id as key an an object array, representing the
-	 * states in the attractor, as value.
-	 * @return The stored attractors
-	 */
-	public HashMap<Object, Object[]> getStoredAttractors(){
-		return this.storedInformation;
-	}
-
-	/**
-	 * This method returns all the old attractor when is made a permanent perturbation
-	 * @return all the old attractors
-	 */
-	public Object[] getOldAttractors(){
-		ArrayList<String> oldAttractorsList = new ArrayList<String>();
-		Object[] states = this.oldAttractors.values().toArray();
-		for(int i = 0; i < this.oldAttractors.size(); i++){
-			if(!oldAttractorsList.contains((String)states[i])){
-				oldAttractorsList.add((String)states[i]);
-			}
-		}
-		//Returns the calculated attractors
-		return oldAttractorsList.toArray();
 	}
 
 	/**
@@ -361,7 +289,6 @@ public class PartialSampling extends BinarySamplingMethod {
 		copiedSampling.attractors = copiedAttractors;
 		copiedSampling.positions = copiedPositions;
 		copiedSampling.cutoff = this.cutoff;
-		copiedSampling.oldAttractors = null;
 
 		return copiedSampling;
 

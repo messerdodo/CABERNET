@@ -12,21 +12,9 @@ package it.unimib.disco.bimib.Mutations;
 //System imports
 import java.util.ArrayList;
 
-
-
-
-
-
-
-
-
-
-
-
 //GRNSim imports
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Networks.GraphManager;
-import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Exceptions.*;
 import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
 import it.unimib.disco.bimib.Utility.UtilityRandom;
@@ -34,7 +22,6 @@ import it.unimib.disco.bimib.Utility.UtilityRandom;
 public class BinaryMutation implements Mutation {
 
 	private GraphManager graphManager;
-	//private AttractorsFinder sampling;
 
 	//Used only for random mutation or flips
 	private int numebrOfnodesToPerturb;
@@ -60,7 +47,6 @@ public class BinaryMutation implements Mutation {
 	/**
 	 * This is the constructor for the mutation during the simulation
 	 * @param graphManager The graph manager
-	 * @param attractorFinder: The attractor finder object
 	 * @param mutationType: The selected mutation type
 	 * @param nodesToPerturb: The number of nodes to perturb in each experiment
 	 * @param minPerturbDuration: The minimum duration of a perturb
@@ -68,12 +54,10 @@ public class BinaryMutation implements Mutation {
 	 * @param perturbNodes: The list of the specific nodes to flip.
 	 * @throws FeaturesException 
 	 */
-	public BinaryMutation(GraphManager graphManager, AttractorsFinder attractorFinder, 
+	public BinaryMutation(GraphManager graphManager,  
 			String mutationType, int nodesToPerturb, int minPerturbDuration, int maxPerturbDuration, 
 			ArrayList<Integer> perturbNodes) throws FeaturesException {
 
-		if(attractorFinder == null)
-			throw new NullPointerException("Sampling method object must be not null");
 		if(graphManager == null)
 			throw new NullPointerException("Graph manager must be not null");
 		if(nodesToPerturb < 0 || nodesToPerturb > graphManager.getNodesNumber())
@@ -113,17 +97,15 @@ public class BinaryMutation implements Mutation {
 	 * @param maxPerturbDuration: The maximum duration of a perturb
 	 * @throws FeaturesException 
 	 */
-	public BinaryMutation(GraphManager graphManager, AttractorsFinder attractorFinder, 
-			String mutationType, int nodesToPerturb, int minPerturbDuration, int maxPerturbDuration) 
-					throws FeaturesException {
-		this(graphManager, attractorFinder, mutationType, nodesToPerturb, minPerturbDuration, maxPerturbDuration, null);
+	public BinaryMutation(GraphManager graphManager, String mutationType, int nodesToPerturb, 
+			int minPerturbDuration, int maxPerturbDuration) throws FeaturesException {
+		this(graphManager, mutationType, nodesToPerturb, minPerturbDuration, maxPerturbDuration, null);
 	}
 
 
 	/**
 	 * This is the constructor for the mutation during the simulation
 	 * @param graphManager The graph manager
-	 * @param attractorFinder: The attractor finder object
 	 * @param mutationType: The selected mutation type
 	 * @param knockInNodesNumber: The number of nodes to knock-in in each experiment
 	 * @param knockOutNodesNumber: The number of nodes to knock-out in each experiment
@@ -135,13 +117,11 @@ public class BinaryMutation implements Mutation {
 	 * @param knockOutNodes: The list of the specific nodes to knock-out.
 	 * @throws FeaturesException 
 	 */
-	public BinaryMutation(GraphManager graphManager, AttractorsFinder attractorFinder, 
-			String mutationType, int knockInNodesNumber, int knockOutNodesNumber, int minKnockInDuration, 
+	public BinaryMutation(GraphManager graphManager, String mutationType, int knockInNodesNumber, 
+			int knockOutNodesNumber, int minKnockInDuration, 
 			int maxKnockInDuration, int minKnockOutDuration, int maxKnockOutDuration, ArrayList<Integer> knockInNodes, 
 			ArrayList<Integer> knockOutNodes) throws FeaturesException {
 
-		if(attractorFinder == null)
-			throw new NullPointerException("Sampling method object must be not null");
 		if(graphManager == null)
 			throw new NullPointerException("Graph manager must be not null");
 		if(knockInNodesNumber + knockOutNodesNumber > graphManager.getNodesNumber())
@@ -203,10 +183,10 @@ public class BinaryMutation implements Mutation {
 	 * @param maxKnockOutDuration: The maximum duration of a knock-out.
 	 * @throws FeaturesException 
 	 */
-	public BinaryMutation(GraphManager graphManager, AttractorsFinder attractorFinder, 
-			String mutationType, int knockInNodesNumber, int knockOutNodesNumber, int minKnockInDuration, 
+	public BinaryMutation(GraphManager graphManager, String mutationType, int knockInNodesNumber, 
+			int knockOutNodesNumber, int minKnockInDuration, 
 			int maxKnockInDuration, int minKnockOutDuration, int maxKnockOutDuration) throws FeaturesException {
-		this(graphManager, attractorFinder, mutationType, knockInNodesNumber, knockOutNodesNumber, minKnockInDuration,
+		this(graphManager, mutationType, knockInNodesNumber, knockOutNodesNumber, minKnockInDuration,
 				maxKnockInDuration, minKnockOutDuration, maxKnockOutDuration, null, null);
 	}
 
@@ -224,14 +204,13 @@ public class BinaryMutation implements Mutation {
 	public Object doMutation(Object state) throws ParamDefinitionException, NotExistingNodeException, 
 		InputTypeException, InterruptedException{
 		int times, knockInDuration, knockOutDuration;
-		ArrayList<Integer> perturbSubset;
+		ArrayList<Integer> perturbSubset = new ArrayList<Integer>();
 		Boolean[] mutatedValues;
 		if(this.mutationType.equals(SimulationFeaturesConstants.FLIP_MUTATIONS)){
 			//Generates the duration of the perturb
 			times = UtilityRandom.randomUniform(this.minPerturbDuration, this.maxPerturbDuration);
 			//Generates the subset of nodes to perturb
 			if(this.perturbNodes != null){
-				perturbSubset = UtilityRandom.randomSubset(this.graphManager.getNodesNumber(), this.numebrOfnodesToPerturb - this.perturbNodes.size(), this.perturbNodes);
 				//Adds the specific nodes to flip in the list
 				perturbSubset.addAll(perturbNodes);
 			}else{
@@ -244,7 +223,6 @@ public class BinaryMutation implements Mutation {
 			times = UtilityRandom.randomUniform(this.minPerturbDuration, this.maxPerturbDuration);
 			//Generates the subset of nodes to perturb
 			if(this.perturbNodes != null){
-				perturbSubset = UtilityRandom.randomSubset(this.graphManager.getNodesNumber(), this.numebrOfnodesToPerturb - this.perturbNodes.size(), this.perturbNodes);
 				//Adds the specific nodes to flip in the list
 				perturbSubset.addAll(perturbNodes);
 			}else{

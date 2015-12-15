@@ -45,21 +45,21 @@ public class FindTreeTask extends AbstractTask{
 	private ArrayList<TesTree> foundTrees;
 	private NetworkManagment cytoscapeBridge;
 	private CyNetwork parent;
-	private int max_children_for_complete_test;
-	private double partial_test_probability;
+	private String comparison_type;
+	private int comparison_cutoff;
 
 	public FindTreeTask(int depth, int cutoff, AtmManager atmManager, 
 			SamplingManager samplingManager,
 			NetworkManagment cytoscapeBridge, CyNetwork parent,
-			int max_children_for_complete_test, double partial_test_probability){
+			String comparison_type, int comparison_cutoff){
 		this.depth = depth;
 		this.cutoff = cutoff;
 		this.samplingManager = samplingManager;
 		this.atmManager = atmManager;
 		this.cytoscapeBridge = cytoscapeBridge;
 		this.parent = parent;
-		this.max_children_for_complete_test = max_children_for_complete_test;
-		this.partial_test_probability = partial_test_probability;
+		this.comparison_type = comparison_type;
+		this.comparison_cutoff = comparison_cutoff;
 	}
 
 	@Override
@@ -73,12 +73,11 @@ public class FindTreeTask extends AbstractTask{
 			public ArrayList<TesTree> call()
 					throws Exception {
 
-				TesManager tesManager = new TesManager(atmManager, samplingManager, max_children_for_complete_test,
-						partial_test_probability);
+				TesManager tesManager = new TesManager(atmManager, samplingManager, comparison_type, comparison_cutoff);
 
-				return tesManager.getRepresentativeTrees(depth, cutoff, true);
+				return tesManager.getRepresentativeTrees(depth, true);
 			}
-		},  5, TimeUnit.MINUTES);
+		},  cutoff, TimeUnit.MINUTES);
 
 
 

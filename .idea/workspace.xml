@@ -2,8 +2,96 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba4dfe13-f4b3-43aa-a4ce-fb898055b79c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CABERNET.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/cytoscape_swing_app_api_3_1_0.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Atms/.gitignore" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/resources/logo.png" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/resources/logo.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ATMExplorationAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ATMExplorationAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ATMExplorationMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ATMExplorationMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/AndOrFunction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/AndOrFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Atms/Atm.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Atms/Atm.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Atms/AtmManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Atms/AtmManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/AtmView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/AtmView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/AttractorNotFoundException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/AttractorNotFoundException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/AttractorsFinder.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/AttractorsFinder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/BinaryMutation.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/BinaryMutation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/BinarySamplingMethod.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/BinarySamplingMethod.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/BooleanFunction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/BooleanFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/BruteForceSampling.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/BruteForceSampling.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/CABERNETApp.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/CABERNETApp.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/CABERNETConstants.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/CABERNETConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/CanalizedFunction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/CanalizedFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ComputeDynamicPerturbationsAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ComputeDynamicPerturbationsAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ComputeDynamicPerturbationsMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ComputeDynamicPerturbationsMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/ConsoleConstants.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/ConsoleConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/DynamicPerturbationsStatistics.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/DynamicPerturbationsStatistics.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicPerturbationsStatsView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicPerturbationsStatsView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/DynamicStatisticsComputationTask.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/DynamicStatisticsComputationTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicStatisticsFrame.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicStatisticsFrame.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/DynamicalStatistics.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/DynamicalStatistics.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicalStatisticsView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/DynamicalStatisticsView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/DynamicalStatsAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/DynamicalStatsAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/DynamicalStatsMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/DynamicalStatsMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExploreFunctionAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExploreFunctionAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExploreFunctionMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExploreFunctionMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/ExploresFunctionView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/ExploresFunctionView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExportAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExportAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExportMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/ExportMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/ExportView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/ExportView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/FeaturesException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/FeaturesException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/FindTreeTask.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/FindTreeTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/Function.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/Function.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/GeneRegulatoryNetwork.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/GeneRegulatoryNetwork.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/GraphManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/GraphManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/IncidenceMatrixGraph.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/IncidenceMatrixGraph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/IO/Input.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/IO/Input.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/InputFormatException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/InputFormatException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/InputTypeException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/InputTypeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/MissedParamException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/MissedParamException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/MissingFeaturesException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/MissingFeaturesException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/MostFrequentlyTreeViewAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/MostFrequentlyTreeViewAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/MostFrequentlyTreeViewMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/MostFrequentlyTreeViewMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/Mutation.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/Mutation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/MutationManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Mutations/MutationManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkCreation.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkCreation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkEditingFromCytoscape.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkEditingFromCytoscape.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/NetworkManagment.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/NetworkManagment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkSimulationsFromFiles.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/NetworkSimulationsFromFiles.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/NetworkStructureStatistics.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Statistics/NetworkStructureStatistics.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/NotExistingAttractorsException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/NotExistingAttractorsException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/NotExistingNodeException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/NotExistingNodeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/NumberFormat.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/NumberFormat.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/IO/Output.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/IO/Output.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/OutputConstants.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/OutputConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/ParamDefinitionException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/ParamDefinitionException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/PartialSampling.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/PartialSampling.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/PartiallyRandomGraph.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/PartiallyRandomGraph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/RandomFunction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Functions/RandomFunction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/RandomGraph.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/RandomGraph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/SCCTarjan.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/SCCTarjan.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/SamplingManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Sampling/SamplingManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/ScaleFreeGraph.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/ScaleFreeGraph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/Simulation.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/Simulation.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/SimulationFeaturesConstants.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/SimulationFeaturesConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/SimulationsContainer.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/CABERNET/SimulationsContainer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/SmallWorldGraph.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Networks/SmallWorldGraph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TESTest.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TESTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/TaskCompletedException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/TaskCompletedException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/TaskFeaturesConstants.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/TaskFeaturesConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/Tes.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/Tes.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/TesNumberComputingAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/TesNumberComputingAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/TesNumberComputingMenuAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/TesNumberComputingMenuAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesTree.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesTree.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/TesTreeException.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Exceptions/TesTreeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesTreeNode.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Tes/TesTreeNode.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/TesView.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/TesView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/TimeLimitedCodeBlock.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Task/TimeLimitedCodeBlock.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/TreeFrame.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/TreeFrame.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/UtilityRandom.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Utility/UtilityRandom.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/ViewManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/ViewManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/VizMapperManager.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/VizMapperManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Wizard.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Wizard.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/WizardAction.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/WizardAction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/WizardTest.java" afterPath="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/WizardTest.java" />
     </list>
     <ignored path="CABERNET.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,7 +112,28 @@
     <favorites_list name="CABERNET" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="Wizard.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Wizard.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="2288" column="65" selection-start-line="2288" selection-start-column="51" selection-end-line="2288" selection-end-column="65" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WizardAction.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/WizardAction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.92622954">
+              <caret line="158" column="102" selection-start-line="158" selection-start-column="75" selection-end-line="158" selection-end-column="102" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -32,6 +141,13 @@
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
       <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Wizard.java" />
+      </list>
     </option>
   </component>
   <component name="NamedScopeManager">
@@ -66,7 +182,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -161,6 +276,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bimib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="GUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Actions" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CABERNET" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CABERNET" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="JCommon" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -172,6 +313,7 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -297,7 +439,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="728" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -309,7 +451,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959612" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12358643" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -330,12 +472,15 @@
     <breakpoint-manager />
     <watches-manager />
   </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/it/unimib/disco/bimib/Middleware/NetworkManagment.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="64" column="16" selection-start-line="64" selection-start-column="16" selection-end-line="64" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -343,7 +488,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -351,7 +495,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.15437393">
           <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -359,6 +502,21 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="64" column="16" selection-start-line="64" selection-start-column="16" selection-end-line="64" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Wizard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2288" column="65" selection-start-line="2288" selection-start-column="51" selection-end-line="2288" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/it/unimib/disco/bimib/GUI/Actions/WizardAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.92622954">
+          <caret line="158" column="102" selection-start-line="158" selection-start-column="75" selection-end-line="158" selection-end-column="102" />
           <folding />
         </state>
       </provider>

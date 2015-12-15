@@ -89,6 +89,15 @@ public class Wizard extends JDialog {
 
 
 	private final JPanel contentPanel = new JPanel();
+	private final JTextField txtAugPLGamma;
+	private final JComboBox<String> cmbAugmentedTopology;
+	private final JTextField txtInOutProbAug;
+	private final JComboBox<String> cmbSFAugmentedAlgorithm;
+	private final JTextField txtAvgConPLAug;
+	private final JCheckBox chkIngoingPowerLaw;
+	private final JTextField txtAugmentedAvgConnectivity;
+	private final JTextField txtKSWAug;
+	private final JTextField txtBetaAug;
 	private JPanel NetworkDefinitionPanel;
 	private JPanel experimentsPanel;
 	private final ButtonGroup networkDefinitionMethodGroup = new ButtonGroup();
@@ -262,13 +271,20 @@ public class Wizard extends JDialog {
 	private JCheckBox chkCompleteFlipExp;
 	private JCheckBox chckbxAllTrees;
 	private JPanel pnlRepresentativeTree;
-
+	private JTextField txtRepresentativeTreeCutoff;
+	private JLabel lblMaximumNumberOf;
+	private JTextField txtTimeCutoffComparison;
+	private final ButtonGroup btngrpComparison = new ButtonGroup();
+	private JRadioButton chkSampledComparison;
+	private JRadioButton chkCompleteComparison;
+	private JRadioButton chkSampledTreesResearch;
+	private JRadioButton chkCompleteTreeResearch;
+	
 	//****
 	private String form;
 	private String inputMethod;
 	private String currentFeature;
 	private boolean editing;
-
 
 	//private String task;
 	private Properties tasks;
@@ -279,26 +295,12 @@ public class Wizard extends JDialog {
 	private Properties simulationFeatures;
 	private TesTree tree;
 	private NetworkManagment netManagment;
-	private JTextField txtRepresentativeTreeCutoff;
-	private JLabel lblMaximumNumberOf;
-	private JTextField txtMaxChildren;
-	private JLabel lblPermutationsCutoffProbability;
-	private JTextField txtPermProb;
-	private JLabel lblAlgorithm;
-	private JTextField txtAugmentedAvgConnectivity;
-	private JTextField txtInOutProbAug;
-	private JTextField txtAugPLGamma;
-	private JComboBox<String> cmbAugmentedTopology;
-	private JComboBox<String> cmbSFAugmentedAlgorithm;
-
-
-	private JCheckBox chkIngoingPowerLaw;
-	private JLabel lblAverageConnectivity_2;
-	private JTextField txtAvgConPLAug;
-	private JLabel lblAverageConnectivity_3;
-	private JTextField txtKSWAug;
-	private JTextField txtBetaAug;
-
+	private JTextField txtTreeResearchCutoff;
+	private final ButtonGroup btngrpTreeResearch = new ButtonGroup();
+	private JTextField txtMaxNetToTest;
+	
+    
+    
 
 
 
@@ -475,9 +477,7 @@ public class Wizard extends JDialog {
 						}
 					}
 				});
-				networksList = new JList<String>();
 				networkListModel = new DefaultListModel<String>();
-				networksList.setModel(networkListModel);
 
 				JButton btnRemoveSelectedNetwork = new JButton("Remove selected network");
 				//Removes the selected network.
@@ -491,38 +491,46 @@ public class Wizard extends JDialog {
 						}
 					}
 				});
+				
+				JScrollPane scrollPane = new JScrollPane();
 
 				GroupLayout gl_networkFromFilePanel = new GroupLayout(networkFromFilePanel);
 				gl_networkFromFilePanel.setHorizontalGroup(
-						gl_networkFromFilePanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_networkFromFilePanel.createSequentialGroup()
-								.addGap(8)
-								.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(networksList, GroupLayout.PREFERRED_SIZE, 700, GroupLayout.PREFERRED_SIZE)
-										.addGroup(gl_networkFromFilePanel.createSequentialGroup()
-												.addComponent(lblNewLabel)
-												.addPreferredGap(ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
-												.addComponent(btnOpenNetwork)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(btnRemoveSelectedNetwork)))
-								.addContainerGap())
-						);
+					gl_networkFromFilePanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_networkFromFilePanel.createSequentialGroup()
+							.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.TRAILING)
+								.addGroup(Alignment.LEADING, gl_networkFromFilePanel.createSequentialGroup()
+									.addContainerGap()
+									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE))
+								.addGroup(gl_networkFromFilePanel.createSequentialGroup()
+									.addGap(8)
+									.addComponent(lblNewLabel)
+									.addPreferredGap(ComponentPlacement.RELATED, 449, Short.MAX_VALUE)
+									.addComponent(btnOpenNetwork)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnRemoveSelectedNetwork)))
+							.addContainerGap())
+				);
 				gl_networkFromFilePanel.setVerticalGroup(
-						gl_networkFromFilePanel.createParallelGroup(Alignment.LEADING)
+					gl_networkFromFilePanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_networkFromFilePanel.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.TRAILING)
-										.addGroup(gl_networkFromFilePanel.createSequentialGroup()
-												.addComponent(lblNewLabel)
-												.addGap(25))
-										.addGroup(gl_networkFromFilePanel.createSequentialGroup()
-												.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(btnRemoveSelectedNetwork)
-														.addComponent(btnOpenNetwork))
-												.addPreferredGap(ComponentPlacement.UNRELATED)))
-								.addComponent(networksList, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-								.addGap(37))
-						);
+							.addContainerGap()
+							.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_networkFromFilePanel.createSequentialGroup()
+									.addComponent(lblNewLabel)
+									.addGap(25))
+								.addGroup(gl_networkFromFilePanel.createSequentialGroup()
+									.addGroup(gl_networkFromFilePanel.createParallelGroup(Alignment.BASELINE)
+										.addComponent(btnRemoveSelectedNetwork)
+										.addComponent(btnOpenNetwork))
+									.addPreferredGap(ComponentPlacement.UNRELATED)))
+							.addGap(18)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+							.addContainerGap())
+				);
+				networksList = new JList<String>();
+				scrollPane.setViewportView(networksList);
+				networksList.setModel(networkListModel);
 				networkFromFilePanel.setLayout(gl_networkFromFilePanel);
 
 				currentFeature = "nodes-number";
@@ -603,12 +611,12 @@ public class Wizard extends JDialog {
 										.addGroup(gl_featuresFileSelectionPanel.createSequentialGroup()
 												.addGap(38)
 												.addComponent(lblFeaturesFile))
-										.addGroup(gl_featuresFileSelectionPanel.createSequentialGroup()
-												.addGap(32)
-												.addGroup(gl_featuresFileSelectionPanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txtFeaturesFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(btnOpenFeatures))))
-								.addContainerGap(18, Short.MAX_VALUE))
+												.addGroup(gl_featuresFileSelectionPanel.createSequentialGroup()
+														.addGap(32)
+														.addGroup(gl_featuresFileSelectionPanel.createParallelGroup(Alignment.BASELINE)
+																.addComponent(txtFeaturesFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(btnOpenFeatures))))
+																.addContainerGap(18, Short.MAX_VALUE))
 						);
 				featuresFileSelectionPanel.setLayout(gl_featuresFileSelectionPanel);
 
@@ -639,7 +647,7 @@ public class Wizard extends JDialog {
 								.addGroup(gl_requiredNetworksPanel.createParallelGroup(Alignment.LEADING)
 										.addComponent(lblNumberOfDifferent, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 										.addComponent(txtRequiredNetworks, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(447, Short.MAX_VALUE))
+										.addContainerGap(447, Short.MAX_VALUE))
 						);
 				requiredNetworksPanel.setLayout(gl_requiredNetworksPanel);
 
@@ -681,10 +689,10 @@ public class Wizard extends JDialog {
 										.addGroup(gl_nodesPanel.createSequentialGroup()
 												.addGap(11)
 												.addComponent(lblNumberOfNodes))
-										.addGroup(gl_nodesPanel.createSequentialGroup()
-												.addGap(5)
-												.addComponent(txtNodesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addContainerGap(67, Short.MAX_VALUE))
+												.addGroup(gl_nodesPanel.createSequentialGroup()
+														.addGap(5)
+														.addComponent(txtNodesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+														.addContainerGap(67, Short.MAX_VALUE))
 						);
 				nodesPanel.setLayout(gl_nodesPanel);
 
@@ -719,10 +727,10 @@ public class Wizard extends JDialog {
 										.addGroup(gl_topologyPanel.createSequentialGroup()
 												.addGap(10)
 												.addComponent(lblNetworkTopology))
-										.addGroup(gl_topologyPanel.createSequentialGroup()
-												.addGap(5)
-												.addComponent(cmbTopology, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addContainerGap(68, Short.MAX_VALUE))
+												.addGroup(gl_topologyPanel.createSequentialGroup()
+														.addGap(5)
+														.addComponent(cmbTopology, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+														.addContainerGap(68, Short.MAX_VALUE))
 						);
 				topologyPanel.setLayout(gl_topologyPanel);
 
@@ -751,10 +759,10 @@ public class Wizard extends JDialog {
 										.addGroup(gl_randomTopologyPanel.createSequentialGroup()
 												.addGap(11)
 												.addComponent(lblNumberOfEdges))
-										.addGroup(gl_randomTopologyPanel.createSequentialGroup()
-												.addGap(5)
-												.addComponent(txtEdgesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-								.addContainerGap(51, Short.MAX_VALUE))
+												.addGroup(gl_randomTopologyPanel.createSequentialGroup()
+														.addGap(5)
+														.addComponent(txtEdgesNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+														.addContainerGap(51, Short.MAX_VALUE))
 						);
 				randomTopologyPanel.setLayout(gl_randomTopologyPanel);
 
@@ -784,7 +792,7 @@ public class Wizard extends JDialog {
 								.addGroup(gl_fixedRandomPanel.createParallelGroup(Alignment.BASELINE)
 										.addComponent(txtFixedRandomInputs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(lblFixedInputs, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-								.addContainerGap(45, Short.MAX_VALUE))
+										.addContainerGap(45, Short.MAX_VALUE))
 						);
 				fixedRandomPanel.setLayout(gl_fixedRandomPanel);
 
@@ -836,15 +844,15 @@ public class Wizard extends JDialog {
 										.addGroup(gl_barabasiPanel.createSequentialGroup()
 												.addGap(11)
 												.addComponent(lblInitialNodesNumber))
-										.addGroup(gl_barabasiPanel.createSequentialGroup()
-												.addGap(5)
-												.addGroup(gl_barabasiPanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txtNi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblAverageConnectivity)
-														.addComponent(txtAvgConnBA, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblInoutProbability)
-														.addComponent(txtInOutProbability, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-								.addContainerGap(73, Short.MAX_VALUE))
+												.addGroup(gl_barabasiPanel.createSequentialGroup()
+														.addGap(5)
+														.addGroup(gl_barabasiPanel.createParallelGroup(Alignment.BASELINE)
+																.addComponent(txtNi, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(lblAverageConnectivity)
+																.addComponent(txtAvgConnBA, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(lblInoutProbability)
+																.addComponent(txtInOutProbability, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+																.addContainerGap(73, Short.MAX_VALUE))
 						);
 				barabasiPanel.setLayout(gl_barabasiPanel);
 
@@ -885,13 +893,13 @@ public class Wizard extends JDialog {
 										.addGroup(gl_powerLawPanel.createSequentialGroup()
 												.addGap(11)
 												.addComponent(lblGamma))
-										.addGroup(gl_powerLawPanel.createSequentialGroup()
-												.addGap(5)
-												.addGroup(gl_powerLawPanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txtGamma, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblPLAverageConnectivity)
-														.addComponent(txtavgConnPL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-								.addContainerGap(67, Short.MAX_VALUE))
+												.addGroup(gl_powerLawPanel.createSequentialGroup()
+														.addGap(5)
+														.addGroup(gl_powerLawPanel.createParallelGroup(Alignment.BASELINE)
+																.addComponent(txtGamma, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(lblPLAverageConnectivity)
+																.addComponent(txtavgConnPL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+																.addContainerGap(67, Short.MAX_VALUE))
 						);
 				powerLawPanel.setLayout(gl_powerLawPanel);
 
@@ -945,10 +953,10 @@ public class Wizard extends JDialog {
 														.addComponent(lblAverageConettivity)
 														.addComponent(txtFixedPLInputs, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 														.addComponent(lblFixedInputs_1)))
-										.addGroup(gl_fixedPowerLawPanel.createSequentialGroup()
-												.addGap(11)
-												.addComponent(lblGamma_1)))
-								.addContainerGap(73, Short.MAX_VALUE))
+														.addGroup(gl_fixedPowerLawPanel.createSequentialGroup()
+																.addGap(11)
+																.addComponent(lblGamma_1)))
+																.addContainerGap(73, Short.MAX_VALUE))
 						);
 				fixedPowerLawPanel.setLayout(gl_fixedPowerLawPanel);
 
@@ -989,13 +997,13 @@ public class Wizard extends JDialog {
 										.addGroup(gl_smallWorldPanel.createSequentialGroup()
 												.addGap(11)
 												.addComponent(lblBeta))
-										.addGroup(gl_smallWorldPanel.createSequentialGroup()
-												.addGap(5)
-												.addGroup(gl_smallWorldPanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txtBeta, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(txtAvgConnSW, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblAverageConnectivitySW))))
-								.addContainerGap(51, Short.MAX_VALUE))
+												.addGroup(gl_smallWorldPanel.createSequentialGroup()
+														.addGap(5)
+														.addGroup(gl_smallWorldPanel.createParallelGroup(Alignment.BASELINE)
+																.addComponent(txtBeta, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(txtAvgConnSW, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(lblAverageConnectivitySW))))
+																.addContainerGap(51, Short.MAX_VALUE))
 						);
 				smallWorldPanel.setLayout(gl_smallWorldPanel);
 
@@ -1027,12 +1035,12 @@ public class Wizard extends JDialog {
 										.addGroup(gl_functionsTypePanel.createSequentialGroup()
 												.addGap(10)
 												.addComponent(lblFunctionsType))
-										.addGroup(gl_functionsTypePanel.createSequentialGroup()
-												.addGap(5)
-												.addGroup(gl_functionsTypePanel.createParallelGroup(Alignment.BASELINE)
-														.addComponent(cmbFunctionsType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(chckbxCompletelyDefinedFunctions))))
-								.addContainerGap(7, Short.MAX_VALUE))
+												.addGroup(gl_functionsTypePanel.createSequentialGroup()
+														.addGap(5)
+														.addGroup(gl_functionsTypePanel.createParallelGroup(Alignment.BASELINE)
+																.addComponent(cmbFunctionsType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																.addComponent(chckbxCompletelyDefinedFunctions))))
+																.addContainerGap(7, Short.MAX_VALUE))
 						);
 				functionsTypePanel.setLayout(gl_functionsTypePanel);
 
@@ -1087,26 +1095,26 @@ public class Wizard extends JDialog {
 																.addComponent(lblBias_1)
 																.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 																.addComponent(txtBiasFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-														.addGroup(gl_functionsRatesPanel.createSequentialGroup()
-																.addComponent(lblBiasValue)
-																.addPreferredGap(ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
-																.addComponent(txtBiasValue, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)))
-												.addPreferredGap(ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-												.addComponent(lblAnd)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(txtAndFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(lblOr)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(txtOrFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-												.addGap(18)
-												.addComponent(lblCanalizing)
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(txtCanalizingFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-												.addGap(160))
-										.addGroup(gl_functionsRatesPanel.createSequentialGroup()
-												.addComponent(lblNewLabel_1)
-												.addContainerGap(253, Short.MAX_VALUE))))
+																.addGroup(gl_functionsRatesPanel.createSequentialGroup()
+																		.addComponent(lblBiasValue)
+																		.addPreferredGap(ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+																		.addComponent(txtBiasValue, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)))
+																		.addPreferredGap(ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+																		.addComponent(lblAnd)
+																		.addPreferredGap(ComponentPlacement.RELATED)
+																		.addComponent(txtAndFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(ComponentPlacement.RELATED)
+																		.addComponent(lblOr)
+																		.addPreferredGap(ComponentPlacement.RELATED)
+																		.addComponent(txtOrFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+																		.addGap(18)
+																		.addComponent(lblCanalizing)
+																		.addPreferredGap(ComponentPlacement.RELATED)
+																		.addComponent(txtCanalizingFunctionsType, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+																		.addGap(160))
+																		.addGroup(gl_functionsRatesPanel.createSequentialGroup()
+																				.addComponent(lblNewLabel_1)
+																				.addContainerGap(253, Short.MAX_VALUE))))
 						);
 				gl_functionsRatesPanel.setVerticalGroup(
 						gl_functionsRatesPanel.createParallelGroup(Alignment.LEADING)
@@ -1123,11 +1131,11 @@ public class Wizard extends JDialog {
 										.addComponent(txtAndFunctionsType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(lblOr)
 										.addComponent(txtOrFunctionsType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addGroup(gl_functionsRatesPanel.createParallelGroup(Alignment.BASELINE)
-										.addComponent(txtBiasValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblBiasValue))
-								.addContainerGap())
+										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addGroup(gl_functionsRatesPanel.createParallelGroup(Alignment.BASELINE)
+												.addComponent(txtBiasValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addComponent(lblBiasValue))
+												.addContainerGap())
 						);
 				functionsRatesPanel.setLayout(gl_functionsRatesPanel);
 
@@ -1436,7 +1444,7 @@ public class Wizard extends JDialog {
 								.addGroup(gl_networkManualFeaturesPanel.createParallelGroup(Alignment.LEADING)
 										.addComponent(networkFeaturesTablePanel, GroupLayout.PREFERRED_SIZE, 706, GroupLayout.PREFERRED_SIZE)
 										.addComponent(featuresSubPanel, GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
-								.addContainerGap())
+										.addContainerGap())
 						);
 				gl_networkManualFeaturesPanel.setVerticalGroup(
 						gl_networkManualFeaturesPanel.createParallelGroup(Alignment.LEADING)
@@ -1455,8 +1463,8 @@ public class Wizard extends JDialog {
 										.addGroup(gl_featuresSubPanel.createSequentialGroup()
 												.addContainerGap()
 												.addComponent(featuresNextPreviousPanel, GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE))
-										.addComponent(featureInputFormPanel, GroupLayout.PREFERRED_SIZE, 708, Short.MAX_VALUE))
-								.addContainerGap())
+												.addComponent(featureInputFormPanel, GroupLayout.PREFERRED_SIZE, 708, Short.MAX_VALUE))
+												.addContainerGap())
 						);
 				gl_featuresSubPanel.setVerticalGroup(
 						gl_featuresSubPanel.createParallelGroup(Alignment.TRAILING)
@@ -1468,95 +1476,111 @@ public class Wizard extends JDialog {
 				featuresSubPanel.setLayout(gl_featuresSubPanel);
 				networkManualFeaturesPanel.setLayout(gl_networkManualFeaturesPanel);
 			}
+            
+            pnlNetworkEditing = new JPanel();
+            contentPanel.add(pnlNetworkEditing, "pnlNetworkEditing");
+            pnlNetworkEditing.setLayout(new BorderLayout(0, 0));
+            
+            lblNetworkEditing = new JLabel("Network augmentation: provide the features of the network to be augmended. ");
+            lblNetworkEditing.setFont(new Font("Helvetica Neue", Font.PLAIN, 15));
+            pnlNetworkEditing.add(lblNetworkEditing, BorderLayout.NORTH);
+            
+            pnlInnerNetworkEditing = new JPanel();
+            pnlNetworkEditing.add(pnlInnerNetworkEditing, BorderLayout.CENTER);
+            SpringLayout sl_pnlInnerNetworkEditing = new SpringLayout();
+            pnlInnerNetworkEditing.setLayout(sl_pnlInnerNetworkEditing);
+            
+            JLabel lblTotalNodes = new JLabel("Total number of nodes :");
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalNodes, 10, SpringLayout.NORTH, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTotalNodes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+            pnlInnerNetworkEditing.add(lblTotalNodes);
+            
+            txtEditingNodesNumber = new JTextField();
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingNodesNumber, -5, SpringLayout.NORTH, lblTotalNodes);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingNodesNumber, 6, SpringLayout.EAST, lblTotalNodes);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingNodesNumber, -509, SpringLayout.EAST, pnlInnerNetworkEditing);
+            txtEditingNodesNumber.setHorizontalAlignment(SwingConstants.CENTER);
+            txtEditingNodesNumber.setText("0");
+            pnlInnerNetworkEditing.add(txtEditingNodesNumber);
+            txtEditingNodesNumber.setColumns(10);
 
-			pnlNetworkEditing = new JPanel();
-			contentPanel.add(pnlNetworkEditing, "pnlNetworkEditing");
-			pnlNetworkEditing.setLayout(new BorderLayout(0, 0));
-
-			lblNetworkEditing = new JLabel("Network augmentation: provide the features of the network to be augmended. ");
-			lblNetworkEditing.setFont(new Font("Helvetica Neue", Font.PLAIN, 15));
-			pnlNetworkEditing.add(lblNetworkEditing, BorderLayout.NORTH);
-
-			pnlInnerNetworkEditing = new JPanel();
-			pnlNetworkEditing.add(pnlInnerNetworkEditing, BorderLayout.CENTER);
-			SpringLayout sl_pnlInnerNetworkEditing = new SpringLayout();
-			pnlInnerNetworkEditing.setLayout(sl_pnlInnerNetworkEditing);
-
-			JLabel lblTotalNodes = new JLabel("Total number of nodes :");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalNodes, 10, SpringLayout.NORTH, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTotalNodes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
-			pnlInnerNetworkEditing.add(lblTotalNodes);
-
-			txtEditingNodesNumber = new JTextField();
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingNodesNumber, -5, SpringLayout.NORTH, lblTotalNodes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingNodesNumber, 6, SpringLayout.EAST, lblTotalNodes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingNodesNumber, -509, SpringLayout.EAST, pnlInnerNetworkEditing);
-			txtEditingNodesNumber.setHorizontalAlignment(SwingConstants.CENTER);
-			txtEditingNodesNumber.setText("0");
-			pnlInnerNetworkEditing.add(txtEditingNodesNumber);
-			txtEditingNodesNumber.setColumns(10);
+			pnlInnerNetworkEditing.add(txtEditingEdgesNumber);
 
 			JLabel lblExcludeAsSource = new JLabel("Exclude the following nodes from source or destination node sets.");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblExcludeAsSource, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblExcludeAsSource, 0, SpringLayout.WEST, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblExcludeAsSource, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
 			pnlInnerNetworkEditing.add(lblExcludeAsSource);
 
 			txtNoSourceGenes = new JTextArea();
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoSourceGenes, 177, SpringLayout.NORTH, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtNoSourceGenes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoSourceGenes, -249, SpringLayout.SOUTH, pnlInnerNetworkEditing);
 			pnlInnerNetworkEditing.add(txtNoSourceGenes);
 
 			lblEachGeneName = new JLabel("Each gene name must be separated by a comma");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, lblExcludeAsSource, -6, SpringLayout.NORTH, lblEachGeneName);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblEachGeneName, 6, SpringLayout.SOUTH, lblExcludeAsSource);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblEachGeneName, 0, SpringLayout.WEST, lblTotalNodes);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblEachGeneName, -170, SpringLayout.EAST, pnlInnerNetworkEditing);
 			pnlInnerNetworkEditing.add(lblEachGeneName);
 
 			lblSourceGenes = new JLabel("Source genes:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblSourceGenes, 158, SpringLayout.NORTH, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, lblEachGeneName, 0, SpringLayout.NORTH, lblSourceGenes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblSourceGenes, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoSourceGenes, 6, SpringLayout.SOUTH, lblSourceGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblSourceGenes, 6, SpringLayout.SOUTH, lblEachGeneName);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblSourceGenes, 0, SpringLayout.WEST, lblTotalNodes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblSourceGenes, 123, SpringLayout.WEST, pnlInnerNetworkEditing);
 			pnlInnerNetworkEditing.add(lblSourceGenes);
 
 			txtNoDestinationGenes = new JTextArea();
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblExcludeAsSource, 0, SpringLayout.EAST, txtNoDestinationGenes);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtNoSourceGenes, -113, SpringLayout.WEST, txtNoDestinationGenes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoDestinationGenes, 0, SpringLayout.NORTH, txtNoSourceGenes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtNoDestinationGenes, 423, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtNoDestinationGenes, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtNoDestinationGenes, 0, SpringLayout.WEST, txtEditingEdgesNumber);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtNoDestinationGenes, 0, SpringLayout.EAST, lblExcludeAsSource);
 			pnlInnerNetworkEditing.add(txtNoDestinationGenes);
 
 			lblDestinationGenes = new JLabel("Target genes:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblSourceGenes, -300, SpringLayout.WEST, lblDestinationGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtNoDestinationGenes, 6, SpringLayout.SOUTH, lblDestinationGenes);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblDestinationGenes, 0, SpringLayout.NORTH, lblSourceGenes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblDestinationGenes, 0, SpringLayout.WEST, txtNoDestinationGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblDestinationGenes, 0, SpringLayout.WEST, txtEditingEdgesNumber);
 			pnlInnerNetworkEditing.add(lblDestinationGenes);
+
+			lblFixedNumberOf = new JLabel("Fixed number of inputs:");
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingEdgesNumber, -24, SpringLayout.WEST, lblFixedNumberOf);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFixedNumberOf, 0, SpringLayout.NORTH, lblTotalNodes);
+			pnlInnerNetworkEditing.add(lblFixedNumberOf);
+
+			txtFixedInputs = new JTextField();
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtFixedInputs, 666, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtFixedInputs, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblFixedNumberOf, -6, SpringLayout.WEST, txtFixedInputs);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtFixedInputs, -6, SpringLayout.NORTH, lblTotalNodes);
+			txtFixedInputs.setHorizontalAlignment(SwingConstants.CENTER);
+			txtFixedInputs.setText("-1");
+			txtFixedInputs.setColumns(10);
+			pnlInnerNetworkEditing.add(txtFixedInputs);
 
 			cmbEditingFunctionType = new JComboBox<String>();
 			cmbEditingFunctionType.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean"}));
 			pnlInnerNetworkEditing.add(cmbEditingFunctionType);
 
 			JLabel lblReplaceTheUndefined = new JLabel("Replace the undefined functions with:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoSourceGenes, -12, SpringLayout.NORTH, lblReplaceTheUndefined);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblReplaceTheUndefined, 279, SpringLayout.NORTH, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblReplaceTheUndefined, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, cmbEditingFunctionType, 6, SpringLayout.SOUTH, lblReplaceTheUndefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblReplaceTheUndefined, 32, SpringLayout.SOUTH, txtNoSourceGenes);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblReplaceTheUndefined, 0, SpringLayout.WEST, lblTotalNodes);
 			pnlInnerNetworkEditing.add(lblReplaceTheUndefined);
 
 			JLabel lblFunctionsType_1 = new JLabel("Function type:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblFunctionsType_1, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, cmbEditingFunctionType, 11, SpringLayout.EAST, lblFunctionsType_1);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFunctionsType_1, 10, SpringLayout.SOUTH, lblReplaceTheUndefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblFunctionsType_1, 0, SpringLayout.WEST, lblTotalNodes);
 			pnlInnerNetworkEditing.add(lblFunctionsType_1);
 
 			chckbxComplitellyDefined = new JCheckBox("Completely defined functions\n");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoDestinationGenes, -34, SpringLayout.NORTH, chckbxComplitellyDefined);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, chckbxComplitellyDefined, 423, SpringLayout.WEST, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, cmbEditingFunctionType, -41, SpringLayout.WEST, chckbxComplitellyDefined);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, txtNoDestinationGenes, -54, SpringLayout.NORTH, chckbxComplitellyDefined);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, chckbxComplitellyDefined, 0, SpringLayout.NORTH, cmbEditingFunctionType);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, chckbxComplitellyDefined, 0, SpringLayout.WEST, txtEditingEdgesNumber);
 			pnlInnerNetworkEditing.add(chckbxComplitellyDefined);
 
 			lblBias = new JLabel("Random bias-based:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblBias, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblBias, 0, SpringLayout.WEST, lblTotalNodes);
 			pnlInnerNetworkEditing.add(lblBias);
 
 			txtEditingBiasType = new JTextField();
@@ -1605,15 +1629,15 @@ public class Wizard extends JDialog {
 			txtEditingOrType = new JTextField();
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingOrType, -6, SpringLayout.NORTH, lblBias);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingOrType, 6, SpringLayout.EAST, lblOr_1);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingOrType, -94, SpringLayout.EAST, lblEachGeneName);
 			txtEditingOrType.setHorizontalAlignment(SwingConstants.CENTER);
 			txtEditingOrType.setText("0.2");
 			txtEditingOrType.setColumns(10);
 			pnlInnerNetworkEditing.add(txtEditingOrType);
 
 			lblCanalizing_1 = new JLabel("Random canalyzing:");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblCanalizing_1, 495, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingOrType, -17, SpringLayout.WEST, lblCanalizing_1);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblCanalizing_1, 0, SpringLayout.NORTH, lblBias);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblCanalizing_1, 17, SpringLayout.EAST, txtEditingOrType);
 			pnlInnerNetworkEditing.add(lblCanalizing_1);
 
 			txtEditingCanalizingType = new JTextField();
@@ -1625,185 +1649,192 @@ public class Wizard extends JDialog {
 			txtEditingCanalizingType.setColumns(10);
 			pnlInnerNetworkEditing.add(txtEditingCanalizingType);
 
-			JPanel pnlAugmentedParams = new JPanel();
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, pnlAugmentedParams, 1, SpringLayout.SOUTH, txtEditingNodesNumber);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, pnlAugmentedParams, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, pnlAugmentedParams, -403, SpringLayout.SOUTH, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, pnlAugmentedParams, 484, SpringLayout.EAST, lblReplaceTheUndefined);
-			pnlInnerNetworkEditing.add(pnlAugmentedParams);
-			pnlAugmentedParams.setLayout(new CardLayout(0, 0));
-
-			JPanel pnlRandomAugmentation = new JPanel();
-			pnlAugmentedParams.add(pnlRandomAugmentation, "pnlRandomAugmentation");
-
-			JPanel pnlScalefreeAugmentation = new JPanel();
-			pnlScalefreeAugmentation.setSize(pnlScalefreeAugmentation.getSize().width, pnlScalefreeAugmentation.getSize().height + 10);
-			FlowLayout flowLayout_1 = (FlowLayout) pnlScalefreeAugmentation.getLayout();
-			flowLayout_1.setAlignment(FlowLayout.LEFT);
-			pnlAugmentedParams.add(pnlScalefreeAugmentation, "pnlScalefreeAugmentation");
-
-			this.cmbAugmentedTopology = new JComboBox<>();
-			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.RANDOM_TOPOLOGY);
-			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-			cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
-
-			cmbAugmentedTopology.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
-						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlRandomAugmentation");	
-					}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
-						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlScalefreeAugmentation");	
-					}else{
-						((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlSmallWorldAugmentation");
-					}
-				}
-			});
-
-			lblTotalEdges = new JLabel("Total number of edges:");
-			pnlRandomAugmentation.add(lblTotalEdges);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalEdges, 0, SpringLayout.NORTH, lblTotalNodes);
-
-			txtEditingEdgesNumber = new JTextField();
-			pnlRandomAugmentation.add(txtEditingEdgesNumber);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingEdgesNumber, 423, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingEdgesNumber, -6, SpringLayout.NORTH, lblTotalNodes);
-			txtEditingEdgesNumber.setHorizontalAlignment(SwingConstants.CENTER);
-			txtEditingEdgesNumber.setText("0");
-			txtEditingEdgesNumber.setColumns(6);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblTotalEdges, -17, SpringLayout.WEST, txtEditingEdgesNumber);
-
-			lblFixedNumberOf = new JLabel("Fixed number of inputs:");
-			pnlRandomAugmentation.add(lblFixedNumberOf);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFixedNumberOf, 0, SpringLayout.NORTH, lblTotalNodes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingEdgesNumber, -24, SpringLayout.WEST, lblFixedNumberOf);
-
-			txtFixedInputs = new JTextField();
-			pnlRandomAugmentation.add(txtFixedInputs);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtFixedInputs, 666, SpringLayout.WEST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtFixedInputs, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtFixedInputs, -6, SpringLayout.NORTH, lblTotalNodes);
-			txtFixedInputs.setHorizontalAlignment(SwingConstants.CENTER);
-			txtFixedInputs.setText("-1");
-			txtFixedInputs.setColumns(6);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblFixedNumberOf, -6, SpringLayout.WEST, txtFixedInputs);
-
 			JLabel lblNewLabel_5 = new JLabel("Note: -1 not considered");
-			pnlRandomAugmentation.add(lblNewLabel_5);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblNewLabel_5, 51, SpringLayout.NORTH, pnlInnerNetworkEditing);
 			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblNewLabel_5, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblExcludeAsSource, 21, SpringLayout.SOUTH, lblNewLabel_5);
+			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblNewLabel_5, 5, SpringLayout.SOUTH, txtFixedInputs);
+			pnlInnerNetworkEditing.add(lblNewLabel_5);
 
+            
+            JPanel pnlAugmentedParams = new JPanel();
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, pnlAugmentedParams, 1, SpringLayout.SOUTH, txtEditingNodesNumber);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, pnlAugmentedParams, 10, SpringLayout.WEST, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.SOUTH, pnlAugmentedParams, -403, SpringLayout.SOUTH, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, pnlAugmentedParams, 484, SpringLayout.EAST, lblReplaceTheUndefined);
+            pnlInnerNetworkEditing.add(pnlAugmentedParams);
+            pnlAugmentedParams.setLayout(new CardLayout(0, 0));
+            
+            JPanel pnlRandomAugmentation = new JPanel();
+            pnlAugmentedParams.add(pnlRandomAugmentation, "pnlRandomAugmentation");
+            
+            JPanel pnlScalefreeAugmentation = new JPanel();
+            pnlScalefreeAugmentation.setSize(pnlScalefreeAugmentation.getSize().width, pnlScalefreeAugmentation.getSize().height + 10);
+            FlowLayout flowLayout_1 = (FlowLayout) pnlScalefreeAugmentation.getLayout();
+            flowLayout_1.setAlignment(FlowLayout.LEFT);
+            pnlAugmentedParams.add(pnlScalefreeAugmentation, "pnlScalefreeAugmentation");
+            
+            this.cmbAugmentedTopology = new JComboBox<>();
+            cmbAugmentedTopology.addItem(SimulationFeaturesConstants.RANDOM_TOPOLOGY);
+            cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+            cmbAugmentedTopology.addItem(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
+            
+            cmbAugmentedTopology.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
+                        ((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlRandomAugmentation");
+                    }else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
+                        ((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlScalefreeAugmentation");
+                    }else{
+                        ((CardLayout)pnlAugmentedParams.getLayout()).show(pnlAugmentedParams, "pnlSmallWorldAugmentation");
+                    }
+                }
+            });
+            
+            lblTotalEdges = new JLabel("Total number of edges:");
+            pnlRandomAugmentation.add(lblTotalEdges);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTotalEdges, 0, SpringLayout.NORTH, lblTotalNodes);
+            
+            txtEditingEdgesNumber = new JTextField();
+            pnlRandomAugmentation.add(txtEditingEdgesNumber);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtEditingEdgesNumber, 423, SpringLayout.WEST, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtEditingEdgesNumber, -6, SpringLayout.NORTH, lblTotalNodes);
+            txtEditingEdgesNumber.setHorizontalAlignment(SwingConstants.CENTER);
+            txtEditingEdgesNumber.setText("0");
+            txtEditingEdgesNumber.setColumns(6);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblTotalEdges, -17, SpringLayout.WEST, txtEditingEdgesNumber);
+            
+            lblFixedNumberOf = new JLabel("Fixed number of inputs:");
+            pnlRandomAugmentation.add(lblFixedNumberOf);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblFixedNumberOf, 0, SpringLayout.NORTH, lblTotalNodes);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtEditingEdgesNumber, -24, SpringLayout.WEST, lblFixedNumberOf);
+            
+            txtFixedInputs = new JTextField();
+            pnlRandomAugmentation.add(txtFixedInputs);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, txtFixedInputs, 666, SpringLayout.WEST, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, txtFixedInputs, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, txtFixedInputs, -6, SpringLayout.NORTH, lblTotalNodes);
+            txtFixedInputs.setHorizontalAlignment(SwingConstants.CENTER);
+            txtFixedInputs.setText("-1");
+            txtFixedInputs.setColumns(6);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblFixedNumberOf, -6, SpringLayout.WEST, txtFixedInputs);
 
-			lblAlgorithm = new JLabel("Algorithm: ");
-			cmbSFAugmentedAlgorithm = new JComboBox<>();
-			cmbSFAugmentedAlgorithm.addItem(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
-			cmbSFAugmentedAlgorithm.addItem(SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
-
-
-			pnlScalefreeAugmentation.add(lblAlgorithm);
-			pnlScalefreeAugmentation.add(cmbSFAugmentedAlgorithm);
-
-			JPanel pnlSubSFAugmented = new JPanel();
-			JPanel pnlAugmentedBarabasi = new JPanel();
-			JPanel pnlAugmentedPowerLaw = new JPanel();
-			FlowLayout flowLayout = (FlowLayout) pnlAugmentedPowerLaw.getLayout();
-			flowLayout.setAlignment(FlowLayout.LEFT);
-
-			pnlSubSFAugmented.setLayout(new CardLayout());
-
-			pnlSubSFAugmented.add(pnlAugmentedBarabasi, "pnlAugmentedBarabasi");
-			pnlSubSFAugmented.add(pnlAugmentedPowerLaw, "pnlAugmentedPowerLaw");
-
-			cmbSFAugmentedAlgorithm.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
-						((CardLayout)pnlSubSFAugmented.getLayout()).show(pnlSubSFAugmented, "pnlAugmentedBarabasi");	
-					}else{
-						((CardLayout)pnlSubSFAugmented.getLayout()).show(pnlSubSFAugmented, "pnlAugmentedPowerLaw");	
-					}
-				}
-			});
-
-			JLabel lblGamma_2 = new JLabel("Gamma: ");
-			pnlAugmentedPowerLaw.add(lblGamma_2);
-
-			txtAugPLGamma = new JTextField();
-			txtAugPLGamma.setHorizontalAlignment(SwingConstants.CENTER);
-			txtAugPLGamma.setText("1.0");
-			pnlAugmentedPowerLaw.add(txtAugPLGamma);
-			txtAugPLGamma.setColumns(4);
-
-			lblAverageConnectivity_2 = new JLabel("Average connectivity: ");
-			pnlAugmentedPowerLaw.add(lblAverageConnectivity_2);
-
-			txtAvgConPLAug = new JTextField();
-			txtAvgConPLAug.setHorizontalAlignment(SwingConstants.CENTER);
-			txtAvgConPLAug.setText("1.0");
-			pnlAugmentedPowerLaw.add(txtAvgConPLAug);
-			txtAvgConPLAug.setColumns(5);
-
-			chkIngoingPowerLaw = new JCheckBox("Ingoing Power Law");
-			chkIngoingPowerLaw.setSelected(true);
-			pnlAugmentedPowerLaw.add(chkIngoingPowerLaw);
-			pnlScalefreeAugmentation.add(pnlSubSFAugmented);
-
-
-			JLabel lblAverageConnectivity_1 = new JLabel("Average Connectivity: ");
-
-			txtAugmentedAvgConnectivity = new JTextField();
-			txtAugmentedAvgConnectivity.setHorizontalAlignment(SwingConstants.CENTER);
-			txtAugmentedAvgConnectivity.setText("1");
-			txtAugmentedAvgConnectivity.setColumns(6);
-
-			JLabel lblInoutGoingProbability = new JLabel("In/outgoing probability:");
-
-			txtInOutProbAug = new JTextField();
-			txtInOutProbAug.setHorizontalAlignment(SwingConstants.CENTER);
-			txtInOutProbAug.setText("0.5");
-			txtInOutProbAug.setColumns(6);
-
-			pnlAugmentedBarabasi.add(lblAverageConnectivity_1);
-			pnlAugmentedBarabasi.add(txtAugmentedAvgConnectivity);
-			pnlAugmentedBarabasi.add(lblInoutGoingProbability);
-			pnlAugmentedBarabasi.add(txtInOutProbAug);
-
-			JPanel pnlSmallWorldAugmentation = new JPanel();
-			FlowLayout flowLayout_2 = (FlowLayout) pnlSmallWorldAugmentation.getLayout();
-			flowLayout_2.setAlignment(FlowLayout.LEFT);
-			pnlAugmentedParams.add(pnlSmallWorldAugmentation, "pnlSmallWorldAugmentation");
-
-			lblAverageConnectivity_3 = new JLabel("Average connectivity: ");
-			lblAverageConnectivity_3.setHorizontalAlignment(SwingConstants.LEFT);
-			pnlSmallWorldAugmentation.add(lblAverageConnectivity_3);
-
-			txtKSWAug = new JTextField();
-			txtKSWAug.setHorizontalAlignment(SwingConstants.CENTER);
-			txtKSWAug.setText("1");
-			pnlSmallWorldAugmentation.add(txtKSWAug);
-			txtKSWAug.setColumns(6);
-
-			JLabel lblEdgeSwitchingProbability = new JLabel("Edge switching probability: ");
-			pnlSmallWorldAugmentation.add(lblEdgeSwitchingProbability);
-
-			txtBetaAug = new JTextField();
-			txtBetaAug.setHorizontalAlignment(SwingConstants.CENTER);
-			txtBetaAug.setText("0.5");
-			pnlSmallWorldAugmentation.add(txtBetaAug);
-			txtBetaAug.setColumns(6);
-
-
-
-			JLabel lblTopology = new JLabel("Topology: ");
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTopology, 0, SpringLayout.NORTH, lblTotalNodes);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTopology, 31, SpringLayout.EAST, txtEditingNodesNumber);
-			pnlInnerNetworkEditing.add(lblTopology);
-
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, cmbAugmentedTopology, 4, SpringLayout.NORTH, pnlInnerNetworkEditing);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, cmbAugmentedTopology, 21, SpringLayout.EAST, lblTopology);
-			sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, cmbAugmentedTopology, 364, SpringLayout.EAST, lblTopology);
-			pnlInnerNetworkEditing.add(cmbAugmentedTopology);
-
+            JLabel lblNewLabel_6 = new JLabel("Note: -1 not considered");
+            pnlRandomAugmentation.add(lblNewLabel_6);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblNewLabel_6, 51, SpringLayout.NORTH, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, lblNewLabel_6, -10, SpringLayout.EAST, pnlInnerNetworkEditing);
+            
+            
+            JLabel lblAlgorithm = new JLabel("Algorithm: ");
+            cmbSFAugmentedAlgorithm = new JComboBox<>();
+            cmbSFAugmentedAlgorithm.addItem(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
+            cmbSFAugmentedAlgorithm.addItem(SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
+            
+            
+            pnlScalefreeAugmentation.add(lblAlgorithm);
+            pnlScalefreeAugmentation.add(cmbSFAugmentedAlgorithm);
+            
+            JPanel pnlSubSFAugmented = new JPanel();
+            JPanel pnlAugmentedBarabasi = new JPanel();
+            JPanel pnlAugmentedPowerLaw = new JPanel();
+            FlowLayout flowLayout = (FlowLayout) pnlAugmentedPowerLaw.getLayout();
+            flowLayout.setAlignment(FlowLayout.LEFT);
+            
+            pnlSubSFAugmented.setLayout(new CardLayout());
+            
+            pnlSubSFAugmented.add(pnlAugmentedBarabasi, "pnlAugmentedBarabasi");
+            pnlSubSFAugmented.add(pnlAugmentedPowerLaw, "pnlAugmentedPowerLaw");
+            
+            cmbSFAugmentedAlgorithm.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
+                        ((CardLayout)pnlSubSFAugmented.getLayout()).show(pnlSubSFAugmented, "pnlAugmentedBarabasi");
+                    }else{
+                        ((CardLayout)pnlSubSFAugmented.getLayout()).show(pnlSubSFAugmented, "pnlAugmentedPowerLaw");
+                    }
+                }
+            });
+            
+            JLabel lblGamma_2 = new JLabel("Gamma: ");
+            pnlAugmentedPowerLaw.add(lblGamma_2);
+            
+            txtAugPLGamma = new JTextField();
+            txtAugPLGamma.setHorizontalAlignment(SwingConstants.CENTER);
+            txtAugPLGamma.setText("1.0");
+            pnlAugmentedPowerLaw.add(txtAugPLGamma);
+            txtAugPLGamma.setColumns(4);
+            
+            JLabel lblAverageConnectivity_2 = new JLabel("Average connectivity: ");
+            pnlAugmentedPowerLaw.add(lblAverageConnectivity_2);
+            
+            txtAvgConPLAug = new JTextField();
+            txtAvgConPLAug.setHorizontalAlignment(SwingConstants.CENTER);
+            txtAvgConPLAug.setText("1.0");
+            pnlAugmentedPowerLaw.add(txtAvgConPLAug);
+            txtAvgConPLAug.setColumns(5);
+            
+            chkIngoingPowerLaw = new JCheckBox("Ingoing Power Law");
+            chkIngoingPowerLaw.setSelected(true);
+            pnlAugmentedPowerLaw.add(chkIngoingPowerLaw);
+            pnlScalefreeAugmentation.add(pnlSubSFAugmented);
+            
+            
+            JLabel lblAverageConnectivity_1 = new JLabel("Average Connectivity: ");
+            
+            txtAugmentedAvgConnectivity = new JTextField();
+            txtAugmentedAvgConnectivity.setHorizontalAlignment(SwingConstants.CENTER);
+            txtAugmentedAvgConnectivity.setText("1");
+            txtAugmentedAvgConnectivity.setColumns(6);
+            
+            JLabel lblInoutGoingProbability = new JLabel("In/outgoing probability:");
+            
+            txtInOutProbAug = new JTextField();
+            txtInOutProbAug.setHorizontalAlignment(SwingConstants.CENTER);
+            txtInOutProbAug.setText("0.5");
+            txtInOutProbAug.setColumns(6);
+            
+            pnlAugmentedBarabasi.add(lblAverageConnectivity_1);
+            pnlAugmentedBarabasi.add(txtAugmentedAvgConnectivity);
+            pnlAugmentedBarabasi.add(lblInoutGoingProbability);
+            pnlAugmentedBarabasi.add(txtInOutProbAug);
+            
+            JPanel pnlSmallWorldAugmentation = new JPanel();
+            FlowLayout flowLayout_2 = (FlowLayout) pnlSmallWorldAugmentation.getLayout();
+            flowLayout_2.setAlignment(FlowLayout.LEFT);
+            pnlAugmentedParams.add(pnlSmallWorldAugmentation, "pnlSmallWorldAugmentation");
+            
+            JLabel lblAverageConnectivity_3 = new JLabel("Average connectivity: ");
+            lblAverageConnectivity_3.setHorizontalAlignment(SwingConstants.LEFT);
+            pnlSmallWorldAugmentation.add(lblAverageConnectivity_3);
+            
+            txtKSWAug = new JTextField();
+            txtKSWAug.setHorizontalAlignment(SwingConstants.CENTER);
+            txtKSWAug.setText("1");
+            pnlSmallWorldAugmentation.add(txtKSWAug);
+            txtKSWAug.setColumns(6);
+            
+            JLabel lblEdgeSwitchingProbability = new JLabel("Edge switching probability: ");
+            pnlSmallWorldAugmentation.add(lblEdgeSwitchingProbability);
+            
+            txtBetaAug = new JTextField();
+            txtBetaAug.setHorizontalAlignment(SwingConstants.CENTER);
+            txtBetaAug.setText("0.5");
+            pnlSmallWorldAugmentation.add(txtBetaAug);
+            txtBetaAug.setColumns(6);
+            
+            
+            
+            JLabel lblTopology = new JLabel("Topology: ");
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, lblTopology, 0, SpringLayout.NORTH, lblTotalNodes);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, lblTopology, 31, SpringLayout.EAST, txtEditingNodesNumber);
+            pnlInnerNetworkEditing.add(lblTopology);
+            
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.NORTH, cmbAugmentedTopology, 4, SpringLayout.NORTH, pnlInnerNetworkEditing);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.WEST, cmbAugmentedTopology, 21, SpringLayout.EAST, lblTopology);
+            sl_pnlInnerNetworkEditing.putConstraint(SpringLayout.EAST, cmbAugmentedTopology, 364, SpringLayout.EAST, lblTopology);
+            pnlInnerNetworkEditing.add(cmbAugmentedTopology);
+            
 			experimentsPanel = new JPanel();
 			contentPanel.add(experimentsPanel, "experimentsPanel");
 			experimentsPanel.setLayout(new BorderLayout(0, 0));
@@ -1857,18 +1888,18 @@ public class Wizard extends JDialog {
 											.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.LEADING)
 													.addComponent(lblSamplingMethod)
 													.addComponent(lblInitialConditions))
-											.addGap(18)
-											.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.LEADING)
-													.addComponent(cmbSamplingType, GroupLayout.PREFERRED_SIZE, 399, GroupLayout.PREFERRED_SIZE)
-													.addGroup(gl_attractorsPanel.createSequentialGroup()
-															.addGap(6)
-															.addComponent(txtInitialConditions, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)))
-											.addContainerGap(12, Short.MAX_VALUE))
-									.addGroup(Alignment.TRAILING, gl_attractorsPanel.createSequentialGroup()
-											.addComponent(lblSimulationStepsCutoff, GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
-											.addGap(18)
-											.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
-											.addGap(34))))
+													.addGap(18)
+													.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.LEADING)
+															.addComponent(cmbSamplingType, GroupLayout.PREFERRED_SIZE, 399, GroupLayout.PREFERRED_SIZE)
+															.addGroup(gl_attractorsPanel.createSequentialGroup()
+																	.addGap(6)
+																	.addComponent(txtInitialConditions, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)))
+																	.addContainerGap(12, Short.MAX_VALUE))
+																	.addGroup(Alignment.TRAILING, gl_attractorsPanel.createSequentialGroup()
+																			.addComponent(lblSimulationStepsCutoff, GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+																			.addGap(18)
+																			.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+																			.addGap(34))))
 					);
 			gl_attractorsPanel.setVerticalGroup(
 					gl_attractorsPanel.createParallelGroup(Alignment.LEADING)
@@ -1877,16 +1908,16 @@ public class Wizard extends JDialog {
 							.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.BASELINE)
 									.addComponent(lblSamplingMethod)
 									.addComponent(cmbSamplingType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.TRAILING)
-									.addGroup(gl_attractorsPanel.createSequentialGroup()
-											.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.BASELINE)
-													.addComponent(lblInitialConditions)
-													.addComponent(txtInitialConditions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-											.addPreferredGap(ComponentPlacement.UNRELATED)
-											.addComponent(lblSimulationStepsCutoff))
-									.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addContainerGap(372, Short.MAX_VALUE))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.TRAILING)
+											.addGroup(gl_attractorsPanel.createSequentialGroup()
+													.addGroup(gl_attractorsPanel.createParallelGroup(Alignment.BASELINE)
+															.addComponent(lblInitialConditions)
+															.addComponent(txtInitialConditions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+															.addPreferredGap(ComponentPlacement.UNRELATED)
+															.addComponent(lblSimulationStepsCutoff))
+															.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+															.addContainerGap(372, Short.MAX_VALUE))
 					);
 			attractorsPanel.setLayout(gl_attractorsPanel);
 
@@ -1930,7 +1961,7 @@ public class Wizard extends JDialog {
 									.addGroup(gl_atmCalulationSelectionPanel.createSequentialGroup()
 											.addGap(14)
 											.addComponent(chkAtmCalculation)))
-							.addContainerGap(15, Short.MAX_VALUE))
+											.addContainerGap(15, Short.MAX_VALUE))
 					);
 			atmCalulationSelectionPanel.setLayout(gl_atmCalulationSelectionPanel);
 
@@ -1996,11 +2027,11 @@ public class Wizard extends JDialog {
 							.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.LEADING)
 									.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 571, GroupLayout.PREFERRED_SIZE)
 									.addComponent(lblRatioOfAttractors, GroupLayout.PREFERRED_SIZE, 527, GroupLayout.PREFERRED_SIZE))
-							.addGap(18)
-							.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(txtRatioStatesMutations, 0, 0, Short.MAX_VALUE)
-									.addComponent(txtExperimentsNumber, GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
-							.addGap(21))
+									.addGap(18)
+									.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.LEADING, false)
+											.addComponent(txtRatioStatesMutations, 0, 0, Short.MAX_VALUE)
+											.addComponent(txtExperimentsNumber, GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
+											.addGap(21))
 					);
 			gl_commonExperimentsPanel.setVerticalGroup(
 					gl_commonExperimentsPanel.createParallelGroup(Alignment.LEADING)
@@ -2009,11 +2040,11 @@ public class Wizard extends JDialog {
 							.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.BASELINE)
 									.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
 									.addComponent(txtExperimentsNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblRatioOfAttractors, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-									.addComponent(txtRatioStatesMutations, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addContainerGap())
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_commonExperimentsPanel.createParallelGroup(Alignment.BASELINE)
+											.addComponent(lblRatioOfAttractors, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+											.addComponent(txtRatioStatesMutations, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+											.addContainerGap())
 					);
 			commonExperimentsPanel.setLayout(gl_commonExperimentsPanel);
 
@@ -2064,23 +2095,23 @@ public class Wizard extends JDialog {
 											.addComponent(lblNumberOfNodes_1)
 											.addGap(27)
 											.addComponent(txtNumberOfFlips, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-									.addGroup(gl_flipsPanel.createSequentialGroup()
-											.addContainerGap()
-											.addGroup(gl_flipsPanel.createParallelGroup(Alignment.LEADING)
-													.addGroup(gl_flipsPanel.createSequentialGroup()
-															.addComponent(lblMinFlipDuration)
-															.addGap(18)
-															.addComponent(txtMinFlipTimes, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE))
-													.addGroup(gl_flipsPanel.createSequentialGroup()
-															.addComponent(lblMaxFlipDuration, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-															.addGap(12)
-															.addComponent(txtMaxFlipTimes, 0, 55, Short.MAX_VALUE)))
-											.addGap(169)))
-							.addGap(292))
-					.addGroup(Alignment.LEADING, gl_flipsPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chkCompleteFlipExp)
-							.addContainerGap(592, Short.MAX_VALUE))
+											.addGroup(gl_flipsPanel.createSequentialGroup()
+													.addContainerGap()
+													.addGroup(gl_flipsPanel.createParallelGroup(Alignment.LEADING)
+															.addGroup(gl_flipsPanel.createSequentialGroup()
+																	.addComponent(lblMinFlipDuration)
+																	.addGap(18)
+																	.addComponent(txtMinFlipTimes, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE))
+																	.addGroup(gl_flipsPanel.createSequentialGroup()
+																			.addComponent(lblMaxFlipDuration, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+																			.addGap(12)
+																			.addComponent(txtMaxFlipTimes, 0, 55, Short.MAX_VALUE)))
+																			.addGap(169)))
+																			.addGap(292))
+																			.addGroup(Alignment.LEADING, gl_flipsPanel.createSequentialGroup()
+																					.addContainerGap()
+																					.addComponent(chkCompleteFlipExp)
+																					.addContainerGap(592, Short.MAX_VALUE))
 					);
 			gl_flipsPanel.setVerticalGroup(
 					gl_flipsPanel.createParallelGroup(Alignment.LEADING)
@@ -2089,17 +2120,17 @@ public class Wizard extends JDialog {
 							.addGroup(gl_flipsPanel.createParallelGroup(Alignment.BASELINE)
 									.addComponent(lblNumberOfNodes_1)
 									.addComponent(txtNumberOfFlips, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_flipsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(txtMinFlipTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblMinFlipDuration))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_flipsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(txtMaxFlipTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblMaxFlipDuration, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chkCompleteFlipExp)
-							.addGap(198))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_flipsPanel.createParallelGroup(Alignment.BASELINE)
+											.addComponent(txtMinFlipTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(lblMinFlipDuration))
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addGroup(gl_flipsPanel.createParallelGroup(Alignment.BASELINE)
+													.addComponent(txtMaxFlipTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+													.addComponent(lblMaxFlipDuration, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+													.addPreferredGap(ComponentPlacement.RELATED)
+													.addComponent(chkCompleteFlipExp)
+													.addGap(198))
 					);
 			flipsPanel.setLayout(gl_flipsPanel);
 
@@ -2163,18 +2194,18 @@ public class Wizard extends JDialog {
 																	.addComponent(lblNumberOfNodes_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 																	.addComponent(lblNewLabel_4, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 																	.addComponent(lblNewLabel_3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-											.addGap(18))
-									.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
-											.addComponent(lblNumberOfNodes_2)
-											.addPreferredGap(ComponentPlacement.RELATED)))
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(txtKnockOutNodes, 0, 0, Short.MAX_VALUE)
-									.addComponent(txtMinKnockOutTimes, 0, 0, Short.MAX_VALUE)
-									.addComponent(txtKnockInNodes, 0, 0, Short.MAX_VALUE)
-									.addComponent(txtMaxKnockInTimes, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
-									.addComponent(txtMinKnockInTimes, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
-									.addComponent(txtMaxKnockOutTimes, Alignment.TRAILING, 0, 0, Short.MAX_VALUE))
-							.addGap(327))
+																	.addGap(18))
+																	.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
+																			.addComponent(lblNumberOfNodes_2)
+																			.addPreferredGap(ComponentPlacement.RELATED)))
+																			.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.LEADING, false)
+																					.addComponent(txtKnockOutNodes, 0, 0, Short.MAX_VALUE)
+																					.addComponent(txtMinKnockOutTimes, 0, 0, Short.MAX_VALUE)
+																					.addComponent(txtKnockInNodes, 0, 0, Short.MAX_VALUE)
+																					.addComponent(txtMaxKnockInTimes, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
+																					.addComponent(txtMinKnockInTimes, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+																					.addComponent(txtMaxKnockOutTimes, Alignment.TRAILING, 0, 0, Short.MAX_VALUE))
+																					.addGap(327))
 					);
 			gl_temporaryMutationsPanel.setVerticalGroup(
 					gl_temporaryMutationsPanel.createParallelGroup(Alignment.LEADING)
@@ -2183,33 +2214,33 @@ public class Wizard extends JDialog {
 									.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
 											.addGap(11)
 											.addComponent(txtKnockInNodes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
-											.addContainerGap()
-											.addComponent(lblNumberOfNodes_2, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblMinKnockinTime)
-									.addComponent(txtMinKnockInTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.TRAILING)
-									.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(lblMaxKnockinTime, GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
-									.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
-											.addGap(5)
-											.addComponent(txtMaxKnockInTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-							.addGap(32)
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(txtKnockOutNodes)
-									.addComponent(lblNumberOfNodes_3))
-							.addGap(5)
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(txtMinKnockOutTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblNewLabel_3))
-							.addGap(5)
-							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(txtMaxKnockOutTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblNewLabel_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addGap(102))
+											.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
+													.addContainerGap()
+													.addComponent(lblNumberOfNodes_2, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)))
+													.addPreferredGap(ComponentPlacement.RELATED)
+													.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
+															.addComponent(lblMinKnockinTime)
+															.addComponent(txtMinKnockInTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+															.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.TRAILING)
+																	.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
+																			.addPreferredGap(ComponentPlacement.RELATED)
+																			.addComponent(lblMaxKnockinTime, GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
+																			.addGroup(gl_temporaryMutationsPanel.createSequentialGroup()
+																					.addGap(5)
+																					.addComponent(txtMaxKnockInTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+																					.addGap(32)
+																					.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
+																							.addComponent(txtKnockOutNodes)
+																							.addComponent(lblNumberOfNodes_3))
+																							.addGap(5)
+																							.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
+																									.addComponent(txtMinKnockOutTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																									.addComponent(lblNewLabel_3))
+																									.addGap(5)
+																									.addGroup(gl_temporaryMutationsPanel.createParallelGroup(Alignment.BASELINE)
+																											.addComponent(txtMaxKnockOutTimes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																											.addComponent(lblNewLabel_4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																											.addGap(102))
 					);
 			temporaryMutationsPanel.setLayout(gl_temporaryMutationsPanel);
 
@@ -2303,80 +2334,128 @@ public class Wizard extends JDialog {
 			treeFromGroup.add(radioTreeFromCytoscape);
 
 			JLabel lblDistancebasedSelection = new JLabel("Distance-based selection:");
+			
+			JLabel lblTreeResearch = new JLabel("Trees research:");
+			
+			chkSampledTreesResearch = new JRadioButton("Sampled");
+			btngrpTreeResearch.add(chkSampledTreesResearch);
+			chkSampledTreesResearch.setSelected(true);
+			
+			chkCompleteTreeResearch = new JRadioButton("Complete");
+			btngrpTreeResearch.add(chkCompleteTreeResearch);
+			
+			JLabel label = new JLabel("Cutoff (minutes):");
+			
+			txtTreeResearchCutoff = new JTextField();
+			txtTreeResearchCutoff.setText("5");
+			txtTreeResearchCutoff.setHorizontalAlignment(SwingConstants.CENTER);
+			txtTreeResearchCutoff.setColumns(10);
+			
+			JLabel lblMaximumNetworkTo = new JLabel("Maximum network to test:");
+			
+			txtMaxNetToTest = new JTextField();
+			txtMaxNetToTest.setText("0");
+			txtMaxNetToTest.setHorizontalAlignment(SwingConstants.CENTER);
+			txtMaxNetToTest.setColumns(10);
 
 
 			GroupLayout gl_InputTreePanel = new GroupLayout(InputTreePanel);
 			gl_InputTreePanel.setHorizontalGroup(
-					gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+				gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_InputTreePanel.createSequentialGroup()
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_InputTreePanel.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(radioTreeFromFile)
+								.addGap(43)
+								.addComponent(radioTreeFromCytoscape, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_InputTreePanel.createSequentialGroup()
+								.addGap(17)
+								.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblDistance)
 									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addContainerGap()
-											.addComponent(radioTreeFromFile)
-											.addGap(43)
-											.addComponent(radioTreeFromCytoscape, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE))
-									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addGap(18)
-											.addComponent(lblMatchingThreshold, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
-											.addGap(20)
-											.addComponent(txtThreshold, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE))
-									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addGap(17)
-											.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
-													.addComponent(lblDistance)
-													.addGroup(gl_InputTreePanel.createSequentialGroup()
-															.addComponent(lblTreeFile)
-															.addPreferredGap(ComponentPlacement.UNRELATED)
-															.addComponent(txtTreeFilePath, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE)))))
-							.addGap(24)
-							.addComponent(btnOpen))
+										.addComponent(lblTreeFile)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(txtTreeFilePath, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE)))))
+						.addGap(24)
+						.addComponent(btnOpen))
 					.addGroup(gl_InputTreePanel.createSequentialGroup()
-							.addGap(57)
-							.addComponent(lblDistancebasedSelection, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
-									.addComponent(rdbtnPerfectMatch, GroupLayout.PREFERRED_SIZE, 330, GroupLayout.PREFERRED_SIZE)
-									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addComponent(rdbtnMinDistance)
-											.addGap(31)
-											.addComponent(rdoHistogramDistance, GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)))
-							.addContainerGap(125, GroupLayout.PREFERRED_SIZE))
-					);
+						.addGap(57)
+						.addComponent(lblDistancebasedSelection, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+							.addComponent(rdbtnPerfectMatch, GroupLayout.PREFERRED_SIZE, 330, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_InputTreePanel.createSequentialGroup()
+								.addComponent(rdbtnMinDistance)
+								.addGap(31)
+								.addComponent(rdoHistogramDistance, GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)))
+						.addContainerGap(125, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_InputTreePanel.createSequentialGroup()
+						.addGap(18)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_InputTreePanel.createSequentialGroup()
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(lblTreeResearch, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(chkSampledTreesResearch, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
+								.addGap(32)
+								.addComponent(chkCompleteTreeResearch, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+								.addComponent(label, GroupLayout.PREFERRED_SIZE, 107, GroupLayout.PREFERRED_SIZE)
+								.addGap(32)
+								.addComponent(txtTreeResearchCutoff, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)
+								.addGap(18))
+							.addGroup(gl_InputTreePanel.createSequentialGroup()
+								.addComponent(lblMatchingThreshold, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+								.addGap(20)
+								.addComponent(txtThreshold, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+								.addGap(18)
+								.addComponent(lblMaximumNetworkTo, GroupLayout.PREFERRED_SIZE, 191, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(txtMaxNetToTest, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE)
+								.addGap(197))))
+			);
 			gl_InputTreePanel.setVerticalGroup(
-					gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+				gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_InputTreePanel.createSequentialGroup()
-							.addGap(11)
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(radioTreeFromFile)
-									.addComponent(radioTreeFromCytoscape))
-							.addGap(13)
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(btnOpen)
-									.addComponent(lblTreeFile)
-									.addComponent(txtTreeFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addGap(18)
-											.addComponent(rdbtnPerfectMatch))
-									.addGroup(gl_InputTreePanel.createSequentialGroup()
-											.addGap(18)
-											.addComponent(lblDistance)))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblDistancebasedSelection)
-									.addComponent(rdbtnMinDistance)
-									.addComponent(rdoHistogramDistance))
-							.addGap(18)
-							.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblMatchingThreshold)
-									.addComponent(txtThreshold, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(93))
-					);
+						.addGap(11)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(radioTreeFromFile)
+							.addComponent(radioTreeFromCytoscape))
+						.addGap(13)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnOpen)
+							.addComponent(lblTreeFile)
+							.addComponent(txtTreeFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGap(18)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.LEADING)
+							.addComponent(rdbtnPerfectMatch)
+							.addComponent(lblDistance))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(lblDistancebasedSelection)
+							.addComponent(rdbtnMinDistance)
+							.addComponent(rdoHistogramDistance))
+						.addGap(18)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(lblMatchingThreshold)
+							.addComponent(txtThreshold, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblMaximumNetworkTo)
+							.addComponent(txtMaxNetToTest, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGap(10)
+						.addGroup(gl_InputTreePanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(lblTreeResearch)
+							.addComponent(txtTreeResearchCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(label)
+							.addComponent(chkCompleteTreeResearch)
+							.addComponent(chkSampledTreesResearch))
+						.addGap(59))
+			);
 			InputTreePanel.setLayout(gl_InputTreePanel);
 
 			JPanel panel = new JPanel();
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, panel, 272, SpringLayout.NORTH, treeMatchingSubPanel);
 			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, InputTreePanel, -6, SpringLayout.NORTH, panel);
+			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, panel, 315, SpringLayout.NORTH, treeMatchingSubPanel);
 			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, treeMatchingSubPanel);
 			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, panel, -10, SpringLayout.SOUTH, treeMatchingSubPanel);
 			sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, panel, 732, SpringLayout.WEST, treeMatchingSubPanel);
@@ -2389,168 +2468,163 @@ public class Wizard extends JDialog {
 				}
 			});
 			grpDepth = new ButtonGroup();
-
+			
 			pnlRepresentativeTree = new JPanel();
 			GroupLayout gl_panel = new GroupLayout(panel);
 			gl_panel.setHorizontalGroup(
-					gl_panel.createParallelGroup(Alignment.LEADING)
+				gl_panel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-									.addComponent(pnlRepresentativeTree, GroupLayout.PREFERRED_SIZE, 619, GroupLayout.PREFERRED_SIZE)
-									.addComponent(chckbxComputeRepresentativeTree))
-							.addContainerGap(97, Short.MAX_VALUE))
-					);
+						.addContainerGap()
+						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+							.addComponent(pnlRepresentativeTree, GroupLayout.PREFERRED_SIZE, 619, GroupLayout.PREFERRED_SIZE)
+							.addComponent(chckbxComputeRepresentativeTree))
+						.addContainerGap(97, Short.MAX_VALUE))
+			);
 			gl_panel.setVerticalGroup(
-					gl_panel.createParallelGroup(Alignment.LEADING)
+				gl_panel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chckbxComputeRepresentativeTree)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(pnlRepresentativeTree, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(22, Short.MAX_VALUE))
-					);
-
-			txtDepthValue = new JTextField();
-			txtDepthValue.setText("1");
-			txtDepthValue.setHorizontalAlignment(SwingConstants.CENTER);
-			txtDepthValue.setColumns(10);
-
-			rdbtnLogn = new JRadioButton("log2(n)");
-			rdbtnLogn.setSelected(true);
-			rdbtnLogn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					txtDepthValue.setVisible(false);
-				}
-			});
-			grpDepth.add(rdbtnLogn);
-
-			rdbtnRatioOfAttractors = new JRadioButton("Ratio of attractors");
-			rdbtnRatioOfAttractors.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					txtDepthValue.setVisible(true);
-				}
-			});
-			grpDepth.add(rdbtnRatioOfAttractors);
-			rdbtnAbsolute = new JRadioButton("Absolute");
-			rdbtnAbsolute.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					txtDepthValue.setVisible(true);
-				}
-			});
-			grpDepth.add(rdbtnAbsolute);
-
-			JLabel lblTreeDepth = new JLabel("Tree depth:");
-
-			JLabel lblMaximumTreeTo = new JLabel("Maximum tree to test:");
-
-			txtRepresentativeTreeCutoff = new JTextField();
-			txtRepresentativeTreeCutoff.setText("-1");
-			txtRepresentativeTreeCutoff.setHorizontalAlignment(SwingConstants.CENTER);
-			txtRepresentativeTreeCutoff.setColumns(10);
-
-			JLabel lblMeansNo = new JLabel("(-1 means no cutoff)");
-
-			JLabel lblforBothAbsolute = new JLabel("(For both Absolute and Ratio)");
-			GroupLayout gl_pnlRepresentativeTree = new GroupLayout(pnlRepresentativeTree);
-			gl_pnlRepresentativeTree.setHorizontalGroup(
-					gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-							.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(chckbxComputeRepresentativeTree)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(pnlRepresentativeTree, GroupLayout.PREFERRED_SIZE, 151, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+			);
+												
+															txtDepthValue = new JTextField();
+															txtDepthValue.setText("1");
+															txtDepthValue.setHorizontalAlignment(SwingConstants.CENTER);
+															txtDepthValue.setColumns(10);
+															txtDepthValue.setVisible(false);
+															
+												rdbtnLogn = new JRadioButton("log2(n)");
+												rdbtnLogn.setSelected(true);
+												rdbtnLogn.addActionListener(new ActionListener() {
+													public void actionPerformed(ActionEvent e) {
+														txtDepthValue.setVisible(false);
+													}
+												});
+												grpDepth.add(rdbtnLogn);
+						
+									rdbtnRatioOfAttractors = new JRadioButton("Ratio of attractors");
+									rdbtnRatioOfAttractors.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											txtDepthValue.setVisible(true);
+										}
+									});
+									grpDepth.add(rdbtnRatioOfAttractors);
+						rdbtnAbsolute = new JRadioButton("Absolute");
+						rdbtnAbsolute.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								txtDepthValue.setVisible(true);
+							}
+						});
+						grpDepth.add(rdbtnAbsolute);
+			
+						JLabel lblTreeDepth = new JLabel("Tree depth:");
+						
+						JLabel lblMaximumTreeTo = new JLabel("Representative tree computation cutoff (Minutes):");
+						
+						txtRepresentativeTreeCutoff = new JTextField();
+						txtRepresentativeTreeCutoff.setText("20");
+						txtRepresentativeTreeCutoff.setHorizontalAlignment(SwingConstants.CENTER);
+						txtRepresentativeTreeCutoff.setColumns(10);
+						
+						JLabel lblforBothAbsolute = new JLabel("(For both Absolute and Ratio)");
+						GroupLayout gl_pnlRepresentativeTree = new GroupLayout(pnlRepresentativeTree);
+						gl_pnlRepresentativeTree.setHorizontalGroup(
+							gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
+									.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
+											.addGap(30)
+											.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
+												.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
+													.addComponent(rdbtnAbsolute)
+													.addGap(96)
+													.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
+													.addGap(18)
+													.addComponent(lblforBothAbsolute, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE))
+												.addComponent(rdbtnRatioOfAttractors)
+												.addComponent(rdbtnLogn)))
+										.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
 											.addContainerGap()
-											.addComponent(lblTreeDepth))
-									.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-											.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-													.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-															.addGap(30)
-															.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-																	.addComponent(rdbtnLogn)
-																	.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-																			.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-																					.addComponent(rdbtnRatioOfAttractors)
-																					.addComponent(rdbtnAbsolute))
-																			.addGap(38)
-																			.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-																					.addComponent(txtRepresentativeTreeCutoff, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
-																					.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)))))
-													.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-															.addContainerGap()
-															.addComponent(lblMaximumTreeTo)))
+											.addComponent(lblMaximumTreeTo)
 											.addGap(18)
-											.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-													.addComponent(lblforBothAbsolute, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)
-													.addComponent(lblMeansNo))))
-							.addContainerGap(86, Short.MAX_VALUE))
-					);
-			gl_pnlRepresentativeTree.setVerticalGroup(
-					gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-							.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-											.addGap(7)
-											.addComponent(lblTreeDepth)
+											.addComponent(txtRepresentativeTreeCutoff, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
+											.addContainerGap()
+											.addComponent(lblTreeDepth)))
+									.addContainerGap(86, Short.MAX_VALUE))
+						);
+						gl_pnlRepresentativeTree.setVerticalGroup(
+							gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, gl_pnlRepresentativeTree.createSequentialGroup()
+									.addContainerGap(28, Short.MAX_VALUE)
+									.addComponent(lblTreeDepth)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(rdbtnLogn)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.LEADING)
+										.addGroup(Alignment.TRAILING, gl_pnlRepresentativeTree.createSequentialGroup()
+											.addComponent(rdbtnRatioOfAttractors)
 											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(rdbtnLogn)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(rdbtnAbsolute)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(rdbtnRatioOfAttractors))
-									.addGroup(gl_pnlRepresentativeTree.createSequentialGroup()
-											.addGap(69)
 											.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.BASELINE)
-													.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-													.addComponent(lblforBothAbsolute))))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lblMaximumTreeTo)
-									.addComponent(txtRepresentativeTreeCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblMeansNo))
-							.addContainerGap(38, Short.MAX_VALUE))
-					);
-			pnlRepresentativeTree.setLayout(gl_pnlRepresentativeTree);
-			pnlRepresentativeTree.setVisible(false);
+												.addComponent(lblMaximumTreeTo)
+												.addComponent(txtRepresentativeTreeCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+											.addContainerGap())
+										.addGroup(Alignment.TRAILING, gl_pnlRepresentativeTree.createSequentialGroup()
+											.addGroup(gl_pnlRepresentativeTree.createParallelGroup(Alignment.BASELINE)
+												.addComponent(rdbtnAbsolute)
+												.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addComponent(lblforBothAbsolute))
+											.addGap(69))))
+						);
+						pnlRepresentativeTree.setLayout(gl_pnlRepresentativeTree);
+						pnlRepresentativeTree.setVisible(false);
 			panel.setLayout(gl_panel);
-
-			chckbxMatchNetworksWith = new JCheckBox("Select only the networks in which the emergent differentiation tree matches with an input tree");
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, chckbxMatchNetworksWith, -451, SpringLayout.SOUTH, treeMatchingSubPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, InputTreePanel, 6, SpringLayout.SOUTH, chckbxMatchNetworksWith);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, chckbxMatchNetworksWith, 10, SpringLayout.WEST, treeMatchingSubPanel);
-			treeMatchingSubPanel.add(chckbxMatchNetworksWith);
-			chckbxMatchNetworksWith.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					InputTreePanel.setVisible(chckbxMatchNetworksWith.isSelected());
-				}
-			});
-			chckbxMatchNetworksWith.setSelected(true);
-
-			lblMaximumNumberOf = new JLabel("Maximum number of children for a complete test:");
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, lblMaximumNumberOf, 10, SpringLayout.NORTH, treeMatchingSubPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, lblMaximumNumberOf, 10, SpringLayout.WEST, treeMatchingSubPanel);
-			treeMatchingSubPanel.add(lblMaximumNumberOf);
-
-			txtMaxChildren = new JTextField();
-			txtMaxChildren.setText("5");
-			txtMaxChildren.setHorizontalAlignment(SwingConstants.CENTER);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, txtMaxChildren, 4, SpringLayout.NORTH, treeMatchingSubPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, txtMaxChildren, 6, SpringLayout.EAST, lblMaximumNumberOf);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, txtMaxChildren, 66, SpringLayout.EAST, lblMaximumNumberOf);
-			treeMatchingSubPanel.add(txtMaxChildren);
-			txtMaxChildren.setColumns(10);
-
-			lblPermutationsCutoffProbability = new JLabel("Permutations cutoff probability:");
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, lblPermutationsCutoffProbability, 0, SpringLayout.NORTH, lblMaximumNumberOf);
-			treeMatchingSubPanel.add(lblPermutationsCutoffProbability);
-
-			txtPermProb = new JTextField();
-			txtPermProb.setHorizontalAlignment(SwingConstants.CENTER);
-			txtPermProb.setText("0.5");
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, lblPermutationsCutoffProbability, -6, SpringLayout.WEST, txtPermProb);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, txtPermProb, 4, SpringLayout.NORTH, treeMatchingSubPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, txtPermProb, -70, SpringLayout.EAST, treeMatchingSubPanel);
-			sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, txtPermProb, -10, SpringLayout.EAST, treeMatchingSubPanel);
-			txtPermProb.setColumns(10);
-			treeMatchingSubPanel.add(txtPermProb);
+			
+						chckbxMatchNetworksWith = new JCheckBox("Select only the networks in which the emergent differentiation tree matches with an input tree");
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, InputTreePanel, 6, SpringLayout.SOUTH, chckbxMatchNetworksWith);
+						chckbxMatchNetworksWith.setSelected(true);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, chckbxMatchNetworksWith, -451, SpringLayout.SOUTH, treeMatchingSubPanel);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, chckbxMatchNetworksWith, 10, SpringLayout.WEST, treeMatchingSubPanel);
+						treeMatchingSubPanel.add(chckbxMatchNetworksWith);
+						chckbxMatchNetworksWith.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								InputTreePanel.setVisible(chckbxMatchNetworksWith.isSelected());
+							}
+						});
+						
+						lblMaximumNumberOf = new JLabel("Trees comparison type:");
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, lblMaximumNumberOf, 10, SpringLayout.NORTH, treeMatchingSubPanel);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, lblMaximumNumberOf, 10, SpringLayout.WEST, treeMatchingSubPanel);
+						treeMatchingSubPanel.add(lblMaximumNumberOf);
+						
+						chkSampledComparison = new JRadioButton("Sampled");
+						chkSampledComparison.setSelected(true);
+						btngrpComparison.add(chkSampledComparison);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, chkSampledComparison, -4, SpringLayout.NORTH, lblMaximumNumberOf);
+						treeMatchingSubPanel.add(chkSampledComparison);
+						
+						chkCompleteComparison = new JRadioButton("Complete");
+						btngrpComparison.add(chkCompleteComparison);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, chkCompleteComparison, 285, SpringLayout.WEST, treeMatchingSubPanel);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, chkSampledComparison, -21, SpringLayout.WEST, chkCompleteComparison);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, chkCompleteComparison, -4, SpringLayout.NORTH, lblMaximumNumberOf);
+						treeMatchingSubPanel.add(chkCompleteComparison);
+						
+						JLabel lblCutoffminutes = new JLabel("Cutoff (minutes):");
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.NORTH, lblCutoffminutes, 0, SpringLayout.NORTH, lblMaximumNumberOf);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.EAST, lblCutoffminutes, -188, SpringLayout.EAST, treeMatchingSubPanel);
+						treeMatchingSubPanel.add(lblCutoffminutes);
+						
+						txtTimeCutoffComparison = new JTextField();
+						txtTimeCutoffComparison.setText("5");
+						txtTimeCutoffComparison.setHorizontalAlignment(SwingConstants.CENTER);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.WEST, txtTimeCutoffComparison, 16, SpringLayout.EAST, lblCutoffminutes);
+						sl_treeMatchingSubPanel.putConstraint(SpringLayout.SOUTH, txtTimeCutoffComparison, -6, SpringLayout.NORTH, chckbxMatchNetworksWith);
+						treeMatchingSubPanel.add(txtTimeCutoffComparison);
+						txtTimeCutoffComparison.setColumns(10);
 
 			outputsPanel = new JPanel();
 			contentPanel.add(outputsPanel, "outputsPanel");
@@ -2589,52 +2663,52 @@ public class Wizard extends JDialog {
 
 			JLabel lblInfoCABERNETFunctions = new JLabel("<html>Note that all the other CABERNET functions are acessibled from the Cytoscape application menu bar.</html>\n");
 			lblInfoCABERNETFunctions.setFont(new Font("Lucida Grande", Font.BOLD, 13));
-
+			
 			chckbxAllTrees = new JCheckBox("All trees");
 			GroupLayout gl_cytoscapeOutputsPanel = new GroupLayout(cytoscapeOutputsPanel);
 			gl_cytoscapeOutputsPanel.setHorizontalGroup(
-					gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
+				gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-							.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
+								.addGap(55)
+								.addComponent(chkNetworksOutput)
+								.addGap(18)
+								.addComponent(chkAttractorsNetworkOutput)
+								.addGap(34)
+								.addComponent(chckbxAllTrees))
+							.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(lblCytoscapeViews))
+							.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
+									.addComponent(chkExportToFileSystem)
 									.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-											.addGap(55)
-											.addComponent(chkNetworksOutput)
-											.addGap(18)
-											.addComponent(chkAttractorsNetworkOutput)
-											.addGap(34)
-											.addComponent(chckbxAllTrees))
-									.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-											.addContainerGap()
-											.addComponent(lblCytoscapeViews))
-									.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-											.addContainerGap()
-											.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
-													.addComponent(chkExportToFileSystem)
-													.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-															.addGap(8)
-															.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.TRAILING)
-																	.addComponent(lblInfoCABERNETFunctions)
-																	.addComponent(pnlExport, GroupLayout.PREFERRED_SIZE, 671, GroupLayout.PREFERRED_SIZE))))))
-							.addContainerGap(39, Short.MAX_VALUE))
-					);
+										.addGap(8)
+										.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.TRAILING)
+											.addComponent(lblInfoCABERNETFunctions)
+											.addComponent(pnlExport, GroupLayout.PREFERRED_SIZE, 671, GroupLayout.PREFERRED_SIZE))))))
+						.addContainerGap(39, Short.MAX_VALUE))
+			);
 			gl_cytoscapeOutputsPanel.setVerticalGroup(
-					gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
+				gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_cytoscapeOutputsPanel.createSequentialGroup()
-							.addGap(16)
-							.addComponent(lblCytoscapeViews)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(chkNetworksOutput)
-									.addComponent(chkAttractorsNetworkOutput)
-									.addComponent(chckbxAllTrees))
-							.addGap(24)
-							.addComponent(chkExportToFileSystem)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(pnlExport, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
-							.addGap(47)
-							.addComponent(lblInfoCABERNETFunctions)
-							.addContainerGap(108, Short.MAX_VALUE))
-					);
+						.addGap(16)
+						.addComponent(lblCytoscapeViews)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(gl_cytoscapeOutputsPanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(chkNetworksOutput)
+							.addComponent(chkAttractorsNetworkOutput)
+							.addComponent(chckbxAllTrees))
+						.addGap(24)
+						.addComponent(chkExportToFileSystem)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(pnlExport, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
+						.addGap(47)
+						.addComponent(lblInfoCABERNETFunctions)
+						.addContainerGap(108, Short.MAX_VALUE))
+			);
 
 			JButton btnSelectDirectory = new JButton("Select directory");
 			btnSelectDirectory.addActionListener(new ActionListener() {
@@ -2676,21 +2750,21 @@ public class Wizard extends JDialog {
 											.addComponent(txtOutputPath, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE)
 											.addGap(12)
 											.addComponent(btnSelectDirectory))
-									.addGroup(gl_pnlExport.createSequentialGroup()
-											.addComponent(chkGrnml)
-											.addGap(18)
-											.addComponent(chkSif, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE))
-									.addComponent(chkAtm)
-									.addGroup(gl_pnlExport.createSequentialGroup()
-											.addComponent(chkAttractors)
-											.addGap(35)
-											.addComponent(chkStates, GroupLayout.PREFERRED_SIZE, 249, GroupLayout.PREFERRED_SIZE))
-									.addComponent(chkSynthesis, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
-									.addGroup(gl_pnlExport.createSequentialGroup()
-											.addComponent(chkAttractorLenghts, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
-											.addGap(6)
-											.addComponent(chkBasins, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)))
-							.addContainerGap(75, Short.MAX_VALUE))
+											.addGroup(gl_pnlExport.createSequentialGroup()
+													.addComponent(chkGrnml)
+													.addGap(18)
+													.addComponent(chkSif, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE))
+													.addComponent(chkAtm)
+													.addGroup(gl_pnlExport.createSequentialGroup()
+															.addComponent(chkAttractors)
+															.addGap(35)
+															.addComponent(chkStates, GroupLayout.PREFERRED_SIZE, 249, GroupLayout.PREFERRED_SIZE))
+															.addComponent(chkSynthesis, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
+															.addGroup(gl_pnlExport.createSequentialGroup()
+																	.addComponent(chkAttractorLenghts, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)
+																	.addGap(6)
+																	.addComponent(chkBasins, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE)))
+																	.addContainerGap(75, Short.MAX_VALUE))
 					);
 			gl_pnlExport.setVerticalGroup(
 					gl_pnlExport.createParallelGroup(Alignment.LEADING)
@@ -2700,27 +2774,27 @@ public class Wizard extends JDialog {
 									.addGroup(gl_pnlExport.createSequentialGroup()
 											.addGap(6)
 											.addComponent(lblExportPath))
-									.addComponent(txtOutputPath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGroup(gl_pnlExport.createSequentialGroup()
-											.addGap(1)
-											.addComponent(btnSelectDirectory)))
-							.addGap(18)
-							.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
-									.addComponent(chkGrnml)
-									.addComponent(chkSif))
-							.addGap(6)
-							.addComponent(chkAtm)
-							.addGap(6)
-							.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
-									.addComponent(chkAttractors)
-									.addComponent(chkStates))
-							.addGap(6)
-							.addComponent(chkSynthesis)
-							.addGap(6)
-							.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
-									.addComponent(chkAttractorLenghts)
-									.addComponent(chkBasins))
-							.addContainerGap())
+											.addComponent(txtOutputPath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addGroup(gl_pnlExport.createSequentialGroup()
+													.addGap(1)
+													.addComponent(btnSelectDirectory)))
+													.addGap(18)
+													.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
+															.addComponent(chkGrnml)
+															.addComponent(chkSif))
+															.addGap(6)
+															.addComponent(chkAtm)
+															.addGap(6)
+															.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
+																	.addComponent(chkAttractors)
+																	.addComponent(chkStates))
+																	.addGap(6)
+																	.addComponent(chkSynthesis)
+																	.addGap(6)
+																	.addGroup(gl_pnlExport.createParallelGroup(Alignment.LEADING)
+																			.addComponent(chkAttractorLenghts)
+																			.addComponent(chkBasins))
+																			.addContainerGap())
 					);
 			pnlExport.setLayout(gl_pnlExport);
 			cytoscapeOutputsPanel.setLayout(gl_cytoscapeOutputsPanel);
@@ -2753,7 +2827,6 @@ public class Wizard extends JDialog {
 	 * @return the exit code: 1 for correct ending
 	 */
 	public int showWizard(){
-		System.out.println("SHOW WIZARD");
 		this.setModal(true);
 		this.setVisible(true);
 		return 1;
@@ -2928,80 +3001,80 @@ public class Wizard extends JDialog {
 						}
 					}
 					//Network editing form
-				}else if(form.equals("editing-features")){
-					if(!txtEditingNodesNumber.getText().equals("") &&
-							!txtEditingBiasType.getText().equals("") && !txtEditingBiasValue.getText().equals("") &&
-							!txtEditingOrType.getText().equals("") && !txtEditingAndType.getText().equals("") &&
-							!txtEditingCanalizingType.getText().equals("")){
-
-						Integer nodes;
-						Double and, or, biased, bias, canalizing;
-
-						//Sets the properties
-						nodes = Integer.parseInt(txtEditingNodesNumber.getText());
-						if(nodes  <= 0){
-							throw new FeaturesException(SimulationFeaturesConstants.NODES + " value must be greater than 0");
-						}
-						simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtEditingNodesNumber.getText());
-
-						if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
-							simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
-							if(Integer.parseInt(txtEditingEdgesNumber.getText())  <= 0){
-								throw new FeaturesException(SimulationFeaturesConstants.EDGES + " value must be greater than 0");
-							}
-							simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEditingEdgesNumber.getText());							
-							if(Integer.parseInt(txtFixedInputs.getText())  < -1 ||
-									Integer.parseInt(txtFixedInputs.getText())  == 0 ||
-									Integer.parseInt(txtFixedInputs.getText()) > Math.pow(nodes - 1, 2)){
-								throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be between 1 and (nodes - 1)^2 or -1");
-							}
-							if(!txtFixedInputs.getText().equals("-1"))
-								simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedInputs.getText());
-						}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
-							simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
-							if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
-
-								int avgCon = Integer.valueOf(txtAugmentedAvgConnectivity.getText());
-								double inOutProb = Double.valueOf(txtInOutProbAug.getText());
-								if(avgCon <= 0){
-									throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be grater than 0.");
-								}
-								if(inOutProb < 0 || inOutProb > 1){
-									throw new FeaturesException(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY + " value must be betwee 0 and 1");
-								}
-								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAugmentedAvgConnectivity.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, txtInOutProbAug.getText());
-
-							}else if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
-								if(Double.valueOf(txtAugPLGamma.getText()) <= 0){
-									throw new FeaturesException(SimulationFeaturesConstants.GAMMA + " value must be greater than 0");
-								}
-								if(Double.valueOf(txtAvgConPLAug.getText()) <= 0){
-									throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
-								}
-								simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
-								simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtAugPLGamma.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConPLAug.getText());
-								simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, chkIngoingPowerLaw.isSelected() ? SimulationFeaturesConstants.YES : SimulationFeaturesConstants.NO);
-							}
-						}else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY)){
-							simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
-							double avgCon;
-							double beta;
-							try{
-								avgCon = Double.valueOf(txtKSWAug.getText());
-							}catch(NumberFormatException ex){
-								avgCon = 1.0;
-							}
-							simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, String.valueOf(avgCon));
-							try{
-								beta = Double.valueOf(txtBetaAug.getText());
-							}catch(NumberFormatException ex){
-								beta = 1.0;
-							}
-							simulationFeatures.setProperty(SimulationFeaturesConstants.BETA, String.valueOf(beta));
-						}
+                }else if(form.equals("editing-features")){
+                    if(!txtEditingNodesNumber.getText().equals("") &&
+                       !txtEditingBiasType.getText().equals("") && !txtEditingBiasValue.getText().equals("") &&
+                       !txtEditingOrType.getText().equals("") && !txtEditingAndType.getText().equals("") &&
+                       !txtEditingCanalizingType.getText().equals("")){
+                        
+                        Integer nodes;
+                        Double and, or, biased, bias, canalizing;
+                        
+                        //Sets the properties
+                        nodes = Integer.parseInt(txtEditingNodesNumber.getText());
+                        if(nodes  <= 0){
+                            throw new FeaturesException(SimulationFeaturesConstants.NODES + " value must be greater than 0");
+                        }
+                        simulationFeatures.setProperty(SimulationFeaturesConstants.NODES, txtEditingNodesNumber.getText());
+                        
+                        if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.RANDOM_TOPOLOGY)){
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.RANDOM_TOPOLOGY);
+                            if(Integer.parseInt(txtEditingEdgesNumber.getText())  <= 0){
+                                throw new FeaturesException(SimulationFeaturesConstants.EDGES + " value must be greater than 0");
+                            }
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.EDGES, txtEditingEdgesNumber.getText());
+                            if(Integer.parseInt(txtFixedInputs.getText())  < -1 ||
+                               Integer.parseInt(txtFixedInputs.getText())  == 0 ||
+                               Integer.parseInt(txtFixedInputs.getText()) > Math.pow(nodes - 1, 2)){
+                                throw new FeaturesException(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER + " value must be between 1 and (nodes - 1)^2 or -1");
+                            }
+                            if(!txtFixedInputs.getText().equals("-1"))
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.FIXED_INPUTS_NUMBER, txtFixedInputs.getText());
+                        }else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY)){
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SCALE_FREE_TOPOLOGY);
+                            if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM)){
+                                
+                                int avgCon = Integer.valueOf(txtAugmentedAvgConnectivity.getText());
+                                double inOutProb = Double.valueOf(txtInOutProbAug.getText());
+                                if(avgCon <= 0){
+                                    throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be grater than 0.");
+                                }
+                                if(inOutProb < 0 || inOutProb > 1){
+                                    throw new FeaturesException(SimulationFeaturesConstants.INGOING_OUTGOING_PROBABILITY + " value must be betwee 0 and 1");
+                                }
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.BARABASI_ALBERTZ_ALGORITHM);
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAugmentedAvgConnectivity.getText());
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, txtInOutProbAug.getText());
+                                
+                            }else if(cmbSFAugmentedAlgorithm.getSelectedItem().equals(SimulationFeaturesConstants.POWER_LAW_ALGORITHM)){
+                                if(Double.valueOf(txtAugPLGamma.getText()) <= 0){
+                                    throw new FeaturesException(SimulationFeaturesConstants.GAMMA + " value must be greater than 0");
+                                }
+                                if(Double.valueOf(txtAvgConPLAug.getText()) <= 0){
+                                    throw new FeaturesException(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY + " value must be greater than 0");
+                                }
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.ALGORITHM, SimulationFeaturesConstants.POWER_LAW_ALGORITHM);
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.GAMMA, txtAugPLGamma.getText());
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, txtAvgConPLAug.getText());
+                                simulationFeatures.setProperty(SimulationFeaturesConstants.INGOING_SCALE_FREE, chkIngoingPowerLaw.isSelected() ? SimulationFeaturesConstants.YES : SimulationFeaturesConstants.NO);
+                            }
+                        }else if(cmbAugmentedTopology.getSelectedItem().equals(SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY)){
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.TOPOLOGY, SimulationFeaturesConstants.SMALL_WORLD_TOPOLOGY);
+                            double avgCon;
+                            double beta;
+                            try{
+                                avgCon = Double.valueOf(txtKSWAug.getText());
+                            }catch(NumberFormatException ex){
+                                avgCon = 1.0;
+                            }
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.AVERAGE_CONNECTIVITY, String.valueOf(avgCon));
+                            try{
+                                beta = Double.valueOf(txtBetaAug.getText());
+                            }catch(NumberFormatException ex){
+                                beta = 1.0;
+                            }
+                            simulationFeatures.setProperty(SimulationFeaturesConstants.BETA, String.valueOf(beta));
+                        }
 
 						simulationFeatures.setProperty(SimulationFeaturesConstants.FUNCTION_TYPE, cmbEditingFunctionType.getSelectedItem().toString());
 
@@ -3211,8 +3284,7 @@ public class Wizard extends JDialog {
 						tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.NO);
 						//Next step: Output elements chosen
 						form = "output-form";
-						lblOutputsList.setBackground(UIManager.getColor("Button.background"));
-						lblExperimentsList.setBackground(Color.WHITE);
+						lblOutputsList.setBackground(Color.LIGHT_GRAY);
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 					}
 					//Next action: Tree matching
@@ -3221,23 +3293,26 @@ public class Wizard extends JDialog {
 					//Representative tree 
 					double depthValue;
 					int depth;
-					int maxChildren;
-					double permProb;
+					int comparisonTimeCutoff;
 					//Sets the cutoff for the comparison
 					if(chckbxComputeRepresentativeTree.isSelected() || chckbxMatchNetworksWith.isSelected()){
-						maxChildren = Integer.valueOf(txtMaxChildren.getText());
-						if(maxChildren < 0){
-							throw new NumberFormatException("The maximum number of children for a complete test must be greater than 0.");
+						
+						comparisonTimeCutoff = Integer.valueOf(txtTimeCutoffComparison.getText());
+						if(comparisonTimeCutoff <= 0){
+							throw new NumberFormatException("The cutoff for the comparison of the trees must be greater than 0.");
 						}
-
-						permProb = Double.valueOf(txtPermProb.getText());
-						if(permProb < 0 || permProb > 1){
-							throw new NumberFormatException("The permutation probability must be bertwwen 0 and 1.");
+						simulationFeatures.setProperty(SimulationFeaturesConstants.TREE_COMPARISON_CUTOFF, txtTimeCutoffComparison.getText());
+						
+						if(chkCompleteComparison.isSelected()){
+							simulationFeatures.setProperty(SimulationFeaturesConstants.TREES_COMPARISON, 
+									SimulationFeaturesConstants.COMPLETE_COMPARISON);
+						}else{
+							simulationFeatures.setProperty(SimulationFeaturesConstants.TREES_COMPARISON, 
+									SimulationFeaturesConstants.SAMPLED_COMPARISON);
 						}
-						simulationFeatures.setProperty(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST, txtMaxChildren.getText());
-						simulationFeatures.setProperty(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY, txtPermProb.getText());
+						
 					}
-
+					
 					if(chckbxComputeRepresentativeTree.isSelected()){
 						chckbxAllTrees.setVisible(true);
 						tasks.setProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.YES);
@@ -3256,10 +3331,10 @@ public class Wizard extends JDialog {
 						}else{
 							tasks.setProperty(CABERNETConstants.TREE_DEPTH_MODE, CABERNETConstants.LOGN_DEPTH);
 						}
-						if(Integer.valueOf(txtRepresentativeTreeCutoff.getText()) < -1)
-							throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + "value must be greater than -1.");
+						if(Integer.valueOf(txtRepresentativeTreeCutoff.getText()) <= 0)
+							throw new NumberFormatException("The " + CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF + "value must be greater than 0.");
 						simulationFeatures.setProperty(CABERNETConstants.REPRESENTATIVE_TREE_CUTOFF, txtRepresentativeTreeCutoff.getText());
-
+						
 					}else{
 						tasks.setProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.NO);
 						chckbxAllTrees.setVisible(false);
@@ -3268,6 +3343,20 @@ public class Wizard extends JDialog {
 					//Reads the tree from file
 					if(chckbxMatchNetworksWith.isSelected()){
 						tasks.setProperty(CABERNETConstants.TREE_MATCHING, CABERNETConstants.YES);
+						
+						if(chkSampledTreesResearch.isSelected()){
+							simulationFeatures.setProperty(SimulationFeaturesConstants.TREES_RESEARCH_TYPE, 
+									SimulationFeaturesConstants.SAMPLED_TREES_RESEARCH);
+						}else{
+							simulationFeatures.setProperty(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF, 
+									SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH);
+						}
+						
+						if(Integer.valueOf(txtTreeResearchCutoff.getText()) < 0)
+							throw new FeaturesException(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF + " value must be greater than 0");
+						simulationFeatures.setProperty(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF, 
+								txtTreeResearchCutoff.getText());
+						
 						//Gets the matching type
 						if(rdbtnPerfectMatch.isSelected()){
 							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.PERFECT_MATCH);
@@ -3282,6 +3371,11 @@ public class Wizard extends JDialog {
 							tasks.setProperty(CABERNETConstants.MATCHING_TYPE, CABERNETConstants.HISTOGRAM_DISTANCE);
 							tasks.setProperty(CABERNETConstants.MATCHING_THRESHOLD, txtThreshold.getText());
 						}
+						
+						if(Integer.valueOf(txtMaxNetToTest.getText()) <= 0)
+							throw new FeaturesException(CABERNETConstants.MAX_NET_TO_TEST + " value must be greater than 0");
+						simulationFeatures.setProperty(CABERNETConstants.MAX_NET_TO_TEST, txtMaxNetToTest.getText());
+						
 						if(radioTreeFromFile.isSelected()){
 							if(txtTreeFilePath.getText().equals(""))
 								throw new Exception("Tree file path missed.");
@@ -3327,7 +3421,7 @@ public class Wizard extends JDialog {
 					}else{
 						outputs.setProperty(CABERNETConstants.SHOW_ALL_TREES, CABERNETConstants.YES);
 					}
-
+					
 					if(chkExportToFileSystem.isSelected()){
 						if(txtOutputPath.getText().equals("")){
 							throw new FeaturesException("Invalid input folder");

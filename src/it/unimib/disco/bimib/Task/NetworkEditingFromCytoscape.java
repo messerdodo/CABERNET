@@ -21,29 +21,11 @@ import it.unimib.disco.bimib.IO.Output;
 import it.unimib.disco.bimib.Middleware.NetworkManagment;
 import it.unimib.disco.bimib.Mutations.MutationManager;
 import it.unimib.disco.bimib.Networks.GraphManager;
+
 //CABERNET imports
 import it.unimib.disco.bimib.CABERNET.CABERNETConstants;
 import it.unimib.disco.bimib.CABERNET.Simulation;
 import it.unimib.disco.bimib.CABERNET.SimulationsContainer;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //System imports
@@ -51,31 +33,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
-
-
-
-
-
-
-
-
-
-
-
-
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-
-
-
-
-
-
-
-
 import java.util.concurrent.TimeoutException;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -101,8 +62,11 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 	private String representativeTreeDepthMode;
 	private double representativeTreeDepthValue;
 	private int representativeTreeCutoff;
-	private int max_children_for_complete_test;
-	private double partial_test_probability;
+	private int comparison_cutoff;
+	private String comparison_type;
+	private int trees_research_cutoff;
+	private String trees_research_type;
+	private int maxNetToTest;
 
 	private GraphManager graphManager;
 	private SamplingManager samplingManager;
@@ -168,22 +132,43 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			}
 		}
 
+		if(this.treeMatching){
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF))
+				throw new FeaturesException(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF + " value must be defined.");
+			this.trees_research_cutoff = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF));
+			if(this.trees_research_cutoff <= 0)
+				throw new NumberFormatException("The " + SimulationFeaturesConstants.TREES_RESEARCH_CUTOFF + " value must be greater than 0");
+
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_RESEARCH_TYPE))
+				throw new FeaturesException(SimulationFeaturesConstants.TREES_RESEARCH_TYPE + " value must be defined.");
+			this.trees_research_type = networkFeatures.getProperty(SimulationFeaturesConstants.TREES_RESEARCH_TYPE);
+			if(!trees_research_type.equals(SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH) &&
+					!trees_research_type.equals(SimulationFeaturesConstants.SAMPLED_TREES_RESEARCH)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_RESEARCH_TYPE + " value must be " + 
+						SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH + " or " +
+						SimulationFeaturesConstants.SAMPLED_TREES_RESEARCH);
+			}
+			if(!networkFeatures.containsKey(CABERNETConstants.MAX_NET_TO_TEST))
+				throw new FeaturesException(CABERNETConstants.MAX_NET_TO_TEST + " value must be defined.");
+			this.maxNetToTest = Math.max(1, Integer.valueOf(networkFeatures.getProperty(CABERNETConstants.MAX_NET_TO_TEST)));
+		}else{
+			this.maxNetToTest = -1;
+		}
+
 		if(this.representativeTreeComputation || this.treeMatching){
-			if(!networkFeatures.containsKey(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST)){
-				throw new FeaturesException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be defined");
+			if(!networkFeatures.containsKey(SimulationFeaturesConstants.TREES_COMPARISON)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_COMPARISON + " value must be defined");
 			}
-			this.max_children_for_complete_test = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST));
-			if(max_children_for_complete_test < 0){
-				throw new NumberFormatException("The " + SimulationFeaturesConstants.MAX_CHILDREN_FOR_COMPLETE_TEST + " value must be greater than 0");
-			}
-
-			if(!networkFeatures.containsKey(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY)){
-				throw new FeaturesException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be defined");
+			this.comparison_type = networkFeatures.getProperty(SimulationFeaturesConstants.TREES_COMPARISON);
+			if(!this.comparison_type.equals(SimulationFeaturesConstants.COMPLETE_COMPARISON) &&
+					!this.comparison_type.equals(SimulationFeaturesConstants.SAMPLED_COMPARISON)){
+				throw new FeaturesException("The " + SimulationFeaturesConstants.TREES_COMPARISON + " value must be " +
+						SimulationFeaturesConstants.COMPLETE_COMPARISON + " or " + SimulationFeaturesConstants.SAMPLED_COMPARISON);
 			}
 
-			this.partial_test_probability = Double.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY));
-			if(partial_test_probability < 0 || partial_test_probability > 1){
-				throw new NumberFormatException("The " + SimulationFeaturesConstants.PARTIAL_TEST_PROBABILITY + " value must be between 0 and 1");
+			this.comparison_cutoff = Integer.valueOf(networkFeatures.getProperty(SimulationFeaturesConstants.TREE_COMPARISON_CUTOFF));
+			if(comparison_cutoff <= 0){
+				throw new NumberFormatException("The " + SimulationFeaturesConstants.TREE_COMPARISON_CUTOFF + " value must be greater than 0");
 			}
 		}
 	}
@@ -205,18 +190,17 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 		GraphManager cytoscapeNetwork = cytoscapeBridge.getNetworkFromCytoscape();
 		int depth = 0;
 		ArrayList<TesTree> representativeTrees;
-		long time = 0;
+		int testedNetworks = 0;
+
 		try{
-			while(net < requiredNetworks){
-				time = System.currentTimeMillis();
-				
-				
+			while(net < requiredNetworks && (this.maxNetToTest == -1 || testedNetworks < this.maxNetToTest)){
+
 				//Variables initialization
 				match = true;
 				deltas = null;
 				parent = null;
 				representativeTrees = null;
-
+				testedNetworks = testedNetworks + 1;
 				//*************************************************************
 				//Task monitor message setting
 				taskMonitor.setStatusMessage("Network " + (net + 1) + ": Network creation");
@@ -261,37 +245,69 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						taskMonitor.setStatusMessage("Network " + (net + 1) + ": Matching");
 						//Creates the TES manager in order to match the network with the tree
 						tesManager = new TesManager(atmManager, samplingManager, 
-								this.max_children_for_complete_test, this.partial_test_probability);
+								comparison_type, comparison_cutoff);
 
 						try{
 							//Trees comparison: three comparison types are allowed
 							if(this.matchingType.equals(CABERNETConstants.PERFECT_MATCH)){
 
 								//Tries to match the network with the given differentiation tree
-								distance = tesManager.findCorrectTesTree(this.givenTree);
-								if(distance == 0){
-									match = true;
-									deltas = tesManager.getThresholds();
-								}else{
+								try{
+									distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+										@Override
+										public Integer call() throws Exception {
+											return tesManager.findCorrectTesTree(givenTree, trees_research_type);
+										}
+									}, trees_research_cutoff, TimeUnit.MINUTES);
+
+									if(distance == 0){
+										match = true;
+										deltas = tesManager.getThresholds();
+									}else{
+										match = false;
+									}
+								}catch(InterruptedException int_exp){
 									match = false;
+									deltas = null;
 								}
 
 							}else if(this.matchingType.equals(CABERNETConstants.MIN_DISTANCE)){
-								//Min distance comparison
-								distance = tesManager.findMinDistanceTesTree(this.givenTree);
-								if(distance == -1){
+
+								try{
+									//Min distance comparison
+									distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+										@Override
+										public Integer call() throws Exception {
+											return tesManager.findMinDistanceTesTree(givenTree, trees_research_type);
+										}
+									}, trees_research_cutoff, TimeUnit.MINUTES);
+									if(distance == -1){
+										match = false;
+									}else if(distance <= threshold){
+										deltas = tesManager.getThresholds();
+									}
+								}catch(InterruptedException int_exp){
 									match = false;
-								}else if(distance <= threshold){
-									deltas = tesManager.getThresholds();
+									deltas = null;
 								}
 							}else{
-								//Computes the histogram distance
-								distance = tesManager.findMinHistogramDistanceTesTree(this.givenTree);
-								if(distance <= threshold){
-									deltas = tesManager.getThresholds();
-									match = true;
-								}else{
+								try{
+									//Computes the histogram distance
+									distance = TimeLimitedCodeBlock.runWithTimeout(new Callable<Integer>(){
+										@Override
+										public Integer call() throws Exception {
+											return tesManager.findMinHistogramDistanceTesTree(givenTree, trees_research_type);
+										}
+									}, trees_research_cutoff, TimeUnit.MINUTES);
+									if(distance <= threshold){
+										deltas = tesManager.getThresholds();
+										match = true;
+									}else{
+										match = false;
+									}
+								}catch(InterruptedException int_exp){
 									match = false;
+									deltas = null;
 								}
 							}
 							//Forces the process conclusion in case of thread interruption
@@ -329,16 +345,16 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 									}
 									//Creates the TES manager
 									TesManager tesManager = new TesManager(atmManager, samplingManager, 
-											max_children_for_complete_test,partial_test_probability);
+											comparison_type, comparison_cutoff);
 
 									if(requiredOutputs.getProperty(CABERNETConstants.SHOW_ALL_TREES).equals(CABERNETConstants.YES)){
-										return tesManager.getRepresentativeTrees(depth, representativeTreeCutoff, true);
+										return tesManager.getRepresentativeTrees(depth, true);
 
 									}else{
-										return tesManager.getRepresentativeTrees(depth, representativeTreeCutoff, false);
+										return tesManager.getRepresentativeTrees(depth, false);
 									}
 								}
-							},  5, TimeUnit.MINUTES);
+							},  representativeTreeCutoff, TimeUnit.MINUTES);
 						}catch(TimeoutException ex){
 							representativeTrees = new ArrayList<TesTree>();
 							System.out.println("Time Out!");
@@ -412,7 +428,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						if(requiredOutputs.getProperty(OutputConstants.GRNML_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
 							Output.createGRNMLFile(graphManager.getGraph(), outputPath + "/network.grnml");
 						}
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -421,7 +437,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						if(requiredOutputs.getProperty(OutputConstants.SIF_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
 							Output.createSIFFile(graphManager.getGraph(), outputPath + "/network.sif");
 						}
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -434,12 +450,12 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
-						
+
 						//STATES IN EACH ATTRACTOR FILE
 						if(requiredOutputs.getProperty(OutputConstants.STATES_IN_EACH_ATTRACTOR, OutputConstants.NO).equals(OutputConstants.YES)){
 							Output.saveStatesAttractorsFile(outputPath + "/states_in_each_attractor.csv", samplingManager.getAttractorFinder());
 						}
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -448,16 +464,16 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						if(requiredOutputs.getProperty(OutputConstants.ATTRACTORS, OutputConstants.NO).equals(OutputConstants.YES)){
 							Output.saveAttractorsFile(samplingManager.getAttractorFinder(), outputPath + "/attractors.csv");
 						}
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
-						
+
 						//SYNTHESIS FILE
 						if(requiredOutputs.getProperty(OutputConstants.SYNTHESIS_FILE, OutputConstants.NO).equals(OutputConstants.YES)){
 							Output.createSynthesisFile(newSim.getNetworkStatistics(), outputPath + "/synthesis.csv");
 						}
-						
+
 						//Forces the process conclusion in case of thread interruption
 						if(Thread.interrupted())
 							throw new InterruptedException();
@@ -470,7 +486,7 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 						throw new InterruptedException();
 				}
 			} //Network while ending
-			
+
 			//*****************************************************************
 			//COMMON STATISTICS
 			DynamicalStatistics dymStats;
@@ -487,8 +503,8 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 			//Forces the process conclusion in case of thread interruption
 			if(Thread.interrupted())
 				throw new InterruptedException();
-			
-			
+
+
 			//Basins of attraction (if required)
 			if(requiredOutputs.getProperty(OutputConstants.BASINS_OF_ATTRACTION, OutputConstants.NO).equals(OutputConstants.YES)){	
 				HashMap<String, ArrayList<Integer>> basinsOfAttraction = new HashMap<String, ArrayList<Integer>>();
@@ -498,7 +514,6 @@ public class NetworkEditingFromCytoscape extends AbstractTask{
 				}
 				Output.saveAttractorsLengths(requiredOutputs.getProperty(OutputConstants.OUTPUT_PATH, "") + "/basins_of_attraction.csv", 
 						basinsOfAttraction);
-			System.out.println("Time: " + (System.currentTimeMillis() - time));
 			}
 			//Process ending
 			taskMonitor.setProgress(1.0);

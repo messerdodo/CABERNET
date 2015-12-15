@@ -15,6 +15,8 @@ import it.unimib.disco.bimib.Task.FindTreeTask;
 
 
 
+import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
+
 //System imports
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
@@ -27,8 +29,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 
 //Cytoscape imports
 import org.cytoscape.app.swing.CySwingAppAdapter;
@@ -52,8 +56,10 @@ public class TreeFrame extends JFrame {
 
 	private NetworkManagment cytoscapeBridge;
 	private JTextField txtCutoff;
-	private JTextField txtMaxChildren;
-	private JTextField txtPermutationProbability;
+	private JTextField txtComparisonCutoff;
+	private final ButtonGroup comparisonTypeGrp = new ButtonGroup();
+	private JRadioButton chkComplete;
+	private JRadioButton chkSampled;
 
 	public TreeFrame(final AtmManager atmManager, final SamplingManager samplingManager, 
 			String networkId, final CyNetwork currentNetwork, final CySwingAppAdapter adapter,
@@ -103,8 +109,8 @@ public class TreeFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int reqDepth = 0;
 				int cutoff;
-				int maxChildren;
-				double permProb;
+				String comparison_type;
+				int comparison_cutoff;
 				double value;
 				int n = samplingManager.getAttractorFinder().getAttractorsNumber();
 				try{
@@ -129,20 +135,18 @@ public class TreeFrame extends JFrame {
 						throw new NumberFormatException("The cutoff must be greater or equal than 0 or -1.");
 					}
 					
-					maxChildren = Integer.valueOf(txtMaxChildren.getText());
-					if(maxChildren < 0){
-						throw new NumberFormatException("The maximum number of children for a complete test must be greater than 0.");
+					comparison_cutoff = Integer.valueOf(txtComparisonCutoff.getText());
+					if(comparison_cutoff <= 0){
+						throw new NumberFormatException("The comparison cutoff must be greater than 0.");
 					}
 					
-					permProb = Double.valueOf(txtPermutationProbability.getText());
-					if(permProb < 0 || permProb > 1){
-						throw new NumberFormatException("The permutation probability must be bertwwen 0 and 1.");
-					}
+					comparison_type = chkSampled.isSelected() ? SimulationFeaturesConstants.SAMPLED_COMPARISON :
+						SimulationFeaturesConstants.COMPLETE_COMPARISON;
 					
 					// Get a Cytoscape service 'DialogTaskManager' in CyActivator class
 					DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
 					dialogTaskManager.execute(new TaskIterator(new FindTreeTask(reqDepth, cutoff, atmManager, samplingManager,
-							cytoscapeBridge, currentNetwork, maxChildren, permProb)));
+							cytoscapeBridge, currentNetwork, comparison_type, comparison_cutoff)));
 					System.out.println("Tesk completed");
 				}catch(Exception nfe){
 					String message = (String) (nfe.getMessage().equals("") ? nfe : nfe.getMessage());
@@ -155,24 +159,26 @@ public class TreeFrame extends JFrame {
 		
 		txtCutoff = new JTextField();
 		txtCutoff.setHorizontalAlignment(SwingConstants.CENTER);
-		txtCutoff.setText("-1");
+		txtCutoff.setText("15");
 		txtCutoff.setColumns(10);
 		
-		JLabel lblMaximumTreesTo = new JLabel("Permutation probability value:");
+		JLabel ComparisonCutoffLbl = new JLabel("Comparison cutoff (minutes):");
 		
-		JLabel label = new JLabel("Maximum trees to test:");
+		JLabel lblComparisonType = new JLabel("Task cutoff (minutes):");
 		
-		JLabel lblMaxChildrenFor = new JLabel("Maximum children for a complete test:");
+		JLabel lblMaxChildrenFor = new JLabel("Comparison type:");
 		
-		txtMaxChildren = new JTextField();
-		txtMaxChildren.setText("8");
-		txtMaxChildren.setHorizontalAlignment(SwingConstants.CENTER);
-		txtMaxChildren.setColumns(10);
+		txtComparisonCutoff = new JTextField();
+		txtComparisonCutoff.setText("2");
+		txtComparisonCutoff.setHorizontalAlignment(SwingConstants.CENTER);
+		txtComparisonCutoff.setColumns(10);
 		
-		txtPermutationProbability = new JTextField();
-		txtPermutationProbability.setText("0.5");
-		txtPermutationProbability.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPermutationProbability.setColumns(10);
+		chkComplete = new JRadioButton("Complete");
+		comparisonTypeGrp.add(chkComplete);
+		
+		chkSampled = new JRadioButton("Sampled");
+		comparisonTypeGrp.add(chkSampled);
+		chkSampled.setSelected(true);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -180,33 +186,34 @@ public class TreeFrame extends JFrame {
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(ComparisonCutoffLbl)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(txtComparisonCutoff, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblTreeDepth)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblMaximumTreesTo)
-									.addPreferredGap(ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-									.addComponent(txtPermutationProbability, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(6)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblTreeDepth)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addGap(6)
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-												.addComponent(rdbtnRelative)
-												.addComponent(rdbtnAbsolute)
-												.addComponent(rdbtnLogn, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)))
-										.addComponent(label, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE)
-										.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblMaxChildrenFor)
-									.addGap(18)
-									.addComponent(txtMaxChildren, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE)))
-							.addGap(211))
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(btnCompute)
-							.addGap(181))))
+										.addComponent(rdbtnRelative)
+										.addComponent(rdbtnAbsolute)
+										.addComponent(rdbtnLogn, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)))
+								.addComponent(lblComparisonType, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblMaxChildrenFor)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(chkComplete)
+							.addGap(18)
+							.addComponent(chkSampled, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)))
+					.addGap(289))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(248)
+					.addComponent(btnCompute)
+					.addContainerGap(271, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -226,19 +233,20 @@ public class TreeFrame extends JFrame {
 							.addComponent(txtDepthValue, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label)
+						.addComponent(lblComparisonType)
 						.addComponent(txtCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblMaxChildrenFor)
-						.addComponent(txtMaxChildren, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(chkComplete)
+						.addComponent(chkSampled))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblMaximumTreesTo)
-						.addComponent(txtPermutationProbability, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(ComparisonCutoffLbl)
+						.addComponent(txtComparisonCutoff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnCompute)
-					.addGap(85))
+					.addGap(23))
 		);
 		getContentPane().setLayout(groupLayout);
 	}

@@ -391,10 +391,43 @@ public class SimulationFeaturesConstants {
 	public static final String PERMANENTLY_KNOCK_OUT_NODES = "permanently-knock-out-nodes";
 	
 	/**
-	 * This key is used in order to define a sort of cutoff for the nodes permutations during the 
-	 * comparison of two trees
+	 * This key is used in order to define the type of comparison to perform. Possible
+	 * values are complete or sampled
 	 */
-	public static final String MAX_CHILDREN_FOR_COMPLETE_TEST = "max-children-for-complete-test";
+	public static final String TREES_COMPARISON = "trees-comparison";
+
+	/**
+	 * Complete value for the trees comparison task.
+	 */
+	public static final String COMPLETE_COMPARISON = "complete";
+	
+	/**
+	 * Sampled value for the trees comparison task.
+	 */
+	public static final String SAMPLED_COMPARISON = "sampled";
+	
+	/**
+	 * Time cutoff for the tree comparison 
+	 */
+	public static final String TREE_COMPARISON_CUTOFF = "tree-comparison-cutoff";
+	
+	/**
+	 * This key is used in order to define the time cutoff for the tree matching task
+	 */
+	public static final String TREES_RESEARCH_CUTOFF = "trees-research-cutoff";
+	/**
+	 * This key is used in order to define the type of research to perform. The allowed
+	 * values are complete and sampled
+	 */
+	public static final String TREES_RESEARCH_TYPE = "trees-research-type";
+	/**
+	 * Complete value for TREE_RESEARCH_TYPE key
+	 */
+	public static final String COMPLETED_TREES_RESEARCH = "complete";
+	/**
+	 * Sampled value for TREE_RESEARCH_TYPE key
+	 */
+	public static final String SAMPLED_TREES_RESEARCH = "sampled";
 
 	/**
 	 * This key is used in order to define the probability of a permutation selection for the comparison 
@@ -403,4 +436,7 @@ public class SimulationFeaturesConstants {
 	public static final String PARTIAL_TEST_PROBABILITY = "partial-test-probability";
 
 	public static final String INGOING_SCALE_FREE = "ingoing-scale-free";
+	/**
+	 * 
+	 */
 }

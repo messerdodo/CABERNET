@@ -53,7 +53,7 @@ public class WizardAction extends AbstractCyAction{
 	public void actionPerformed(ActionEvent e) {
 		// Get a Cytoscape service 'DialogTaskManager' in CyActivator class
 		DialogTaskManager dialogTaskManager = adapter.getCyServiceRegistrar().getService(DialogTaskManager.class);
-		
+
 		Wizard wizard = new Wizard(adapter);
 		Properties simulationFeatures;
 		Properties tasks;
@@ -71,9 +71,9 @@ public class WizardAction extends AbstractCyAction{
 				simulationFeatures = wizard.getSimulationFeatures();
 				tasks = wizard.getTaskToDo();
 				outputs = wizard.getOutputs();
-				atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.NO).equals(CABERNETConstants.YES);
-				tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING, CABERNETConstants.NO).equals(CABERNETConstants.YES);
-				representativeTreeComputation = tasks.getProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE, CABERNETConstants.NO).equals(CABERNETConstants.YES);
+				atm_computation = tasks.getProperty(CABERNETConstants.ATM_COMPUTATION).equals(CABERNETConstants.YES);
+				tree_matching = tasks.getProperty(CABERNETConstants.TREE_MATCHING).equals(CABERNETConstants.YES);
+				representativeTreeComputation = tasks.getProperty(CABERNETConstants.COMPUTE_REPRESENTATIVE_TREE).equals(CABERNETConstants.YES);
 				if(representativeTreeComputation){
 					representativeTreeDepthMode = tasks.getProperty(CABERNETConstants.TREE_DEPTH_MODE);
 					if(representativeTreeDepthMode.equals(CABERNETConstants.ABSOLUTE_DEPTH) ||
@@ -170,7 +170,6 @@ public class WizardAction extends AbstractCyAction{
 					}
 				}
 			}catch(Exception ex){
-				System.err.println("Error " + ex);
 				JOptionPane.showMessageDialog(null, ex.getMessage().equals("") ? ex : ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
 			}
 		}

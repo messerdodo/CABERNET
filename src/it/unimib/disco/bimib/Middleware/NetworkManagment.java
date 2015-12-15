@@ -46,7 +46,7 @@ public class NetworkManagment {
 	private final boolean DIRECTED_EDGE = true;
 	private final int SOURCE = 0;
 	private final int DESTINATION = 1;
-	
+
 	private final int PRECISION = 2;
 
 	private final CyAppAdapter adapter;
@@ -82,12 +82,13 @@ public class NetworkManagment {
 		CyTable nodeTable = newRBN.getDefaultNodeTable();
 		nodeTable.createColumn("Gene number", Integer.class, true);
 		nodeTable.createColumn("Function", String.class, true);
+		nodeTable.createColumn("Bias", Double.class, true);
 		nodeTable.createColumn("Incoming edges", Integer.class, true);
 		nodeTable.createColumn("Outcoming edges", Integer.class, true);
 		nodeTable.createColumn("Degree", Integer.class, true);
 		nodeTable.createColumn("Normalized Degree", Double.class, true);
 		nodeTable.createColumn("Added", Boolean.class, true);
-		
+
 		double maxDegree = 1.0;
 
 		//Adds the genes
@@ -98,13 +99,12 @@ public class NetworkManagment {
 			newRBN.getRow(genes[i]).set(CyNetwork.NAME, genesNames.get(i));
 			newRBN.getRow(genes[i]).set("Gene number", i);
 			newRBN.getRow(genes[i]).set("Function", rbn.getFunction(i).getType());
+			newRBN.getRow(genes[i]).set("Bias", rbn.getFunction(i).getBias());
 			newRBN.getRow(genes[i]).set("Incoming edges", rbn.getIncomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Outcoming edges", rbn.getOutcomingNodes(i).size());
 			newRBN.getRow(genes[i]).set("Degree", rbn.getNodeDegree(i));
 			newRBN.getRow(genes[i]).set("Added", genesNames.get(i).contains("gene_"));
 			maxDegree = Math.max(maxDegree, rbn.getNodeDegree(i));
-			
-			
 		}
 
 		//Set the normalized degree
@@ -235,19 +235,24 @@ public class NetworkManagment {
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public CyNetwork createTesGraph(AttractorsFinder attractorsFinder, AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+	public CyNetwork createTesGraph(AttractorsFinder attractorsFinder, AtmManager atmManager, String networkId, 
+			double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
+		
 		double[][] tesChartMatrix = TesManager.getTesGraph(atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold));
-
-		int nodes = tesChartMatrix.length;
+		int  nodes = tesChartMatrix.length;
 		int k = 0;
+		int[] att_numbers;
 		ArrayList<Integer> skippedRows = new ArrayList<Integer>();
-
+		boolean notInTes;
 		//Gets the real number of attractors related with a TES
 		for(int i = 0; i < tesChartMatrix.length; i++){
+			notInTes = false;
 			k = 0;
-			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
+			while(k < tesChartMatrix.length && !notInTes){
+				notInTes = (tesChartMatrix[i][k] < 0.0);
 				k++;
-			if(k == tesChartMatrix.length){
+			}
+			if(notInTes){
 				nodes = nodes - 1;
 				skippedRows.add(i);
 			}
@@ -274,6 +279,15 @@ public class NetworkManagment {
 				}
 				attractorAssignments[ri] = i;
 				ri = ri + 1;
+			}
+		}
+
+		att_numbers = new int[nodes];
+		k = 0;
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			if(!skippedRows.contains(i)){
+				att_numbers[k] = i;
+				k = k + 1;
 			}
 		}
 
@@ -314,7 +328,7 @@ public class NetworkManagment {
 			for(int state = 0; state < states.length; state++){
 				statesInAttractor[state] = tesGraph.addNode();
 				tesGraph.getRow(statesInAttractor[state]).set("State", states[state].toString());
-				tesGraph.getRow(statesInAttractor[state]).set("Name", "A" + (virtual + 1));
+				tesGraph.getRow(statesInAttractor[state]).set("Name", "A" + (att_numbers[virtual] + 1));
 			}
 
 			//Sets the edges
@@ -362,19 +376,25 @@ public class NetworkManagment {
 	public CyNetwork createCollapsedTesGraph(AtmManager atmManager, String networkId, double threshold, CyNetwork parent) throws ParamDefinitionException, NotExistingNodeException, InputTypeException{
 		double[][] tesChartMatrix = TesManager.getTesGraph(atmManager.getAtm().copyAtmMatrixWithDeltaRemoval(threshold));
 		int nodes = tesChartMatrix.length;
+		int[] att_numbers;
 		int k = 0;
 		ArrayList<Integer> skippedRows = new ArrayList<Integer>();
 
+		boolean notInTes;
 		//Gets the real number of attractors related with a TES
 		for(int i = 0; i < tesChartMatrix.length; i++){
+			notInTes = false;
 			k = 0;
-			while(k < tesChartMatrix.length && tesChartMatrix[i][k] == 0.0)
+			while(k < tesChartMatrix.length && ! notInTes){
+				notInTes = tesChartMatrix[i][k] < 0.0;
 				k++;
-			if(k == tesChartMatrix.length){
+			}
+			if(notInTes){
 				nodes = nodes - 1;
 				skippedRows.add(i);
 			}
 		}
+		
 		double[][] restrictedTesMatrix = new double[nodes][nodes];
 
 		//Restricted TES matrix initialization
@@ -394,6 +414,14 @@ public class NetworkManagment {
 					}
 				}
 				ri = ri + 1;
+			}
+		}
+		att_numbers = new int[nodes];
+		k = 0;
+		for(int i = 0; i < tesChartMatrix.length; i++){
+			if(!skippedRows.contains(i)){
+				att_numbers[k] = i;
+				k = k + 1;
 			}
 		}
 
@@ -420,7 +448,7 @@ public class NetworkManagment {
 		for(int i = 0; i < nodes; i++){
 			//Sets the virtual attractor node.
 			attractorsNodes[i] = tesGraph.addNode();
-			tesGraph.getRow(attractorsNodes[i]).set("Name", "A" + (i + 1));
+			tesGraph.getRow(attractorsNodes[i]).set("Name", "A" + (att_numbers[i] + 1));
 		}
 
 		CyEdge transitionEdge;

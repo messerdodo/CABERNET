@@ -16,24 +16,17 @@ import java.util.Collections;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 //GRNSim imports
 import it.unimib.disco.bimib.Exceptions.TesTreeException;
 import it.unimib.disco.bimib.Sampling.AttractorsFinder;
 import it.unimib.disco.bimib.Sampling.SamplingManager;
 import it.unimib.disco.bimib.Utility.SCCTarjan;
+import it.unimib.disco.bimib.Utility.SimulationFeaturesConstants;
+import it.unimib.disco.bimib.Utility.UtilityRandom;
 import it.unimib.disco.bimib.Atms.Atm;
 import it.unimib.disco.bimib.Atms.AtmManager;
+import it.unimib.disco.bimib.Exceptions.ParamDefinitionException;
+
 
 public class TesManager {
 
@@ -41,8 +34,8 @@ public class TesManager {
 	private AttractorsFinder attractorsFinder;
 	private TesTree createdTree;
 	private double[] thresholds;
-	private int  max_children_for_complete_test;
-	private double partial_test_probability;
+	private String comparison_type;
+	private int comparison_cutoff;
 
 	/**
 	 * Default constructor 
@@ -51,14 +44,13 @@ public class TesManager {
 	 * @throws Exception
 	 */
 	public TesManager(AtmManager atm, SamplingManager sampling,
-			int max_children_for_complete_test, 
-			double partial_test_probability)throws Exception {
+			String comparison_type, int comparison_cutoff)throws Exception {
 
 		this.atm = atm.getAtm();
 		this.attractorsFinder = sampling.getAttractorFinder();	
 		this.thresholds = null;
-		this.max_children_for_complete_test = max_children_for_complete_test;
-		this.partial_test_probability = partial_test_probability;
+		this.comparison_type = comparison_type;
+		this.comparison_cutoff = comparison_cutoff;
 		this.setCreatedTree(null);
 	}
 
@@ -84,7 +76,7 @@ public class TesManager {
 		return this.thresholds;
 	}
 
-	public int findCorrectTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
+	public int findCorrectTesTree(TesTree givenTree, String research_type) throws Exception {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 		TesTree createdTree = null;
@@ -96,7 +88,8 @@ public class TesManager {
 		}
 
 		//Searches every possible combination of delta in the matrix 
-		combinations = deltaCombinations(this.atm.copyAtm(), givenTreeDeepness);		
+		combinations = deltaCombinations(this.atm.copyAtm(), givenTreeDeepness, research_type);	
+		combinations = UtilityRandom.randomDoublePermutation(combinations);
 		//Combinations checking
 		if(combinations == null)
 			return -1;
@@ -106,7 +99,7 @@ public class TesManager {
 			try{
 				createdTree = new TesTree(testing_thresholds, this.atm.copyAtm(), this.attractorsFinder.getAttractors());
 				//Checks if the created tree is equal to the given differentiation tree.
-				if(createdTree.tesTreeCompare(givenTree, max_children_for_complete_test, partial_test_probability)){
+				if(createdTree.tesTreeCompare(givenTree, comparison_type, comparison_cutoff)){
 					this.thresholds = testing_thresholds;
 					//Tree fund: the method returns 0.
 					return 0;
@@ -126,8 +119,10 @@ public class TesManager {
 	 * If it's impossible to create the given tree, the method returns the null value. 
 	 * @throws TesTreeException: An error occurred during the tree creation
 	 * @throws InterruptedException 
+	 * @throws ParamDefinitionException 
 	 */
-	public int findMinDistanceTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
+	public int findMinDistanceTesTree(TesTree givenTree, String research_type) 
+			throws TesTreeException, InterruptedException, ParamDefinitionException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 
@@ -137,7 +132,7 @@ public class TesManager {
 		}
 
 		//Searches every possible combination of delta in the matrix 
-		ArrayList<double[]> combinations = deltaCombinations(this.atm.copyAtm(), givenTreeDeepness);		
+		ArrayList<double[]> combinations = deltaCombinations(this.atm.copyAtm(), givenTreeDeepness, research_type);		
 
 		TesTree createdTree = null;
 		int minDistance = -1, currentDistance;
@@ -168,8 +163,10 @@ public class TesManager {
 	 * If it's impossible to create the given tree, the method returns the null value. 
 	 * @throws TesTreeException: An error occurred during the tree creation
 	 * @throws InterruptedException 
+	 * @throws ParamDefinitionException 
 	 */
-	public int findMinHistogramDistanceTesTree(TesTree givenTree) throws TesTreeException, InterruptedException {
+	public int findMinHistogramDistanceTesTree(TesTree givenTree, 
+			String research_type) throws TesTreeException, InterruptedException, ParamDefinitionException {
 		int k = this.attractorsFinder.getAttractors().length;
 		int givenTreeDeepness = givenTree.getTreeDeppness();
 
@@ -179,7 +176,7 @@ public class TesManager {
 		}
 
 		//Searches every possible combination of delta in the matrix 
-		ArrayList<double[]> combinations = deltaCombinations(givenTreeDeepness);		
+		ArrayList<double[]> combinations = deltaCombinations(givenTreeDeepness, research_type);		
 		TesTree createdTree = null;
 		int minDistance = -1, currentDistance;
 		//Creates a new TES tree for each delta values combination
@@ -211,7 +208,8 @@ public class TesManager {
 
 
 
-	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness)throws TesTreeException, InterruptedException{
+	public ArrayList<double[]> deltaCombinations(int requiredTreeDeepness, String research_type)
+			throws TesTreeException, InterruptedException, ParamDefinitionException{
 		//Initializes the ArraList
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<double[]> combinations = new ArrayList<double[]>();
@@ -222,25 +220,31 @@ public class TesManager {
 		//Forces the process conclusion in case of thread interruption
 		if(Thread.interrupted())
 			throw new InterruptedException();
-		
+
 		//Sorts all the value in a crescent order
 		Collections.sort(values); 
 
 		if(requiredTreeDeepness > values.size())
 			return null;
 		else{
-			//Gets the unstructured combinations 
-			ArrayList<Double> e = combinationCreator(values, requiredTreeDeepness);
-			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
-				
+			ArrayList<ArrayList<Double>> e;
+			if(research_type.equals(SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH)){
+				e = TesManager.combinationCreator(values, 0, requiredTreeDeepness, 1.0);
+			}else{
+				//Gets the combinations 
+				double prob = Math.min(1.0, (2.0 * requiredTreeDeepness) / values.size());
+				e = TesManager.combinationCreator(values, 0, requiredTreeDeepness, prob);
+			}
+			for(ArrayList<Double> comb: e){
 				//Forces the process conclusion in case of thread interruption
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				
+
 				double[] singleCombination = new double[requiredTreeDeepness + 1];
 				singleCombination[0] = 0.0;
+				Collections.sort(comb);
 				for(int j = 1; j < requiredTreeDeepness + 1; j++){
-					singleCombination[j] = e.get(i+j-1);
+					singleCombination[j] = comb.get(j - 1);
 				}
 				//Adds the combination in the array list "Combinations"
 				combinations.add(singleCombination);
@@ -257,8 +261,10 @@ public class TesManager {
 	 * @return an arrayList which contains an array with the delta values for each combination.
 	 * @throws TesTreeException: An error occurred during the combinations calculation.
 	 * @throws InterruptedException 
+	 * @throws ParamDefinitionException 
 	 */
-	public static ArrayList<double[]> deltaCombinations(double[][] atm, int requiredTreeDeepness) throws TesTreeException, InterruptedException{	
+	public static ArrayList<double[]> deltaCombinations(double[][] atm, int requiredTreeDeepness,
+			String research_type) throws TesTreeException, InterruptedException, ParamDefinitionException{	
 		//Initializes the ArraList
 		ArrayList<Double> values = new ArrayList<Double>();
 		ArrayList<double[]> combinations = new ArrayList<double[]>();
@@ -273,9 +279,10 @@ public class TesManager {
 		//Forces the process conclusion in case of thread interruption
 		if(Thread.interrupted())
 			throw new InterruptedException();
-		
+
 		//Sorts all the value in a crescent order
 		Collections.sort(values); 
+
 		//Removes the zero if it is present.
 		if(values.contains(0.0))
 			values.remove(new Double(0.0));
@@ -283,18 +290,23 @@ public class TesManager {
 		if(requiredTreeDeepness > values.size())
 			throw new TesTreeException("k ("+requiredTreeDeepness+") is bigger then the threshold's values ("+values.size() +")");
 		else{
-			//Gets the unstructured combinations 
-			ArrayList<Double> e = TesManager.combinationCreator(values, requiredTreeDeepness);
-			for(int i = 0; i < e.size(); i += requiredTreeDeepness){
-				
+			ArrayList<ArrayList<Double>> e;
+			if(research_type.equals(SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH)){
+				e = TesManager.combinationCreator(values, 0, requiredTreeDeepness, 1.0);
+			}else{
+				double prob = Math.min(1.0, (2.0 * requiredTreeDeepness) / values.size());
+				e = TesManager.combinationCreator(values, 0, requiredTreeDeepness, prob);
+			}
+			for(ArrayList<Double> comb: e){
 				//Forces the process conclusion in case of thread interruption
 				if(Thread.interrupted())
 					throw new InterruptedException();
-				
+
 				double[] singleCombination = new double[requiredTreeDeepness + 1];
 				singleCombination[0] = 0.0;
+				Collections.sort(comb);
 				for(int j = 1; j < requiredTreeDeepness + 1; j++){
-					singleCombination[j] = e.get(i+j-1);
+					singleCombination[j] = comb.get(j - 1);
 				}
 				//Adds the combination in the array list "Combinations"
 				combinations.add(singleCombination);
@@ -313,75 +325,33 @@ public class TesManager {
 	 * Each set of k values should be explained as a single combination.
 	 * @throws InterruptedException 
 	 */
-	private static ArrayList<Double> combinationCreator(ArrayList<Double> values, int k) throws InterruptedException {
-		//Initializes all the ArrayList needed
-		ArrayList<Double> head = new ArrayList<Double>();
-		ArrayList<Double> temp =new ArrayList<Double>();
-		ArrayList<Double> tailcombs = new ArrayList<Double>();
-		ArrayList<Double> combs = new ArrayList<Double>();
-		int j = 0;
-		
-		//Forces the process conclusion in case of thread interruption
-		if(Thread.interrupted())
-			throw new InterruptedException();
-
-		//If k is equal to the length of the ArrayList returns its
-		if (k == values.size()) {
-			return values;
-		}
-		//If k is equal to 1 adds all the values in the ArrayList combs
-		if (k == 1) {
-			for (int i = 0; i < values.size() ; i++) {
-				combs.add(values.get(i));
+	public static ArrayList<ArrayList<Double>> combinationCreator(ArrayList<Double> values, 
+			int start, int k, double probability) throws ParamDefinitionException, InterruptedException {
+		ArrayList<ArrayList<Double>> combs;
+		ArrayList<Double> tail;
+		ArrayList<ArrayList<Double>> tails;
+		if(k == 1){
+			combs = new ArrayList<ArrayList<Double>>();
+			for(int i = start; i < values.size() - k + 1; i++){
+				tail = new ArrayList<Double>();
+				tail.add(values.get(i));
+				combs.add(tail);
 			}
-			return combs;
-		}
-		//Searches the k combinations
-		for (int i = 0; i < values.size() - k  + 1; i++) {
-			
-			//Forces the process conclusion in case of thread interruption
-			if(Thread.interrupted())
-				throw new InterruptedException();
-			
-			//Adds the first element of the ArrayList values into head
-			head.add(values.get(i));
-
-			//Adds all the remain values in a temporary ArrayList
-			for(int index = i + 1; index < values.size(); index++)
-				temp.add(values.get(index));
-
-			//If the temporary ArrayList isn't empty makes the recursive call
-			if(temp.isEmpty() != true)
-				tailcombs = combinationCreator(temp, k - 1);
-
-			//Pass all the element of the ArrayList tailcombs
-			while ( j < tailcombs.size()) {
-				
-				//Forces the process conclusion in case of thread interruption
-				if(Thread.interrupted())
+		}else{
+			combs = new ArrayList<ArrayList<Double>>();
+			ArrayList<Integer> sampling = UtilityRandom.randomSubset(start, 
+					values.size() - k, 
+					(int)Math.ceil(((values.size() - k - start + 1) * probability)));
+			for(int i : sampling){
+				if(Thread.interrupted()){
 					throw new InterruptedException();
-				
-				//Checks if the specified values of the ArrayList is different from the ith head's element
-				//and if it is bigger.
-				if(tailcombs.get(j) != head.get(0) && tailcombs.get(j) > head.get(i)){
-					//Adds the ith head's element in the ArraList combs
-					combs.add(head.get(i));
-					//Adds all the k-element in the ArraList combs
-					for(int valueK = 0 ; valueK < k - 1; valueK ++){
-						
-						//Forces the process conclusion in case of thread interruption
-						if(Thread.interrupted())
-							throw new InterruptedException();
-						
-						combs.add(tailcombs.get(j));
-						j++;
-					}
 				}
-
+				tails = combinationCreator(values, i + 1, k - 1, probability);
+				for(ArrayList<Double> c : tails){
+					c.add(values.get(i));
+					combs.add(c);
+				}
 			}
-			//Resets the index and the temporary ArrayList
-			j = 0;
-			temp.clear();
 		}
 		return combs;
 	}
@@ -431,7 +401,7 @@ public class TesManager {
 		//Gets the Strongly Connected Components
 		SCCTarjan sccCalculator = new SCCTarjan(atm);
 		ArrayList<ArrayList<Integer>> scc = sccCalculator.scc();
-
+	
 		//Each position of the array contains the number of the scc of the element.
 		int[] assignments = new int[atm.length];
 		for(int i  = 0; i < scc.size(); i++){
@@ -467,11 +437,16 @@ public class TesManager {
 		//Only the links between attractors in a TES are copied
 		ArrayList<Integer> tes;
 		for(int t = 0; t < temporaryTesSet.length; t++){
-			if(temporaryTesSet[t] == true){
-				tes = scc.get(t);
-				for(int a1 = 0; a1 < tes.size(); a1++)
-					for(int a2 = 0; a2 < tes.size(); a2++)
+
+			tes = scc.get(t);
+			for(int a1 = 0; a1 < tes.size(); a1++){
+				for(int a2 = 0; a2 < tes.size(); a2++){
+					if(temporaryTesSet[t] == true){
 						tesGraphMatrix[tes.get(a1)][tes.get(a2)] = atm[tes.get(a1)][tes.get(a2)];
+					}else{
+						tesGraphMatrix[tes.get(a1)][tes.get(a2)] = -1;
+					}
+				}
 			}
 		}
 		return tesGraphMatrix;
@@ -539,16 +514,17 @@ public class TesManager {
 	 * @param atm: the atm matrix
 	 * @param requiredDepth: tree depth.
 	 * @return
-	 * @throws TesTreeException
-	 * @throws InterruptedException 
+	 * @throws Exception 
 	 */
-	public ArrayList<TesTree> getRepresentativeTrees(int requiredDepth, int cutoff, boolean most) throws TesTreeException, InterruptedException{
+	public ArrayList<TesTree> getRepresentativeTrees(int requiredDepth, boolean most) throws Exception{
 		ArrayList<TesTree> foundTrees = new ArrayList<TesTree>();
 		ArrayList<Integer> treesOccurence = new ArrayList<Integer>();
 		ArrayList<TesTree> mostFrequentTree = new ArrayList<TesTree>();
 		double[][] atm = this.atm.getAtm();
 
-		ArrayList<double[]> combinations = deltaCombinations(atm, requiredDepth);
+		ArrayList<double[]> combinations = deltaCombinations(atm, requiredDepth, 
+				SimulationFeaturesConstants.COMPLETED_TREES_RESEARCH);
+		combinations = UtilityRandom.randomDoublePermutation(combinations);
 		TesTree createdTree;
 		int i;
 		int times = 0;
@@ -556,7 +532,7 @@ public class TesManager {
 		boolean found = false;
 		//Tests 'cutoff' trees (or combinations.size() if cutoff is too big)
 		//If cutoff is -1 tests all the possible trees
-		while(times < combinations.size() && (cutoff == -1 || times < cutoff)){
+		while(times < combinations.size()){
 
 			//Forces the process conclusion in case of thread interruption
 			if(Thread.interrupted())
@@ -575,7 +551,7 @@ public class TesManager {
 						throw new InterruptedException();
 
 					if(createdTree.tesTreeCompare(foundTrees.get(i), 
-							max_children_for_complete_test, partial_test_probability)){
+							comparison_type, comparison_cutoff)){
 						found = true;
 						createdTree = null;
 						System.gc();
@@ -616,11 +592,11 @@ public class TesManager {
 		}
 		foundTrees = null;
 		System.gc();
-		
+
 		//Forces the process conclusion in case of thread interruption
 		if(Thread.interrupted())
 			throw new InterruptedException();
-		
+
 		//Returns the most obtained trees
 		return mostFrequentTree;
 	}

@@ -81,39 +81,13 @@ public interface AttractorsFinder {
 	 */
 	public double getOscillatingNodesRatio();
 
-
-	/**
-	 * This method rewires the attractor finder
-	 * @throws ParamDefinitionException 
-	 * @throws InputTypeException 
-	 * @throws NotExistingNodeException 
-	 * @throws AttractorNotFoundException 
-	 * @throws InterruptedException 
-	 */
-	public void rewiredAttractorFinder() throws ParamDefinitionException, NotExistingNodeException, 
-		InputTypeException, AttractorNotFoundException, InterruptedException;
-
-	/**
-	 * This method returns all the old attractor when is made a permanent perturbation
-	 * @return all the old attractors
-	 */
-	public Object[] getOldAttractors();
-
 	/**
 	 * This method saves the old state of the sampling object.
 	 * @throws ParamDefinitionException
 	 * @throws NotExistingNodeException
 	 * @throws InputTypeException
 	 */
-	public void clearAndStore() throws ParamDefinitionException, NotExistingNodeException, InputTypeException;
-
-	/**
-	 * This method returns the stored attractors.
-	 * The returned HashMap has the attractor id as key an an object array, representing the
-	 * states in the attractor, as value.
-	 * @return The stored attractors
-	 */
-	public HashMap<Object, Object[]> getStoredAttractors();
+	public void clear() throws ParamDefinitionException, NotExistingNodeException, InputTypeException;
 
 	/**
 	 * This method returns a copy of itself.
