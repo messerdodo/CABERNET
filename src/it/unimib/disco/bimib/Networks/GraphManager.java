@@ -12,6 +12,7 @@ package it.unimib.disco.bimib.Networks;
 
 //System imports
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
