@@ -3251,7 +3251,8 @@ public class Wizard extends JDialog {
 						tasks.setProperty(CABERNETConstants.ATM_COMPUTATION, CABERNETConstants.NO);
 						//Next step: Output elements chosen
 						form = "output-form";
-						lblOutputsList.setBackground(Color.LIGHT_GRAY);
+						lblOutputsList.setBackground(UIManager.getColor("Button.background"));
+						lblExperimentsList.setBackground(Color.WHITE);
 						((CardLayout)contentPanel.getLayout()).show(contentPanel, "outputsPanel");
 					}
 					//Next action: Tree matching

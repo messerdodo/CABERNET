@@ -381,8 +381,8 @@ public class GraphManager {
         int undefinedFunctionsNumber = 0;
 		double randomRate = 0, biasRate = 0, biasValue = 0, andRate = 0, orRate = 0, canalizedRate = 0;
         ArrayList<Integer> undefinedFunctions = new ArrayList<Integer>();
-        ArrayList<String> noSource = new ArrayList<String>();
-        ArrayList<String> noTarget = new ArrayList<String>();
+        ArrayList<String> noSource = new ArrayList<>();
+        ArrayList<String> noTarget = new ArrayList<>();
         
         if(features.containsKey(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES))
             noSource = (ArrayList<String>) features.get(SimulationFeaturesConstants.EXCLUDES_SOURCE_GENES);
@@ -578,7 +578,8 @@ public class GraphManager {
 
 	}
     
-    private void randomTopologyAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget)
+    @SuppressWarnings("unchecked")
+	private void randomTopologyAugmentation(Properties features, ArrayList<String> noSource, ArrayList<String> noTarget)
     throws FeaturesException, NotExistingNodeException, ParamDefinitionException {
         int totalNodes;
         //Adds the undefined nodes (if specified)

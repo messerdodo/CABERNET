@@ -95,7 +95,6 @@ public class AtmManager {
 				throw new FeaturesException(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB + " key must be specified");
 
 			mutationRate = Double.parseDouble(simulationFeatures.get(SimulationFeaturesConstants.RATIO_OF_STATES_TO_PERTURB).toString());
-
 			//Checks if the mutations rate is between 0 and 1
 			if(mutationRate < 0)
 				mutationRate = 0;
@@ -109,7 +108,6 @@ public class AtmManager {
 			if(!simulationFeatures.containsKey(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP)) 
 				throw new MissingFeaturesException("Features must contain the " + SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP + " key");
 			perturbExperiments = Integer.parseInt(simulationFeatures.get(SimulationFeaturesConstants.HOW_MANY_PERTURB_EXP).toString());
-
 			this.atm.createAtm(samplingManager.getAttractorFinder().getAttractors(), perturbExperiments, mutationRate);
 		}else{
 			//Create a new ATM object
